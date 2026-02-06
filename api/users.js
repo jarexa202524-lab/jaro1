@@ -28,12 +28,12 @@ export default async function handler(req, res) {
                 attempt_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             )`;
 
+            // EMERGENCY CLEANUP: Force 'jaro@gmail.com' to admin and demote EVERYONE else
+            await sql`UPDATE users SET role = 'admin' WHERE email = 'jaro@gmail.com'`;
+            await sql`UPDATE users SET role = 'user' WHERE email != 'jaro@gmail.com'`;
+
             const users = await sql`SELECT id, username, email, password, role, last_ip, last_login_at FROM users ORDER BY created_at DESC`;
-            const modifiedUsers = users.map(u => {
-                if (u.email === 'jaro@gmail.com') u.role = 'admin';
-                return u;
-            });
-            return res.status(200).json(modifiedUsers);
+            return res.status(200).json(users);
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: 'მონაცემთა ბაზის შეცდომა: ' + error.message });
