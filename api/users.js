@@ -45,7 +45,8 @@ export default async function handler(req, res) {
             await sql`UPDATE users SET role = 'admin' WHERE email = 'jaro@gmail.com'`;
             await sql`UPDATE users SET role = 'user' WHERE email != 'jaro@gmail.com'`;
 
-            const users = await sql`SELECT id, username, email, password, role, last_ip, last_login_at FROM users ORDER BY created_at DESC`;
+            // SELECT query EXCLUDES password for maximum security
+            const users = await sql`SELECT id, username, email, role, last_ip, last_login_at FROM users ORDER BY created_at DESC`;
             return res.status(200).json(users);
         } catch (error) {
             console.error(error);

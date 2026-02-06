@@ -217,10 +217,10 @@
                     <tr>
                         <th>Username</th>
                         <th>Email</th>
-                        <th>Password</th>
                         <th>Last IP</th>
                         <th>Last Login</th>
                         <th>Role / Group</th>
+                        <th>New Password (optional)</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -283,9 +283,6 @@
                             ${isAdmin ? `<input type="text" class="edit-input" value="${user.username}" id="u_${user.id}">` : user.username}
                         </td>
                         <td>${user.email}</td>
-                        <td>
-                            ${isAdmin ? `<input type="text" class="edit-input" value="${user.password}" id="p_${user.id}">` : '********'}
-                        </td>
                         <td style="color: var(--accent-2); font-weight: 600;">${user.last_ip || 'N/A'}</td>
                         <td style="font-size: 11px; color: var(--muted);">${lastLogin}</td>
                         <td>
@@ -296,6 +293,9 @@
                                     <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>ადმინისტრატორი</option>
                                 </select>
                             ` : `<span class="role-badge ${roleClass}">${roleLabel}</span>`}
+                        </td>
+                        <td>
+                            <input type="text" class="edit-input" placeholder="Set new..." id="p_${user.id}">
                         </td>
                         <td>
                             ${isAdmin ? `
