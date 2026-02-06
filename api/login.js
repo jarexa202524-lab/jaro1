@@ -53,13 +53,14 @@ export default async function handler(req, res) {
                     user: { username: user.username, email: user.email, role: user.role, token: sessionToken }
                 });
             } else {
-                // Log failed attempt and check for brute-force attacks
+                // Log failed attempt and check for brute-force attacks (AI/Bot Protection)
                 await sql`INSERT INTO security_logs (email, event_type, ip_address) VALUES (${identifier}, 'FAILED_LOGIN_ATTEMPT', ${ip})`;
 
-                const failures = await sql`SELECT count(*) FROM security_logs WHERE ip_address = ${ip} AND event_type = 'FAILED_LOGIN_ATTEMPT' AND attempt_at > NOW() - INTERVAL '15 minutes'`;
-                if (parseInt(failures[0].count) > 10) {
+                // Stricter blocking: 5 failures = 24 hour block
+                const failures = await sql`SELECT count(*) FROM security_logs WHERE ip_address = ${ip} AND event_type = 'FAILED_LOGIN_ATTEMPT' AND attempt_at > NOW() - INTERVAL '1 hour'`;
+                if (parseInt(failures[0].count) >= 5) {
                     await sql`INSERT INTO blocked_ips (ip) VALUES (${ip}) ON CONFLICT DO NOTHING`;
-                    await sql`INSERT INTO security_logs (email, event_type, ip_address) VALUES ('SYSTEM', 'IP_AUTO_BLOCKED', ${ip})`;
+                    await sql`INSERT INTO security_logs (email, event_type, ip_address) VALUES ('SYSTEM', 'AI_BOT_ATTACK_BLOCKED', ${ip})`;
                 }
 
                 return res.status(401).json({ error: 'არასწორი მონაცემები' });

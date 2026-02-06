@@ -11,9 +11,11 @@ export default async function handler(req, res) {
     const token = authHeader.replace('Bearer ', '');
     const validUsers = await sql`SELECT email, role FROM users WHERE session_token = ${token}`;
 
-    // STRICT LOCKDOWN: Only jaro@gmail.com can access the admin dashboard
-    if (validUsers.length === 0 || validUsers[0].email !== 'jaro@gmail.com') {
-        return res.status(403).json({ error: 'წვდომა უარყოფილია! მხოლოდ მთავარ ადმინისტრატორს (jaro@gmail.com) აქვს წვდომა.' });
+    // ULTRA-SECURE CHECK: Absolute email verification + Role confirmation
+    if (validUsers.length === 0 || validUsers[0].email !== 'jaro@gmail.com' || validUsers[0].role !== 'admin') {
+        const attackerIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        await sql`INSERT INTO security_logs (email, event_type, ip_address) VALUES (${validUsers[0]?.email || 'UNKNOWN'}, 'UNAUTHORIZED_ADMIN_ACCESS_ATTEMPT', ${attackerIp})`;
+        return res.status(403).json({ error: 'წვდომა უარყოფილია! თქვენი აქტივობა დაფიქსირებულია.' });
     }
 
     if (req.method === 'GET') {

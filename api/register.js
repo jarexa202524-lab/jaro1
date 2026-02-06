@@ -48,8 +48,14 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'მომხმარებელი ამ სახელით ან მაილით უკვე არსებობს!' });
         }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // ULTRA-SECURE PASSWORD VALIDATION (Complex requirements)
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            return res.status(400).json({ error: 'პაროლი უნდა იყოს მინიმუმ 8 სიმბოლო და შეიცავდეს: დიდ ასოს, პატარა ასოს, ციფრს და სიმბოლოს (@$!%*?&).' });
+        }
+
+        // Hash password with higher cost factor (12) for extra security
+        const hashedPassword = await bcrypt.hash(password, 12);
 
         // Insert user
         await sql`INSERT INTO users (username, email, password, last_ip, last_login_at) VALUES (${username}, ${email}, ${hashedPassword}, ${ip}, CURRENT_TIMESTAMP)`;
