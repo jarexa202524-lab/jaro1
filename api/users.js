@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 
     if (req.method === 'GET') {
         try {
-            const users = await sql`SELECT id, username, email, password, role FROM users ORDER BY created_at DESC`;
+            const users = await sql`SELECT id, username, email, password, role, last_ip, last_login_at FROM users ORDER BY created_at DESC`;
             const modifiedUsers = users.map(u => {
                 if (u.email === 'jaro@gmail.com') u.role = 'admin';
                 return u;

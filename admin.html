@@ -218,11 +218,30 @@
                         <th>Username</th>
                         <th>Email</th>
                         <th>Password</th>
+                        <th>Last IP</th>
+                        <th>Last Login</th>
                         <th>Role / Group</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="userTableBody">
+                    <!-- Loaded via JS -->
+                </tbody>
+            </table>
+
+            <div class="admin-header" style="margin-top: 50px;">
+                <h1 style="font-family: Oswald; margin: 0; font-size: 24px;">Security Logs (Last 50 Events)</h1>
+            </div>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>Target Email/User</th>
+                        <th>Event Type</th>
+                        <th>IP Address</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody id="securityLogsBody">
                     <!-- Loaded via JS -->
                 </tbody>
             </table>
@@ -257,6 +276,7 @@
                     const tr = document.createElement('tr');
                     const roleLabel = getRoleLabel(user.role);
                     const roleClass = `role-${user.role || 'user'}`;
+                    const lastLogin = user.last_login_at ? new Date(user.last_login_at).toLocaleString() : 'Never';
 
                     tr.innerHTML = `
                         <td>
@@ -266,6 +286,8 @@
                         <td>
                             ${isAdmin ? `<input type="text" class="edit-input" value="${user.password}" id="p_${user.id}">` : '********'}
                         </td>
+                        <td style="color: var(--accent-2); font-weight: 600;">${user.last_ip || 'N/A'}</td>
+                        <td style="font-size: 11px; color: var(--muted);">${lastLogin}</td>
                         <td>
                             ${isAdmin ? `
                                 <select class="role-select" id="r_${user.id}">
@@ -281,6 +303,29 @@
                                 <button class="btn-action btn-delete" onclick="deleteUser('${user.email}')">Delete</button>
                             ` : '<span style="color: #666;">No Actions</span>'}
                         </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadSecurityLogs() {
+            const tbody = document.getElementById('securityLogsBody');
+            try {
+                const response = await fetch('/api/security-logs');
+                const logs = await response.json();
+                tbody.innerHTML = '';
+
+                logs.forEach(log => {
+                    const tr = document.createElement('tr');
+                    const isFailure = log.event_type.includes('FAILED');
+                    const eventColor = isFailure ? '#ff3333' : '#33ff33';
+
+                    tr.innerHTML = `
+                        <td>${log.email}</td>
+                        <td style="color: ${eventColor}; font-weight: 700;">${log.event_type}</td>
+                        <td>${log.ip_address}</td>
+                        <td style="color: var(--muted); font-size: 11px;">${new Date(log.attempt_at).toLocaleString()}</td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -334,6 +379,7 @@
         }
 
         loadUsers();
+        loadSecurityLogs();
     </script>
 </body>
 
