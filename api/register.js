@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import bcrypt from 'bcryptjs';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -41,8 +42,11 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'მომხმარებელი ამ სახელით ან მაილით უკვე არსებობს!' });
         }
 
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         // Insert user
-        await sql`INSERT INTO users (username, email, password, last_ip, last_login_at) VALUES (${username}, ${email}, ${password}, ${ip}, CURRENT_TIMESTAMP)`;
+        await sql`INSERT INTO users (username, email, password, last_ip, last_login_at) VALUES (${username}, ${email}, ${hashedPassword}, ${ip}, CURRENT_TIMESTAMP)`;
 
         // Log registration
         await sql`INSERT INTO security_logs (email, event_type, ip_address) VALUES (${email}, 'USER_REGISTERED', ${ip})`;

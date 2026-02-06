@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import bcrypt from 'bcryptjs';
 
 export default async function handler(req, res) {
     const sql = neon(process.env.DATABASE_URL);
@@ -55,7 +56,10 @@ export default async function handler(req, res) {
         try {
             if (role) await sql`UPDATE users SET role = ${role} WHERE email = ${email}`;
             if (username) await sql`UPDATE users SET username = ${username} WHERE email = ${email}`;
-            if (password) await sql`UPDATE users SET password = ${password} WHERE email = ${email}`;
+            if (password) {
+                const hashedPassword = await bcrypt.hash(password, 10);
+                await sql`UPDATE users SET password = ${hashedPassword} WHERE email = ${email}`;
+            }
 
             return res.status(200).json({ message: 'მონაცემები განახლდა' });
         } catch (error) {
