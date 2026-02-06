@@ -309,15 +309,16 @@
           const response = await fetch('/api/me', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: storedUser.email })
+            body: JSON.stringify({ email: storedUser.email, token: storedUser.token })
           });
           if (response.ok) {
             const freshUser = await response.json();
+            freshUser.token = storedUser.token;
             if (freshUser.role !== storedUser.role || freshUser.username !== storedUser.username) {
               localStorage.setItem('currentUser', JSON.stringify(freshUser));
               updateAuthUI(freshUser);
             }
-          } else if (response.status === 404) {
+          } else if (response.status === 401 || response.status === 404) {
             localStorage.removeItem('currentUser');
             window.location.reload();
           }

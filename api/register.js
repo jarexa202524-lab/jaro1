@@ -11,6 +11,12 @@ export default async function handler(req, res) {
     if (ip && ip.includes(',')) ip = ip.split(',')[0].trim();
 
     try {
+        // RATE LIMITING: Max 3 registrations per IP per hour
+        const recentRegistrations = await sql`SELECT count(*) FROM security_logs WHERE ip_address = ${ip} AND event_type = 'USER_REGISTERED' AND attempt_at > NOW() - INTERVAL '1 hour'`;
+        if (parseInt(recentRegistrations[0].count) >= 3) {
+            return res.status(429).json({ error: 'ძალიან ბევრი რეგისტრაცია! სცადეთ მოგვიანებით (1 საათში).' });
+        }
+
         // Create/Update table if not exists
         await sql`CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,

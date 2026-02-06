@@ -5,6 +5,17 @@ export default async function handler(req, res) {
 
     const sql = neon(process.env.DATABASE_URL);
 
+    // SECURITY CHECK: Verify Admin Token
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) return res.status(401).json({ error: 'წვდომა უარყოფილია!' });
+
+    const token = authHeader.replace('Bearer ', '');
+    const validUsers = await sql`SELECT role FROM users WHERE session_token = ${token}`;
+
+    if (validUsers.length === 0 || (validUsers[0].role !== 'admin' && validUsers[0].role !== 'moderator')) {
+        return res.status(403).json({ error: 'წვდომა უარყოფილია!' });
+    }
+
     try {
         // Ensure table exists
         await sql`CREATE TABLE IF NOT EXISTS security_logs (

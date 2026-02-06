@@ -268,8 +268,11 @@
         async function loadUsers() {
             const tbody = document.getElementById('userTableBody');
             try {
-                const response = await fetch('/api/users');
+                const response = await fetch('/api/users', {
+                    headers: { 'Authorization': `Bearer ${currentUser.token}` }
+                });
                 const users = await response.json();
+                if (!response.ok) throw new Error(users.error);
                 tbody.innerHTML = '';
 
                 users.forEach(user => {
@@ -312,8 +315,11 @@
         async function loadSecurityLogs() {
             const tbody = document.getElementById('securityLogsBody');
             try {
-                const response = await fetch('/api/security-logs');
+                const response = await fetch('/api/security-logs', {
+                    headers: { 'Authorization': `Bearer ${currentUser.token}` }
+                });
                 const logs = await response.json();
+                if (!response.ok) throw new Error(logs.error);
                 tbody.innerHTML = '';
 
                 logs.forEach(log => {
@@ -346,7 +352,10 @@
             try {
                 const response = await fetch('/api/users', {
                     method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
                     body: JSON.stringify({ email, username, password, role })
                 });
                 if (response.ok) {
@@ -361,7 +370,10 @@
             try {
                 const response = await fetch('/api/users', {
                     method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
                     body: JSON.stringify({ email })
                 });
                 if (response.ok) {
