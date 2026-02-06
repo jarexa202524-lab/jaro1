@@ -562,22 +562,42 @@
 
     if (currentUser) {
       // Define Admin Users
-      const isAdmin = currentUser.username.toLowerCase() === 'admin' || currentUser.email === 'jaro@gmail.com';
+      const isAdmin = currentUser.role === 'admin' || currentUser.role === 'moderator';
+      let nickColor = '#33ff33'; // Default User Green
+      let roleTag = '';
+
+      if (currentUser.role === 'admin') {
+        nickColor = '#ff3333'; // Red
+        roleTag = '<span style="color: #ff3333; font-size: 10px;">[ADMIN]</span>';
+      } else if (currentUser.role === 'moderator') {
+        nickColor = '#ff9933'; // Orange
+        roleTag = '<span style="color: #ff9933; font-size: 10px;">[MOD]</span>';
+      }
 
       authSection.innerHTML = `
-                <span id="userNick" style="color: var(--accent-2); font-weight: 600; margin-right: 10px; cursor: pointer;">👋 ${currentUser.username} ${isAdmin ? '<span style="color: gold; font-size: 10px;">[ADMIN]</span>' : ''}</span>
+                <span id="userNick" style="color: ${nickColor}; font-weight: 600; margin-right: 10px; cursor: pointer;">👋 ${currentUser.username} ${roleTag}</span>
                 <a href="#" id="logoutBtn" style="color: #e74c3c; text-decoration: none; font-size: 13px;">გამოსვლა</a>
             `;
 
       document.getElementById('userNick').addEventListener('click', function () {
         modalUser.textContent = currentUser.username;
-        if (isAdmin) {
-          modalRank.innerHTML = 'წოდება: <b>ადმინისტრატორი</b>';
+        let roleText = 'მომხმარებელი';
+        let roleColor = '#33ff33'; // Green
+        adminLinkContainer.innerHTML = '';
+
+        if (currentUser.role === 'admin') {
+          roleText = 'ადმინისტრატორი';
+          roleColor = '#ff3333'; // Red
           adminLinkContainer.innerHTML = `<a href="admin.html" class="modal-btn" style="background: var(--accent);">ადმინ პანელი</a>`;
-        } else {
-          modalRank.innerHTML = 'წოდება: მომხმარებელი';
-          adminLinkContainer.innerHTML = '';
+        } else if (currentUser.role === 'moderator') {
+          roleText = 'მოდერატორი';
+          roleColor = '#ff9933'; // Orange
+          // Moderators might also need admin panel access but with limited rights? 
+          // For now, let's give them the link too.
+          adminLinkContainer.innerHTML = `<a href="admin.html" class="modal-btn" style="background: var(--accent);">ადმინ პანელი</a>`;
         }
+
+        modalRank.innerHTML = `წოდება: <b style="color: ${roleColor}">${roleText}</b>`;
         modalOverlay.style.display = 'flex';
       });
 

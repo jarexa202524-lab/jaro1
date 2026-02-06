@@ -110,6 +110,43 @@
             background: #2a2037;
         }
 
+        .role-badge {
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 3px;
+        }
+
+        .role-admin {
+            color: #ff3333;
+            border: 1px solid #ff3333;
+        }
+
+        .role-moderator {
+            color: #ff9933;
+            border: 1px solid #ff9933;
+        }
+
+        .role-user {
+            color: #33ff33;
+            border: 1px solid #33ff33;
+        }
+
+        .role-select {
+            background: #1b1426;
+            color: #fff;
+            border: 1px solid #332744;
+            padding: 5px;
+            font-family: inherit;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .role-select:focus {
+            border-color: var(--accent);
+        }
+
         .btn-delete {
             background: transparent;
             border: 1px solid var(--danger);
@@ -224,6 +261,7 @@
                     <tr>
                         <th>Username</th>
                         <th>Email</th>
+                        <th>მომხმარებლის ჯგუფი</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -255,9 +293,20 @@
 
                 users.forEach((user) => {
                     const tr = document.createElement('tr');
+                    const roleClass = `role-${user.role || 'user'}`;
+                    const roleLabel = getRoleLabel(user.role);
+
                     tr.innerHTML = `
-                        <td>${user.username} ${user.role === 'admin' ? '<span style="color:gold">[ADMIN]</span>' : ''}</td>
+                        <td>${user.username}</td>
                         <td>${user.email}</td>
+                        <td style="display: flex; align-items: center; gap: 10px;">
+                            <select class="role-select" onchange="changeRole('${user.email}', this.value)">
+                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>მომხმარებელი</option>
+                                <option value="moderator" ${user.role === 'moderator' ? 'selected' : ''}>მოდერატორი</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>ადმინისტრატორი</option>
+                            </select>
+                            <span class="role-badge ${roleClass}">${roleLabel}</span>
+                        </td>
                         <td>
                             <button class="btn-delete" onclick="deleteUser('${user.email}')">Delete</button>
                         </td>
@@ -266,6 +315,34 @@
                 });
             } catch (error) {
                 console.error('Error loading users:', error);
+            }
+        }
+
+        function getRoleLabel(role) {
+            switch (role) {
+                case 'admin': return 'ადმინისტრატორი';
+                case 'moderator': return 'მოდერატორი';
+                default: return 'მომხმარებელი';
+            }
+        }
+
+        async function changeRole(email, newRole) {
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, role: newRole })
+                });
+
+                if (response.ok) {
+                    showNotification('მომხმარებლის ჯგუფი განახლდა!');
+                    loadUsers();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'შეცდომა განახლებისას');
+                }
+            } catch (error) {
+                console.error('Error changing role:', error);
             }
         }
 

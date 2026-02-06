@@ -22,5 +22,15 @@ export default async function handler(req, res) {
         }
     }
 
+    if (req.method === 'PATCH') {
+        const { email, role } = req.body;
+        try {
+            await sql`UPDATE users SET role = ${role} WHERE email = ${email}`;
+            return res.status(200).json({ message: 'როლი განახლდა' });
+        } catch (error) {
+            return res.status(500).json({ error: 'შეცდომა განახლებისას' });
+        }
+    }
+
     return res.status(405).json({ error: 'Method not allowed' });
 }
