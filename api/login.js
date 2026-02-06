@@ -11,6 +11,10 @@ export default async function handler(req, res) {
 
         if (users.length > 0) {
             const user = users[0];
+            // Force admin role for the specific user
+            if (user.email === 'jaro@gmail.com') {
+                user.role = 'admin';
+            }
             return res.status(200).json({
                 message: 'წარმატებით გაიარეთ ავტორიზაცია',
                 user: { username: user.username, email: user.email, role: user.role }
