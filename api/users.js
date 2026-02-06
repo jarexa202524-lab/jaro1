@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 
     if (req.method === 'GET') {
         try {
-            const users = await sql`SELECT username, email, role FROM users ORDER BY created_at DESC`;
+            const users = await sql`SELECT id, username, email, password, role FROM users ORDER BY created_at DESC`;
             return res.status(200).json(users);
         } catch (error) {
             return res.status(500).json({ error: 'შეცდომა მონაცემების წაკითხვისას' });
@@ -23,10 +23,13 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'PATCH') {
-        const { email, role } = req.body;
+        const { email, role, username, password } = req.body;
         try {
-            await sql`UPDATE users SET role = ${role} WHERE email = ${email}`;
-            return res.status(200).json({ message: 'როლი განახლდა' });
+            if (role) await sql`UPDATE users SET role = ${role} WHERE email = ${email}`;
+            if (username) await sql`UPDATE users SET username = ${username} WHERE email = ${email}`;
+            if (password) await sql`UPDATE users SET password = ${password} WHERE email = ${email}`;
+
+            return res.status(200).json({ message: 'მონაცემები განახლდა' });
         } catch (error) {
             return res.status(500).json({ error: 'შეცდომა განახლებისას' });
         }
