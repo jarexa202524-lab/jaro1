@@ -1,0 +1,247 @@
+﻿<!doctype html>
+<html lang="ka">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Can I Run It — Game Debate</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #110b18;
+      --panel: #1b1426;
+      --panel-2: #241b33;
+      --accent: #8a4dff;
+      --accent-2: #b58bff;
+      --muted: #c6bbd8;
+      --text: #f2eef7;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "Rajdhani", "Oswald", sans-serif;
+      background:
+        radial-gradient(1200px 600px at 75% -100px, #3a2a56 0%, #1c1427 40%, #110b18 70%),
+        linear-gradient(180deg, #0f0a16 0%, #110b18 60%, #0b0712 100%);
+    }
+
+    .frame {
+      max-width: 1200px;
+      margin: 28px auto 48px;
+      background: var(--panel);
+      border: 1px solid #2f243d;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 220px 1fr 220px;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px 10px;
+      background: linear-gradient(180deg, #261c34, #1a1225);
+      border-bottom: 2px solid #140f1b;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Oswald", sans-serif;
+      letter-spacing: 1px;
+      text-decoration: none;
+    }
+
+    .logo .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      display: grid;
+      place-items: center;
+      color: var(--accent-2);
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .logo span {
+      display: inline-block;
+      color: #e5e5ea;
+      font-size: 20px;
+    }
+
+    .logo span b {
+      color: var(--accent);
+    }
+
+    .nav {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav a {
+      color: inherit;
+      text-decoration: none;
+      padding-bottom: 6px;
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav a.active,
+    .nav a:hover {
+      color: #fff;
+      border-bottom-color: var(--accent);
+    }
+
+    .auth {
+      display: flex;
+      justify-content: flex-end;
+      gap: 18px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .auth a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .auth a:hover {
+      color: #fff;
+    }
+
+    .subbar {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 0;
+      border-top: 1px solid #120c19;
+      background: #1a1323;
+    }
+
+    .subnav {
+      display: flex;
+      gap: 18px;
+      padding: 12px 20px;
+      border-right: 1px solid #261b34;
+      font-size: 13px;
+      color: #d6cae4;
+    }
+
+    .search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      background: #241b32;
+      color: #d4c6e4;
+      font-size: 13px;
+      border-left: 1px solid #2a2037;
+    }
+
+    .search input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #f2eef7;
+      font-family: inherit;
+    }
+
+    .page {
+      padding: 26px 24px 40px;
+      border-top: 1px solid #2a2037;
+    }
+
+    .page h1 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+    }
+
+    .page p {
+      margin: 0;
+      color: #d7cbe8;
+      max-width: 760px;
+      line-height: 1.6;
+    }
+
+    .back {
+      display: inline-block;
+      margin-top: 16px;
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    @media (max-width: 980px) {
+      .frame {
+        margin: 0;
+      }
+
+      .topbar {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .auth {
+        justify-content: center;
+      }
+
+      .subbar {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="frame">
+    <div class="topbar">
+      <a href="index.html" class="logo">
+        <div class="mark">G</div>
+        <span><b>GAME</b> DEBATE</span>
+      </a>
+      <nav class="nav">
+        <a href="news.html">News</a>
+        <a href="games.html">Games</a>
+        <a href="hardware.html">Hardware</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="awards.html">Awards</a>
+        <a class="active" href="can-i-run-it.html">Can I Run It</a>
+        <a href="future-proof.html">Future-Proof My PC</a>
+      </nav>
+      <div class="auth">
+        <a href="login.html">Login</a>
+        <a href="register.html">Register</a>
+      </div>
+    </div>
+    <div class="subbar">
+      <div class="subnav">News • Games • Hardware • Reviews • Awards • Can I Run It</div>
+      <div class="search">
+        🔍
+        <input type="text" placeholder="Search" />
+      </div>
+    </div>
+    <div class="page">
+      <h1>Can I Run It</h1>
+      <p>ეს გვერდი სისტემის მოთხოვნების შესამოწმებლადაა. აქ შეგვიძლია დავამატოთ თამაშების მოთხოვნები და ტესტები.</p>
+      <a class="back" href="index.html">← მთავარ გვერდზე დაბრუნება</a>
+    </div>
+  </div>
+</body>
+
+</html>

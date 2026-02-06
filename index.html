@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="ka">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Game Debate — Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #110b18;
+      --panel: #1b1426;
+      --panel-2: #241b33;
+      --accent: #8a4dff;
+      --accent-2: #b58bff;
+      --muted: #c6bbd8;
+      --text: #f2eef7;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "Rajdhani", "Oswald", sans-serif;
+      background:
+        radial-gradient(1200px 600px at 75% -100px, #3a2a56 0%, #1c1427 40%, #110b18 70%),
+        linear-gradient(180deg, #0f0a16 0%, #110b18 60%, #0b0712 100%);
+    }
+
+    .frame {
+      max-width: 1200px;
+      margin: 28px auto 48px;
+      background: var(--panel);
+      border: 1px solid #2f243d;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 220px 1fr 220px;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px 10px;
+      background: linear-gradient(180deg, #261c34, #1a1225);
+      border-bottom: 2px solid #140f1b;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Oswald", sans-serif;
+      letter-spacing: 1px;
+      text-decoration: none;
+    }
+
+    .logo .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      display: grid;
+      place-items: center;
+      color: var(--accent-2);
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .logo span {
+      display: inline-block;
+      color: #e5e5ea;
+      font-size: 20px;
+    }
+
+    .logo span b {
+      color: var(--accent);
+    }
+
+    .nav {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav a {
+      color: inherit;
+      text-decoration: none;
+      padding-bottom: 6px;
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav a.active,
+    .nav a:hover {
+      color: #fff;
+      border-bottom-color: var(--accent);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal {
+      background: var(--panel-2);
+      border: 1px solid var(--accent);
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+      box-shadow: 0 0 50px rgba(138, 77, 255, 0.2);
+    }
+
+    .modal h2 {
+      margin: 0 0 15px;
+      font-family: "Oswald", sans-serif;
+      color: var(--accent-2);
+      text-align: center;
+    }
+
+    .modal .rank {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .modal .rank b {
+      color: #2ecc71;
+    }
+
+    .modal-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(180deg, #b78bff, #7c46f2);
+      color: #fff;
+      text-align: center;
+      text-decoration: none;
+      font-family: "Oswald", sans-serif;
+      font-weight: 600;
+      margin-bottom: 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .auth {
+      display: flex;
+      justify-content: flex-end;
+      gap: 18px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .auth a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .auth a:hover {
+      color: #fff;
+    }
+
+    .subbar {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 0;
+      border-top: 1px solid #120c19;
+      background: #1a1323;
+    }
+
+    .subnav {
+      display: flex;
+      gap: 18px;
+      padding: 12px 20px;
+      border-right: 1px solid #261b34;
+      font-size: 13px;
+      color: #d6cae4;
+    }
+
+    .search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      background: #241b32;
+      color: #d4c6e4;
+      font-size: 13px;
+      border-left: 1px solid #2a2037;
+    }
+
+    .search input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #f2eef7;
+      font-family: inherit;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 0;
+      position: relative;
+      background: #1a1424;
+    }
+
+    .main {
+      padding: 16px 18px 20px 18px;
+      border-right: 1px solid #2a2037;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 12px;
+    }
+
+    .hero {
+      min-height: 260px;
+      background:
+        linear-gradient(120deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.1)),
+        radial-gradient(400px 260px at 70% 20%, rgba(170, 125, 255, 0.35), transparent 60%),
+        linear-gradient(130deg, #2b2138, #130d1a);
+      border: 1px solid #332744;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 70px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.85));
+    }
+
+    .hero-title {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      z-index: 1;
+    }
+
+    .side-cards {
+      display: grid;
+      gap: 12px;
+    }
+
+    .card {
+      background: linear-gradient(140deg, #2c223b, #16101f);
+      border: 1px solid #332744;
+      min-height: 124px;
+      position: relative;
+      overflow: hidden;
+      padding: 12px;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: -40px;
+      right: -30px;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle at center, rgba(170, 125, 255, 0.5), transparent 70%);
+      opacity: 0.7;
+    }
+
+    .card h4 {
+      margin: 0 0 6px 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 12px;
+      color: #d2c7e3;
+      line-height: 1.4;
+    }
+
+    .tiles {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .tile {
+      min-height: 140px;
+      background:
+        linear-gradient(120deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.1)),
+        linear-gradient(130deg, #5a3a7a, #241b30);
+      border: 1px solid #332744;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tile span {
+      position: absolute;
+      left: 12px;
+      bottom: 10px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .sidebar {
+      padding: 12px 12px 16px;
+      display: grid;
+      gap: 8px;
+      background: #1a1323;
+    }
+
+    .sidebar .btn {
+      padding: 12px;
+      text-align: center;
+      font-size: 12px;
+      background: linear-gradient(180deg, #b78bff, #7c46f2);
+      color: #fff;
+      border: 1px solid #5f33c2;
+    }
+
+    .sidebar .btn.green {
+      background: linear-gradient(180deg, #9f7bff, #6b3ad7);
+      border-color: #4b259f;
+    }
+
+    .sidebar .btn.blue {
+      background: linear-gradient(180deg, #c6a6ff, #8a4dff);
+      border-color: #5d2fc2;
+    }
+
+    .sidebar .list {
+      margin-top: 10px;
+      background: #22192f;
+      border: 1px solid #332744;
+      padding: 10px;
+    }
+
+    .sidebar .list h5 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: #e5dbf3;
+      letter-spacing: 0.4px;
+    }
+
+    .sidebar .list-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 6px 0;
+      border-top: 1px solid #332744;
+      color: #d7cbe8;
+    }
+
+    .mascot {
+      position: absolute;
+      left: -60px;
+      top: 110px;
+      width: 220px;
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6));
+      pointer-events: none;
+    }
+
+    .mascot svg {
+      width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 980px) {
+      .frame {
+        margin: 0;
+      }
+
+      .topbar {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .auth {
+        justify-content: center;
+      }
+
+      .subbar {
+        grid-template-columns: 1fr;
+      }
+
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .main {
+        border-right: none;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tiles {
+        grid-template-columns: 1fr;
+      }
+
+      .mascot {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="frame">
+    <div class="topbar">
+      <a href="index.html" class="logo">
+        <div class="mark">G</div>
+        <span><b>GAME</b> DEBATE</span>
+      </a>
+      <nav class="nav">
+        <a class="active" href="news.html">News</a>
+        <a href="games.html">Games</a>
+        <a href="hardware.html">Hardware</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="awards.html">Awards</a>
+        <a href="can-i-run-it.html">Can I Run It</a>
+        <a href="future-proof.html">Future-Proof My PC</a>
+      </nav>
+      <div class="auth" id="authSection">
+        <a href="login.html">Login</a>
+        <a href="register.html">Register</a>
+      </div>
+    </div>
+
+    <div class="subbar">
+      <div class="subnav">News • Games • Hardware • Reviews • Awards • Can I Run It</div>
+      <div class="search">
+        🔍
+        <input type="text" placeholder="Search" />
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="main">
+        <div class="hero-grid">
+          <div class="hero">
+            <div class="hero-title">Diablo II Resurrected Beta PC performance report — Graphics benchmarks</div>
+          </div>
+          <div class="side-cards">
+            <div class="card">
+              <h4>Intel DG2 graphics cards launching Q1 2022, AI upscaling tech confirmed</h4>
+              <p>Rumored specs and early test benches suggest strong mid-tier performance.</p>
+            </div>
+            <div class="card">
+              <h4>Cyberpunk 2077 DLC will be revealed today, Patch 1.3 notes detail updates</h4>
+              <p>Performance, balance tweaks, and new content details leak ahead of the reveal.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="tiles">
+          <div class="tile"><span>PC performance report — Graphics benchmarks</span></div>
+          <div class="tile"
+            style="background: linear-gradient(120deg, rgba(0,0,0,0.5), rgba(0,0,0,0.15)), linear-gradient(130deg, #9a6d35, #2d2218);">
+            <span>Age of Empires IV — performance analysis</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <div class="btn">Is My PC Future-Proof?</div>
+        <div class="btn">Latest System Requirements</div>
+        <div class="btn green">CPU Game Performance Test</div>
+        <div class="btn green">Graphics Card Game Performance Test</div>
+        <div class="btn blue">Benchmark Database</div>
+
+        <div class="list">
+          <h5>PC RELEASE DATES</h5>
+          <div class="list-item"><span>Greek: Memories of Azur</span><span>Aug 17 2021</span></div>
+          <div class="list-item"><span>Humankind</span><span>Aug 17 2021</span></div>
+          <div class="list-item"><span>Tetris Effect</span><span>Aug 19 2021</span></div>
+          <div class="list-item"><span>Quake</span><span>Aug 19 2021</span></div>
+        </div>
+      </aside>
+
+      <div class="mascot" aria-hidden="true">
+        <svg viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="suit" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#3b3b3f" />
+              <stop offset="1" stop-color="#121214" />
+            </linearGradient>
+          </defs>
+          <rect x="40" y="110" width="120" height="160" rx="8" fill="url(#suit)" stroke="#0d0d0f" />
+          <rect x="80" y="130" width="40" height="120" fill="#f7f2e7" />
+          <polygon points="100,150 120,200 100,250 80,200" fill="#c31219" />
+          <circle cx="100" cy="70" r="38" fill="#f7f2e7" stroke="#c1b39d" />
+          <rect x="68" y="60" width="64" height="16" rx="8" fill="#fff" stroke="#222" />
+          <circle cx="88" cy="68" r="4" fill="#333" />
+          <circle cx="112" cy="68" r="4" fill="#333" />
+          <path d="M80 90 Q100 100 120 90" stroke="#4c2d1f" stroke-width="4" fill="none" />
+          <circle cx="150" cy="170" r="20" fill="#0f0f12" stroke="#333" />
+          <circle cx="150" cy="170" r="10" fill="#c31219" />
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <span class="modal-close" id="modalClose">&times;</span>
+      <h2 id="modalUser">Username</h2>
+      <div class="rank" id="modalRank">წოდება: მომხმარებელი</div>
+      <div id="adminLinkContainer"></div>
+      <button class="modal-btn" onclick="window.location.reload()">Refresh Page</button>
+    </div>
+  </div>
+
+  <script>
+    // Check for logged in user
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const authSection = document.getElementById('authSection');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalClose = document.getElementById('modalClose');
+    const modalUser = document.getElementById('modalUser');
+    const modalRank = document.getElementById('modalRank');
+    const adminLinkContainer = document.getElementById('adminLinkContainer');
+
+    if (currentUser) {
+      // Define Admin Users
+      const isAdmin = currentUser.username.toLowerCase() === 'admin' || currentUser.email === 'jaro@gmail.com';
+
+      authSection.innerHTML = `
+                <span id="userNick" style="color: var(--accent-2); font-weight: 600; margin-right: 10px; cursor: pointer;">👋 ${currentUser.username} ${isAdmin ? '<span style="color: gold; font-size: 10px;">[ADMIN]</span>' : ''}</span>
+                <a href="#" id="logoutBtn" style="color: #e74c3c; text-decoration: none; font-size: 13px;">გამოსვლა</a>
+            `;
+
+      document.getElementById('userNick').addEventListener('click', function () {
+        modalUser.textContent = currentUser.username;
+        if (isAdmin) {
+          modalRank.innerHTML = 'წოდება: <b>ადმინისტრატორი</b>';
+          adminLinkContainer.innerHTML = `<a href="admin.html" class="modal-btn" style="background: var(--accent);">ადმინ პანელი</a>`;
+        } else {
+          modalRank.innerHTML = 'წოდება: მომხმარებელი';
+          adminLinkContainer.innerHTML = '';
+        }
+        modalOverlay.style.display = 'flex';
+      });
+
+      document.getElementById('logoutBtn').addEventListener('click', function (e) {
+        e.preventDefault();
+        localStorage.removeItem('currentUser');
+        window.location.reload();
+      });
+    }
+
+    modalClose.addEventListener('click', () => modalOverlay.style.display = 'none');
+    window.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) modalOverlay.style.display = 'none';
+    });
+  </script>
+</body>
+
+</html>
