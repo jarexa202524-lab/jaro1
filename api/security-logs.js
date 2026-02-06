@@ -12,8 +12,8 @@ export default async function handler(req, res) {
     const token = authHeader.replace('Bearer ', '');
     const validUsers = await sql`SELECT email, role FROM users WHERE session_token = ${token}`;
 
-    // STRICT LOCKDOWN: Only jaro@gmail.com can see logs
-    if (validUsers.length === 0 || validUsers[0].email !== 'jaro@gmail.com') {
+    // STRICT LOCKDOWN: Only jaro@gmail.com with admin role can see logs
+    if (validUsers.length === 0 || validUsers[0].email !== 'jaro@gmail.com' || validUsers[0].role !== 'admin') {
         return res.status(403).json({ error: 'წვდომა უარყოფილია!' });
     }
 

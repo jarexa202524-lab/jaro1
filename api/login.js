@@ -23,6 +23,8 @@ export default async function handler(req, res) {
         if (isBlocked.length > 0) return res.status(403).json({ error: 'წვდომა შეზღუდულია! თქვენი IP დაბლოკილია საეჭვო აქტივობის გამო.' });
 
         // Ensure session_token column exists
+        try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS session_token TEXT`; } catch (e) { }
+
         // Ensure security_logs has advanced columns
         try {
             await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS user_agent TEXT`;

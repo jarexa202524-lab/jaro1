@@ -58,6 +58,12 @@ export default async function handler(req, res) {
 
     if (req.method === 'DELETE') {
         const { email } = req.body;
+
+        // CRITICAL: Prevent deletion of main admin
+        if (email === 'jaro@gmail.com') {
+            return res.status(403).json({ error: 'მთავარი ადმინისტრატორის წაშლა აკრძალულია!' });
+        }
+
         try {
             await sql`DELETE FROM users WHERE email = ${email}`;
             return res.status(200).json({ message: 'მომხმარებელი წაიშალა' });
@@ -68,6 +74,12 @@ export default async function handler(req, res) {
 
     if (req.method === 'PATCH') {
         const { email, role, username, password } = req.body;
+
+        // CRITICAL: Protect jaro@gmail.com from role/username changes
+        if (email === 'jaro@gmail.com' && (role || username)) {
+            return res.status(403).json({ error: 'მთავარი ადმინისტრატორის მონაცემების შეცვლა აკრძალულია!' });
+        }
+
         try {
             if (role) await sql`UPDATE users SET role = ${role} WHERE email = ${email}`;
             if (username) await sql`UPDATE users SET username = ${username} WHERE email = ${email}`;
