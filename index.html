@@ -551,69 +551,97 @@
   </div>
 
   <script>
-    // Check for logged in user
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    const authSection = document.getElementById('authSection');
-    const modalOverlay = document.getElementById('modalOverlay');
-    const modalClose = document.getElementById('modalClose');
-    const modalUser = document.getElementById('modalUser');
-    const modalRank = document.getElementById('modalRank');
-    const adminLinkContainer = document.getElementById('adminLinkContainer');
+    async function syncSession() {
+      const storedUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!storedUser || !storedUser.email) return;
 
-    if (currentUser) {
-      // Define Admin Users
-      let isAdmin = currentUser.role === 'admin' || currentUser.role === 'moderator' || currentUser.email === 'jaro@gmail.com';
-      if (currentUser.email === 'jaro@gmail.com') currentUser.role = 'admin'; // Force local sync
+      try {
+        const response = await fetch('/api/me', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: storedUser.email })
+        });
 
+        if (response.ok) {
+          const freshUser = await response.json();
+          // If role or username changed, update localStorage and UI
+          if (freshUser.role !== storedUser.role || freshUser.username !== storedUser.username) {
+            localStorage.setItem('currentUser', JSON.stringify(freshUser));
+            updateAuthUI(freshUser);
+          }
+        } else if (response.status === 404) {
+          // User deleted from DB
+          localStorage.removeItem('currentUser');
+          window.location.reload();
+        }
+      } catch (e) { console.error('Session sync failed:', e); }
+    }
+
+    function updateAuthUI(user) {
+      const authSection = document.getElementById('authSection');
+      if (!user) return;
+
+      const isAdmin = user.role === 'admin' || user.role === 'moderator' || user.email === 'jaro@gmail.com';
       let nickColor = '#33ff33'; // Default User Green
       let roleTag = '';
 
-      if (currentUser.role === 'admin') {
+      if (user.role === 'admin' || user.email === 'jaro@gmail.com') {
         nickColor = '#ff3333'; // Red
         roleTag = '<span style="color: #ff3333; font-size: 10px;">[ADMIN]</span>';
-      } else if (currentUser.role === 'moderator') {
+      } else if (user.role === 'moderator') {
         nickColor = '#ff9933'; // Orange
         roleTag = '<span style="color: #ff9933; font-size: 10px;">[MOD]</span>';
       }
 
       authSection.innerHTML = `
-                <span id="userNick" style="color: ${nickColor}; font-weight: 600; margin-right: 10px; cursor: pointer;">👋 ${currentUser.username} ${roleTag}</span>
-                <a href="#" id="logoutBtn" style="color: #e74c3c; text-decoration: none; font-size: 13px;">გამოსვლა</a>
-            `;
+        <span id="userNick" style="color: ${nickColor}; font-weight: 600; margin-right: 10px; cursor: pointer;">👋 ${user.username} ${roleTag}</span>
+        <a href="#" id="logoutBtn" style="color: #e74c3c; text-decoration: none; font-size: 13px;">გამოსვლა</a>
+      `;
 
-      document.getElementById('userNick').addEventListener('click', function () {
-        modalUser.textContent = currentUser.username;
-        let roleText = 'მომხმარებელი';
-        let roleColor = '#33ff33'; // Green
-        adminLinkContainer.innerHTML = '';
-
-        if (currentUser.role === 'admin') {
-          roleText = 'ადმინისტრატორი';
-          roleColor = '#ff3333'; // Red
-          adminLinkContainer.innerHTML = `<a href="admin.html" class="modal-btn" style="background: var(--accent);">ადმინ პანელი</a>`;
-        } else if (currentUser.role === 'moderator') {
-          roleText = 'მოდერატორი';
-          roleColor = '#ff9933'; // Orange
-          // Moderators might also need admin panel access but with limited rights? 
-          // For now, let's give them the link too.
-          adminLinkContainer.innerHTML = `<a href="admin.html" class="modal-btn" style="background: var(--accent);">ადმინ პანელი</a>`;
-        }
-
-        modalRank.innerHTML = `წოდება: <b style="color: ${roleColor}">${roleText}</b>`;
-        modalOverlay.style.display = 'flex';
-      });
-
-      document.getElementById('logoutBtn').addEventListener('click', function (e) {
+      document.getElementById('userNick').onclick = () => showProfileModal(user);
+      document.getElementById('logoutBtn').onclick = (e) => {
         e.preventDefault();
         localStorage.removeItem('currentUser');
         window.location.reload();
-      });
+      };
     }
 
-    modalClose.addEventListener('click', () => modalOverlay.style.display = 'none');
-    window.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) modalOverlay.style.display = 'none';
-    });
+    function showProfileModal(user) {
+      const modalOverlay = document.getElementById('modalOverlay');
+      const modalUser = document.getElementById('modalUser');
+      const modalRank = document.getElementById('modalRank');
+      const adminLinkContainer = document.getElementById('adminLinkContainer');
+
+      modalUser.textContent = user.username;
+      let roleText = 'მომხმარებელი';
+      let roleColor = '#33ff33';
+      adminLinkContainer.innerHTML = '';
+
+      if (user.role === 'admin' || user.email === 'jaro@gmail.com') {
+        roleText = 'ადმინისტრატორი';
+        roleColor = '#ff3333';
+        adminLinkContainer.innerHTML = `<a href="admin.html" class="modal-btn" style="background: var(--accent);">ადმინ პანელი</a>`;
+      } else if (user.role === 'moderator') {
+        roleText = 'მოდერატორი';
+        roleColor = '#ff9933';
+        adminLinkContainer.innerHTML = `<a href="admin.html" class="modal-btn" style="background: var(--accent);">ადმინ პანელი</a>`;
+      }
+
+      modalRank.innerHTML = `წოდება: <b style="color: ${roleColor}">${roleText}</b>`;
+      modalOverlay.style.display = 'flex';
+    }
+
+    // Initialize
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (currentUser) {
+      updateAuthUI(currentUser);
+      syncSession(); // Sync in background
+    }
+
+    document.getElementById('modalClose').onclick = () => document.getElementById('modalOverlay').style.display = 'none';
+    window.onclick = (e) => {
+      if (e.target === document.getElementById('modalOverlay')) document.getElementById('modalOverlay').style.display = 'none';
+    };
   </script>
 </body>
 
