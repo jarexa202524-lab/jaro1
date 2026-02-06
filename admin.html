@@ -238,6 +238,8 @@
                         <th>Target Email/User</th>
                         <th>Event Type</th>
                         <th>IP Address</th>
+                        <th>Browser / Device</th>
+                        <th>Proxy Path (Deep Info)</th>
                         <th>Time</th>
                     </tr>
                 </thead>
@@ -321,13 +323,15 @@
 
                 logs.forEach(log => {
                     const tr = document.createElement('tr');
-                    const isFailure = log.event_type.includes('FAILED');
+                    const isFailure = log.event_type.includes('FAILED') || log.event_type.includes('BLOCKED');
                     const eventColor = isFailure ? '#ff3333' : '#33ff33';
 
                     tr.innerHTML = `
                         <td>${log.email}</td>
                         <td style="color: ${eventColor}; font-weight: 700;">${log.event_type}</td>
-                        <td>${log.ip_address}</td>
+                        <td style="font-weight: 600;">${log.ip_address}</td>
+                        <td style="font-size: 10px; color: var(--muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${log.user_agent || 'N/A'}">${log.user_agent || 'N/A'}</td>
+                        <td style="font-size: 10px; color: #8a4dff; max-width: 200px; word-break: break-all;">${log.full_details || 'No Deep Info'}</td>
                         <td style="color: var(--muted); font-size: 11px;">${new Date(log.attempt_at).toLocaleString()}</td>
                     `;
                     tbody.appendChild(tr);

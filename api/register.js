@@ -7,8 +7,13 @@ export default async function handler(req, res) {
     const { username, email, password } = req.body;
     const sql = neon(process.env.DATABASE_URL);
 
-    let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-    if (ip && ip.includes(',')) ip = ip.split(',')[0].trim();
+    // ADVANCED IP & PROXY DETECTION (Anti-VPN)
+    const forwarded = req.headers['x-forwarded-for'];
+    const realIp = req.headers['x-real-ip'];
+    const vercelIp = req.headers['x-vercel-forwarded-for'];
+    const ip = forwarded ? forwarded.split(',')[0].trim() : (realIp || req.socket.remoteAddress || 'unknown');
+    const fullIpInfo = `Client: ${ip}, Forwarded: ${forwarded || 'none'}, RealIP: ${realIp || 'none'}, Vercel: ${vercelIp || 'none'}`;
+    const userAgent = req.headers['user-agent'] || 'unknown';
 
     try {
         // RATE LIMITING: Max 3 registrations per IP per hour
@@ -33,14 +38,20 @@ export default async function handler(req, res) {
         try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_ip TEXT`; } catch (e) { }
         try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP WITH TIME ZONE`; } catch (e) { }
 
-        // Create Security Logs table
+        // Create Security Logs table with Advanced Columns
         await sql`CREATE TABLE IF NOT EXISTS security_logs (
             id SERIAL PRIMARY KEY,
             email TEXT,
             event_type TEXT,
             ip_address TEXT,
+            user_agent TEXT,
+            full_details TEXT,
             attempt_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         )`;
+        try {
+            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS user_agent TEXT`;
+            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS full_details TEXT`;
+        } catch (e) { }
 
         // Check if user exists
         const existing = await sql`SELECT * FROM users WHERE email = ${email} OR username = ${username}`;
@@ -60,8 +71,8 @@ export default async function handler(req, res) {
         // Insert user
         await sql`INSERT INTO users (username, email, password, last_ip, last_login_at) VALUES (${username}, ${email}, ${hashedPassword}, ${ip}, CURRENT_TIMESTAMP)`;
 
-        // Log registration
-        await sql`INSERT INTO security_logs (email, event_type, ip_address) VALUES (${email}, 'USER_REGISTERED', ${ip})`;
+        // Log registration with Proxy Info
+        await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details) VALUES (${email}, 'USER_REGISTERED', ${ip}, ${userAgent}, ${fullIpInfo})`;
 
         return res.status(200).json({ message: 'წარმატებით დარეგისტრირდით!' });
     } catch (error) {
