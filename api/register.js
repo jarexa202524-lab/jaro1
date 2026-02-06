@@ -6,6 +6,9 @@ export default async function handler(req, res) {
     const { username, email, password } = req.body;
     const sql = neon(process.env.DATABASE_URL);
 
+    let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    if (ip && ip.includes(',')) ip = ip.split(',')[0].trim();
+
     try {
         // Create/Update table if not exists
         await sql`CREATE TABLE IF NOT EXISTS users (
@@ -39,7 +42,10 @@ export default async function handler(req, res) {
         }
 
         // Insert user
-        await sql`INSERT INTO users (username, email, password) VALUES (${username}, ${email}, ${password})`;
+        await sql`INSERT INTO users (username, email, password, last_ip, last_login_at) VALUES (${username}, ${email}, ${password}, ${ip}, CURRENT_TIMESTAMP)`;
+
+        // Log registration
+        await sql`INSERT INTO security_logs (email, event_type, ip_address) VALUES (${email}, 'USER_REGISTERED', ${ip})`;
 
         return res.status(200).json({ message: 'წარმატებით დარეგისტრირდით!' });
     } catch (error) {
