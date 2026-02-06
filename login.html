@@ -334,25 +334,30 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const identifier = document.getElementById('loginIdentifier').value;
             const password = document.getElementById('loginPassword').value;
 
-            // Simulated Database using localStorage
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            const user = users.find(u => (u.username === identifier || u.email === identifier) && u.password === password);
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ identifier, password })
+                });
 
-            if (user) {
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                showMessage('თქვენ წარმატებით გაიარეთ ავტორიზაცია საიტზე.', 'success');
+                const data = await response.json();
 
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
-            } else {
-                showMessage('არასწორი მომხმარებლის სახელი ან პაროლი!', 'error');
+                if (response.ok) {
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    showMessage('თქვენ წარმატებით გაიარეთ ავტორიზაცია საიტზე.', 'success');
+                    setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+                } else {
+                    showMessage(data.error || 'ავტორიზაცია ვერ მოხერხდა', 'error');
+                }
+            } catch (error) {
+                showMessage('სერვერთან კავშირი ვერ დამყარდა', 'error');
             }
         });
 
@@ -361,10 +366,7 @@
             messageBox.textContent = text;
             messageBox.className = 'message-box message-' + type;
             messageBox.style.display = 'block';
-
-            setTimeout(() => {
-                messageBox.style.display = 'none';
-            }, 3000);
+            setTimeout(() => { messageBox.style.display = 'none'; }, 3000);
         }
     </script>
 </body>

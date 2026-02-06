@@ -235,42 +235,56 @@
     </div>
 
     <script>
-        function loadUsers() {
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
+        async function loadUsers() {
             const tableBody = document.getElementById('userTableBody');
             const totalUsers = document.getElementById('totalUsers');
             const lastUser = document.getElementById('lastUser');
 
-            tableBody.innerHTML = '';
-            totalUsers.textContent = users.length;
+            try {
+                const response = await fetch('/api/users');
+                const users = await response.json();
 
-            if (users.length > 0) {
-                lastUser.textContent = users[users.length - 1].username;
-            } else {
-                lastUser.textContent = 'None';
+                tableBody.innerHTML = '';
+                totalUsers.textContent = users.length;
+
+                if (users.length > 0) {
+                    lastUser.textContent = users[0].username;
+                } else {
+                    lastUser.textContent = 'None';
+                }
+
+                users.forEach((user) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${user.username} ${user.role === 'admin' ? '<span style="color:gold">[ADMIN]</span>' : ''}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <button class="btn-delete" onclick="deleteUser('${user.email}')">Delete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
             }
-
-            users.forEach((user, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${user.username}</td>
-                    <td>${user.email}</td>
-                    <td>
-                        <button class="btn-delete" onclick="deleteUser('${user.email}')">Delete</button>
-                    </td>
-                `;
-                tableBody.appendChild(tr);
-            });
         }
 
-        function deleteUser(email) {
+        async function deleteUser(email) {
             if (confirm('ნამდვილად გსურთ ამ მომხმარებლის წაშლა?')) {
-                let users = JSON.parse(localStorage.getItem('users') || '[]');
-                users = users.filter(u => u.email !== email);
-                localStorage.setItem('users', JSON.stringify(users));
+                try {
+                    const response = await fetch('/api/users', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
 
-                showNotification('მომხმარებელი წაიშალა წარმატებით!');
-                loadUsers();
+                    if (response.ok) {
+                        showNotification('მომხმარებელი წაიშალა წარმატებით!');
+                        loadUsers();
+                    }
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                }
             }
         }
 
@@ -281,11 +295,7 @@
             setTimeout(() => { note.style.display = 'none'; }, 3000);
         }
 
-        // Initialize
         loadUsers();
-
-        // Simple security: Check if a user is logged in (optional: check for admin role)
-        // For this demo, we'll just let the owner access it via URL
     </script>
 </body>
 

@@ -356,7 +356,7 @@
     </div>
 
     <script>
-        document.getElementById('registerForm').addEventListener('submit', function (e) {
+        document.getElementById('registerForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const username = document.getElementById('username').value;
@@ -369,22 +369,24 @@
                 return;
             }
 
-            // Simulated Database using localStorage
-            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
 
-            if (users.find(u => u.username === username || u.email === email)) {
-                showMessage('მომხმარებელი ამ სახელით ან მაილით უკვე არსებობს!', 'error');
-                return;
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('თქვენ წარმატებით დარეგისტრირდით საიტზე!', 'success');
+                    setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+                } else {
+                    showMessage(data.error || 'რეგისტრაცია ვერ მოხერხდა', 'error');
+                }
+            } catch (error) {
+                showMessage('სერვერთან კავშირი ვერ დამყარდა', 'error');
             }
-
-            users.push({ username, email, password });
-            localStorage.setItem('users', JSON.stringify(users));
-
-            showMessage('თქვენ წარმატებით დარეგისტრირდით საიტზე!', 'success');
-
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 2000);
         });
 
         function showMessage(text, type) {
@@ -392,10 +394,7 @@
             messageBox.textContent = text;
             messageBox.className = 'message-box message-' + type;
             messageBox.style.display = 'block';
-
-            setTimeout(() => {
-                messageBox.style.display = 'none';
-            }, 3000);
+            setTimeout(() => { messageBox.style.display = 'none'; }, 3000);
         }
     </script>
 </body>
