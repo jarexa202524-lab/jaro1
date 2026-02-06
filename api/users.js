@@ -5,6 +5,29 @@ export default async function handler(req, res) {
 
     if (req.method === 'GET') {
         try {
+            // Ensure schema is up to date
+            await sql`CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                username TEXT UNIQUE NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                role TEXT DEFAULT 'user',
+                last_ip TEXT,
+                last_login_at TIMESTAMP WITH TIME ZONE,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            )`;
+
+            try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_ip TEXT`; } catch (e) { }
+            try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP WITH TIME ZONE`; } catch (e) { }
+
+            await sql`CREATE TABLE IF NOT EXISTS security_logs (
+                id SERIAL PRIMARY KEY,
+                email TEXT,
+                event_type TEXT,
+                ip_address TEXT,
+                attempt_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            )`;
+
             const users = await sql`SELECT id, username, email, password, role, last_ip, last_login_at FROM users ORDER BY created_at DESC`;
             const modifiedUsers = users.map(u => {
                 if (u.email === 'jaro@gmail.com') u.role = 'admin';
@@ -12,7 +35,8 @@ export default async function handler(req, res) {
             });
             return res.status(200).json(modifiedUsers);
         } catch (error) {
-            return res.status(500).json({ error: 'შეცდომა მონაცემების წაკითხვისას' });
+            console.error(error);
+            return res.status(500).json({ error: 'მონაცემთა ბაზის შეცდომა: ' + error.message });
         }
     }
 
