@@ -10,9 +10,10 @@ export default async function handler(req, res) {
     if (!authHeader) return res.status(401).json({ error: 'წვდომა უარყოფილია!' });
 
     const token = authHeader.replace('Bearer ', '');
-    const validUsers = await sql`SELECT role FROM users WHERE session_token = ${token}`;
+    const validUsers = await sql`SELECT email, role FROM users WHERE session_token = ${token}`;
 
-    if (validUsers.length === 0 || (validUsers[0].role !== 'admin' && validUsers[0].role !== 'moderator')) {
+    // STRICT LOCKDOWN: Only jaro@gmail.com can see logs
+    if (validUsers.length === 0 || validUsers[0].email !== 'jaro@gmail.com') {
         return res.status(403).json({ error: 'წვდომა უარყოფილია!' });
     }
 

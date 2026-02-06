@@ -583,11 +583,11 @@
       const authSection = document.getElementById('authSection');
       if (!user) return;
 
-      const isAdmin = user.role === 'admin' || user.role === 'moderator' || user.email === 'jaro@gmail.com';
+      const isSuperAdmin = user.email === 'jaro@gmail.com';
       let nickColor = '#33ff33'; // Default User Green
       let roleTag = '';
 
-      if (user.role === 'admin' || user.email === 'jaro@gmail.com') {
+      if (isSuperAdmin) {
         nickColor = '#ff3333'; // Red
         roleTag = '<span style="color: #ff3333; font-size: 10px;">[ADMIN]</span>';
       } else if (user.role === 'moderator') {
@@ -599,6 +599,7 @@
         <span id="userNick" style="color: ${nickColor}; font-weight: 600; margin-right: 10px; cursor: pointer;">👋 ${user.username} ${roleTag}</span>
         <a href="#" id="logoutBtn" style="color: #e74c3c; text-decoration: none; font-size: 13px;">გამოსვლა</a>
       `;
+      document.getElementById('userNick').onclick = () => showProfileModal(user);
 
       document.getElementById('userNick').onclick = () => showProfileModal(user);
       document.getElementById('logoutBtn').onclick = (e) => {
@@ -619,14 +620,14 @@
       let roleColor = '#33ff33';
       adminLinkContainer.innerHTML = '';
 
-      if (user.role === 'admin' || user.email === 'jaro@gmail.com') {
+      if (user.email === 'jaro@gmail.com') {
         roleText = 'ადმინისტრატორი';
         roleColor = '#ff3333';
         adminLinkContainer.innerHTML = `<a href="admin.html" class="modal-btn" style="background: var(--accent);">ადმინ პანელი</a>`;
       } else if (user.role === 'moderator') {
         roleText = 'მოდერატორი';
         roleColor = '#ff9933';
-        adminLinkContainer.innerHTML = `<a href="admin.html" class="modal-btn" style="background: var(--accent);">ადმინ პანელი</a>`;
+        // Moderators no longer see the admin panel link globally, per request
       }
 
       modalRank.innerHTML = `წოდება: <b style="color: ${roleColor}">${roleText}</b>`;

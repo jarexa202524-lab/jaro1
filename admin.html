@@ -251,19 +251,16 @@
     <script>
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-        // Security Check
-        if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'moderator')) {
-            window.location.href = 'index.html';
+        // STRICT SECURITY CHECK
+        if (!currentUser || currentUser.email !== 'jaro@gmail.com' || !currentUser.token) {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
         } else {
             document.body.style.display = 'block';
             document.getElementById('adminName').textContent = `Logged in as: ${currentUser.username}`;
-            if (currentUser.role === 'moderator') {
-                document.getElementById('panelTitle').textContent = 'MODERATOR';
-                document.getElementById('moderatorNotice').style.display = 'block';
-            }
         }
 
-        const isAdmin = currentUser.role === 'admin';
+        const isAdmin = true; // jaro is always admin now
 
         async function loadUsers() {
             const tbody = document.getElementById('userTableBody');
