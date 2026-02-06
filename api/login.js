@@ -6,7 +6,8 @@ export default async function handler(req, res) {
     const { identifier, password } = req.body;
     const sql = neon(process.env.DATABASE_URL);
 
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    if (ip && ip.includes(',')) ip = ip.split(',')[0].trim();
 
     try {
         const users = await sql`SELECT * FROM users WHERE (username = ${identifier} OR email = ${identifier}) AND password = ${password}`;
