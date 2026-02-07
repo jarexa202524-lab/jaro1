@@ -85,7 +85,16 @@ export default async function handler(req, res) {
             if (isMatch) {
                 // Update last login info and session token
                 const sessionToken = crypto.randomBytes(32).toString('hex');
-                await sql`UPDATE users SET last_ip = ${ip}, last_country = ${country}, last_browser = ${browser}, last_login_at = CURRENT_TIMESTAMP, session_token = ${sessionToken} WHERE id = ${user.id}`;
+                await sql`UPDATE users SET 
+                    last_ip = ${ip}, 
+                    last_country = ${country}, 
+                    last_city = ${city}, 
+                    last_region = ${region}, 
+                    last_browser = ${browser}, 
+                    last_device = ${device},
+                    last_login_at = CURRENT_TIMESTAMP, 
+                    session_token = ${sessionToken} 
+                WHERE id = ${user.id}`;
                 await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details, browser, country, city, region, device) 
                           VALUES (${user.email}, 'SUCCESSFUL_LOGIN', ${ip}, ${userAgent}, ${fullIpInfo}, ${browser}, ${country}, ${city}, ${region}, ${device})`;
 

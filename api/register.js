@@ -99,7 +99,8 @@ export default async function handler(req, res) {
         const hashedPassword = await bcrypt.hash(password, 12);
 
         // Insert user
-        await sql`INSERT INTO users (username, email, password, last_ip, last_country, last_browser, last_login_at) VALUES (${username}, ${email}, ${hashedPassword}, ${ip}, ${country}, ${browser}, CURRENT_TIMESTAMP)`;
+        await sql`INSERT INTO users (username, email, password, last_ip, last_country, last_city, last_region, last_browser, last_device, last_login_at) 
+              VALUES (${username}, ${email}, ${hashedPassword}, ${ip}, ${country}, ${city}, ${region}, ${browser}, ${device}, CURRENT_TIMESTAMP)`;
 
         // Log registration with Proxy Info
         await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details, browser, country, city, region, device) 

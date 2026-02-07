@@ -464,8 +464,8 @@
                             <tr>
                                 <th>Username</th>
                                 <th>Email</th>
-                                <th>IP / Country</th>
-                                <th>Browser</th>
+                                <th>IP / ზუსტი ლოკაცია</th>
+                                <th>ბრაუზერი / მოწყობილობა</th>
                                 <th>Last Login</th>
                                 <th>Role / Group</th>
                                 <th>New Password (optional)</th>
@@ -641,12 +641,18 @@
                         ${isAdmin ? `<input type="text" class="edit-input" value="${user.username}" id="u_${user.id}">` : user.username}
                     </td>
                     <td>${user.email}</td>
-                    <td style="color: var(--accent-2); font-weight: 600;">
-                        ${user.last_ip || 'N/A'}<br>
-                        ${getFlagImage(user.last_country)}
-                        <span style="font-size: 10px; color: #aaa; margin-left: 5px;">${user.last_country || 'Unknown'}</span>
-                    </td>
-                    <td style="font-size: 11px;">${user.last_browser || 'Unknown'}</td>
+                        <td style="color: var(--accent-2); font-weight: 600;">
+                            ${user.last_ip || 'N/A'}<br>
+                            ${getFlagImage(user.last_country)}
+                            <div style="font-size: 10px; color: #aaa; margin-top: 5px;">
+                                <span style="color: var(--accent-2);">${user.last_city || 'Unknown'}</span>, ${user.last_region || 'N/A'}<br>
+                                ${user.last_country || 'Unknown'}
+                            </div>
+                        </td>
+                        <td style="font-size: 11px;">
+                            <b style="color: #fff;">${user.last_browser || 'Other'}</b><br>
+                            <span style="color: var(--accent-2); font-weight: 700;">${user.last_device || 'PC / Desktop'}</span>
+                        </td>
                     <td style="font-size: 11px; color: var(--muted);">${lastLogin}</td>
                     <td>
                         ${isAdmin ? `
