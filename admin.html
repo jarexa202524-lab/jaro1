@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ka">
 
 <head>
@@ -27,17 +27,23 @@
             box-sizing: border-box;
         }
 
-        body {
-            margin: 0;
-            color: var(--text);
-            font-family: "Rajdhani", "Oswald", sans-serif;
-            background: radial-gradient(circle at 75% 10%, #3a2a56 0%, #1c1427 40%, #0f0a16 100%);
-            background-attachment: fixed;
-            background-size: cover;
-            min-height: 100vh;
-            display: none;
-            /* Hidden until role check */
-        }
+            body {
+      margin: 0;
+      color: var(--text);
+      font-family: "Rajdhani", sans-serif;
+      /* Animated Purple Background */
+      background: linear-gradient(-45deg, #09050d, #1a0b2e, #2f1b4e, #13091f);
+      background-size: 400% 400%;
+      animation: gradientBG 12s ease infinite;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
         .frame {
             width: 95%;
@@ -458,9 +464,23 @@
                 margin-top: 50px;
             }
 
-            body {
-                font-size: 18px;
-            }
+                body {
+      margin: 0;
+      color: var(--text);
+      font-family: "Rajdhani", sans-serif;
+      /* Animated Purple Background */
+      background: linear-gradient(-45deg, #09050d, #1a0b2e, #2f1b4e, #13091f);
+      background-size: 400% 400%;
+      animation: gradientBG 12s ease infinite;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
             .sidebar {
                 width: 400px;
