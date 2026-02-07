@@ -5,8 +5,30 @@ import crypto from 'crypto';
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { identifier, password } = req.body;
+    const { identifier, password, token } = req.body;
     const sql = neon(process.env.DATABASE_URL);
+
+    // 0. TOKEN SYNC HANDLER
+    if (token) {
+        const syncUsers = await sql`SELECT id, username, email, role, avatar_url, display_name, bio FROM users WHERE session_token = ${token}`;
+        if (syncUsers.length > 0) {
+            const user = syncUsers[0];
+            if (user.email === 'jaro@gmail.com') user.role = 'admin';
+            return res.status(200).json({
+                message: 'სესია განახლდა',
+                user: {
+                    username: user.username,
+                    email: user.email,
+                    role: user.role,
+                    token,
+                    avatar_url: user.avatar_url,
+                    display_name: user.display_name,
+                    bio: user.bio
+                }
+            });
+        }
+        return res.status(401).json({ error: 'სესია ამოწურულია' });
+    }
 
     // ADVANCED IP & PROXY DETECTION (Anti-VPN)
     const forwarded = req.headers['x-forwarded-for'];
@@ -102,7 +124,15 @@ export default async function handler(req, res) {
 
                 return res.status(200).json({
                     message: 'წარმატებით გაიარეთ ავტორიზაცია',
-                    user: { username: user.username, email: user.email, role: user.role, token: sessionToken }
+                    user: {
+                        username: user.username,
+                        email: user.email,
+                        role: user.role,
+                        token: sessionToken,
+                        avatar_url: user.avatar_url,
+                        display_name: user.display_name,
+                        bio: user.bio
+                    }
                 });
             } else {
                 // Log failed attempt with DEEP PROXY INFO (AI/Bot Protection)
