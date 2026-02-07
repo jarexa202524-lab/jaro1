@@ -8,18 +8,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;700&display=swap"
         rel="stylesheet" />
     <style>
         :root {
-            --bg: #110b18;
-            --panel: #1b1426;
-            --panel-2: #241b33;
+            --bg: #09050d;
+            --panel: rgba(27, 20, 38, 0.7);
+            --panel-2: rgba(36, 27, 51, 0.8);
             --accent: #8a4dff;
+            --accent-glow: rgba(138, 77, 255, 0.4);
             --accent-2: #b58bff;
-            --muted: #c6bbd8;
+            --muted: #a496b8;
             --text: #f2eef7;
-            --shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -29,229 +33,102 @@
         body {
             margin: 0;
             color: var(--text);
-            font-family: "Rajdhani", "Oswald", sans-serif;
-            background:
-                radial-gradient(1200px 600px at 75% -100px, #3a2a56 0%, #1c1427 40%, #110b18 70%),
-                linear-gradient(180deg, #0f0a16 0%, #110b18 60%, #0b0712 100%);
-        }
-
-        .frame {
-            max-width: 1200px;
-            margin: 28px auto 48px;
-            background: var(--panel);
-            border: 1px solid #2f243d;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            min-height: 80vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .topbar {
-            display: grid;
-            grid-template-columns: 220px 1fr 220px;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 20px 10px;
-            background: linear-gradient(180deg, #261c34, #1a1225);
-            border-bottom: 2px solid #140f1b;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: "Oswald", sans-serif;
-            letter-spacing: 1px;
-            text-decoration: none;
-        }
-
-        .logo .mark {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
-            display: grid;
-            place-items: center;
-            color: var(--accent-2);
-            font-weight: 700;
-            font-size: 18px;
-        }
-
-        .logo span {
-            display: inline-block;
-            color: #e5e5ea;
-            font-size: 20px;
-        }
-
-        .logo span b {
-            color: var(--accent);
-        }
-
-        .nav {
-            display: flex;
-            gap: 18px;
-            justify-content: center;
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        .nav a {
-            color: inherit;
-            text-decoration: none;
-            padding-bottom: 6px;
-            border-bottom: 2px solid transparent;
-        }
-
-        .nav a:hover {
-            color: #fff;
-            border-bottom-color: var(--accent);
-        }
-
-        .auth {
-            display: flex;
-            justify-content: flex-end;
-            gap: 18px;
-            font-size: 14px;
-            color: var(--muted);
-        }
-
-        .auth a {
-            color: inherit;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .auth a:hover {
-            color: #fff;
-        }
-
-        /* Success & Error Messages */
-        .message-box {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 4px;
-            color: #fff;
-            font-weight: 600;
-            z-index: 1000;
-            display: none;
-            animation: slideIn 0.3s ease-out;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .message-success {
-            background: #2ecc71;
-            border-left: 5px solid #27ae60;
-        }
-
-        .message-error {
-            background: #e74c3c;
-            border-left: 5px solid #c0392b;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .auth-container {
-            flex: 1;
+            font-family: "Rajdhani", sans-serif;
+            background: #09050d;
+            background-image: radial-gradient(circle at center, rgba(138, 77, 255, 0.1) 0%, transparent 60%);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
-            background: radial-gradient(circle at center, #241b33 0%, #1b1426 100%);
         }
 
         .auth-card {
             width: 100%;
-            max-width: 400px;
-            background: #241b33;
-            border: 1px solid #332744;
-            padding: 40px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            max-width: 440px;
+            background: var(--panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: var(--shadow);
             position: relative;
         }
 
-        .auth-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-        }
-
         .auth-card h2 {
+            font-family: "Oswald";
+            font-size: 32px;
             margin: 0 0 30px;
-            font-family: "Oswald", sans-serif;
-            font-size: 28px;
             text-align: center;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             color: #fff;
         }
 
+        .back-home {
+            position: absolute;
+            top: 25px;
+            left: 30px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
             display: block;
-            font-size: 13px;
-            color: var(--muted);
-            margin-bottom: 8px;
+            font-size: 11px;
+            color: var(--accent-2);
+            margin-bottom: 10px;
             text-transform: uppercase;
+            font-weight: 700;
             letter-spacing: 1px;
         }
 
         .form-group input {
             width: 100%;
-            background: #1b1426;
-            border: 1px solid #332744;
-            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 14px 20px;
             color: #fff;
             font-family: inherit;
-            outline: none;
-            transition: border-color 0.3s;
+            border-radius: 12px;
+            transition: var(--transition);
         }
 
         .form-group input:focus {
             border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.08);
+            outline: none;
         }
 
         .auth-btn {
             width: 100%;
-            background: linear-gradient(180deg, #b78bff, #7c46f2);
-            border: none;
-            padding: 14px;
+            background: var(--accent);
             color: #fff;
-            font-family: "Oswald", sans-serif;
+            border: none;
+            padding: 16px;
+            font-family: "Oswald";
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
+            border-radius: 14px;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-top: 10px;
-            transition: filter 0.3s;
+            transition: var(--transition);
+            box-shadow: 0 0 20px var(--accent-glow);
         }
 
         .auth-btn:hover {
+            transform: translateY(-3px);
             filter: brightness(1.1);
         }
 
         .auth-footer {
-            margin-top: 25px;
+            margin-top: 30px;
             text-align: center;
             font-size: 14px;
             color: var(--muted);
@@ -260,30 +137,32 @@
         .auth-footer a {
             color: var(--accent-2);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
         }
 
-        .auth-footer a:hover {
-            text-decoration: underline;
+        .message-box {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            border-radius: 15px;
+            color: #fff;
+            font-weight: 700;
+            z-index: 1000;
+            display: none;
+            animation: slideDown 0.4s ease;
         }
 
-        @media (max-width: 980px) {
-            .frame {
-                margin: 0;
+        @keyframes slideDown {
+            from {
+                transform: translate(-50%, -50px);
+                opacity: 0;
             }
 
-            .topbar {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .auth {
-                justify-content: center;
-                margin-top: 10px;
-            }
-
-            .nav {
-                margin: 15px 0;
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
             }
         }
     </style>
@@ -291,82 +170,55 @@
 
 <body>
     <div id="messageBox" class="message-box"></div>
-    <div class="frame">
-        <div class="topbar">
-            <a href="index.html" class="logo">
-                <div class="mark">G</div>
-                <span><b>GAME</b> DEBATE</span>
-            </a>
-            <nav class="nav">
-                <a href="news.html">News</a>
-                <a href="games.html">Games</a>
-                <a href="hardware.html">Hardware</a>
-                <a href="reviews.html">Reviews</a>
-                <a href="awards.html">Awards</a>
-                <a href="can-i-run-it.html">Can I Run It</a>
-                <a href="future-proof.html">Future-Proof My PC</a>
-            </nav>
-            <div class="auth">
-                <a href="login.html">Login</a>
-                <a href="register.html">Register</a>
+    <div class="auth-card">
+        <a href="index.html" class="back-home">← Back</a>
+        <h2>LOGIN</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Username or Email</label>
+                <input type="text" id="loginIdentifier" placeholder="Enter your credentials" required />
             </div>
-        </div>
-
-        <div class="auth-container">
-            <div class="auth-card">
-                <h2>LOGIN</h2>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label>Username or Email</label>
-                        <input type="text" id="loginIdentifier" placeholder="Enter your username" required />
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="loginPassword" placeholder="••••••••" required />
-                    </div>
-                    <button type="submit" class="auth-btn">Sign In</button>
-                </form>
-                <div class="auth-footer">
-                    Don't have an account? <a href="register.html">Register</a>
-                </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••" required />
             </div>
+            <button type="submit" class="auth-btn">Authorize</button>
+        </form>
+        <div class="auth-footer">
+            New here? <a href="register.html">Create Account</a>
         </div>
     </div>
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-
             const identifier = document.getElementById('loginIdentifier').value;
             const password = document.getElementById('loginPassword').value;
-
             try {
                 const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ identifier, password })
                 });
-
                 const data = await response.json();
-
                 if (response.ok) {
                     localStorage.setItem('currentUser', JSON.stringify(data.user));
-                    showMessage('თქვენ წარმატებით გაიარეთ ავტორიზაცია საიტზე.', 'success');
-                    setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+                    showMessage('წარმატებული ავტორიზაცია!', '#2ecc71');
+                    setTimeout(() => { window.location.href = 'index.html'; }, 1500);
                 } else {
-                    showMessage(data.error || 'ავტორიზაცია ვერ მოხერხდა', 'error');
+                    showMessage(data.error || 'შეცდომა', '#e74c3c');
                 }
             } catch (error) {
-                showMessage('სერვერთან კავშირი ვერ დამყარდა', 'error');
+                showMessage('სერვერი მიუწვდომელია', '#e74c3c');
             }
         });
 
-        function showMessage(text, type) {
-            const messageBox = document.getElementById('messageBox');
-            messageBox.textContent = text;
-            messageBox.className = 'message-box message-' + type;
-            messageBox.style.display = 'block';
-            setTimeout(() => { messageBox.style.display = 'none'; }, 3000);
+        function showMessage(text, color) {
+            const box = document.getElementById('messageBox');
+            box.textContent = text;
+            box.style.background = color;
+            box.style.display = 'block';
+            setTimeout(() => { box.style.display = 'none'; }, 3000);
         }
     </script>
 </body>

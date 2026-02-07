@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;700&display=swap"
     rel="stylesheet" />
   <style>
     :root {
@@ -35,7 +35,7 @@
       color: var(--text);
       font-family: "Rajdhani", sans-serif;
       background: #09050d;
-      background-image: radial-gradient(circle at 20% 20%, rgba(138, 77, 255, 0.15) 0%, transparent 40%);
+      background-image: radial-gradient(circle at 10% 10%, rgba(138, 77, 255, 0.1) 0%, transparent 40%);
       background-attachment: fixed;
       min-height: 100vh;
     }
@@ -44,168 +44,220 @@
       width: 100%;
       max-width: 1440px;
       margin: 0 auto;
-      position: relative;
     }
 
+    /* MODERNIST TOPBAR */
     .topbar {
       position: sticky;
       top: 0;
       z-index: 1000;
-      display: grid;
-      grid-template-columns: auto 1fr auto;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
       padding: 15px 40px;
       background: rgba(9, 5, 13, 0.85);
-      backdrop-filter: blur(15px);
+      backdrop-filter: blur(20px) saturate(160%);
       border-bottom: 1px solid var(--glass-border);
     }
 
     .logo {
       display: flex;
-      align-items: center;
-      gap: 12px;
+      flex-direction: column;
       text-decoration: none;
-      font-family: "Oswald", sans-serif;
-      font-weight: 700;
-    }
-
-    .logo .mark {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: var(--accent);
-      display: grid;
-      place-items: center;
-      color: #fff;
+      line-height: 1.1;
     }
 
     .logo span {
       color: #fff;
+      font-family: "Oswald";
       font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 2px;
       text-transform: uppercase;
+    }
+
+    .logo span b {
+      color: var(--accent);
+    }
+
+    .logo small {
+      font-size: 10px;
+      color: var(--accent-2);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 600;
+      opacity: 0.7;
     }
 
     .nav {
       display: flex;
-      gap: 24px;
-      justify-content: center;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 5px;
+      border-radius: 40px;
+      border: 1px solid var(--glass-border);
     }
 
     .nav a {
       color: var(--muted);
       text-decoration: none;
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 12px;
+      font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 10px 18px;
+      border-radius: 30px;
       transition: var(--transition);
     }
 
-    .nav a:hover,
+    .nav a:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
     .nav a.active {
       color: #fff;
+      background: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
     }
 
     .auth {
       display: flex;
-      gap: 15px;
-    }
-
-    .auth a {
-      padding: 6px 20px;
-      border-radius: 30px;
-      border: 1px solid var(--accent);
-      color: #fff;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 12px;
-      transition: var(--transition);
-    }
-
-    .user-profile-badge {
-      display: flex;
+      gap: 12px;
       align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      background: var(--glass);
-      padding: 4px 12px 4px 4px;
+      min-width: 220px;
+      justify-content: flex-end;
+    }
+
+    .auth-btn {
+      padding: 10px 24px;
       border-radius: 30px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: var(--transition);
       border: 1px solid var(--glass-border);
     }
 
-    .user-profile-badge img {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
+    .auth-btn.login {
+      color: #fff;
     }
 
-    .user-logout-btn {
-      padding: 8px 16px;
-      border-radius: 30px;
-      background: rgba(231, 76, 60, 0.1);
-      color: #e74c3c;
-      font-weight: 700;
-      font-size: 12px;
+    .auth-btn.register {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 16px 4px 4px;
+      background: rgba(138, 77, 255, 0.1);
+      border: 1px solid rgba(138, 77, 255, 0.2);
+      border-radius: 40px;
       cursor: pointer;
       transition: var(--transition);
     }
 
+    .user-badge img {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      object-fit: cover;
+    }
+
+    .user-badge span {
+      font-weight: 700;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .logout-btn {
+      padding: 10px 18px;
+      background: rgba(231, 76, 60, 0.1);
+      border: 1px solid rgba(231, 76, 60, 0.2);
+      border-radius: 30px;
+      color: #ff6b6b;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    /* NEWS HEADER */
     .page-header {
-      padding: 60px 40px 30px;
+      padding: 80px 40px 40px;
       text-align: center;
     }
 
     .page-header h1 {
-      font-family: "Oswald", sans-serif;
-      font-size: 48px;
+      font-family: "Oswald";
+      font-size: 64px;
       text-transform: uppercase;
-      margin: 0 0 10px;
-      letter-spacing: 2px;
+      margin: 0;
+      letter-spacing: 4px;
     }
 
-    .news-container {
-      padding: 0 40px 60px;
-      max-width: 1000px;
+    .page-header p {
+      font-size: 18px;
+      color: var(--accent-2);
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .container {
+      padding: 0 40px 100px;
+      max-width: 900px;
       margin: 0 auto;
     }
 
-    .news-article {
+    .article-card {
       background: var(--panel);
       border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      padding: 40px;
-      margin-bottom: 30px;
-    }
-
-    .news-article p {
-      font-size: 18px;
+      border-radius: 30px;
+      padding: 60px;
       line-height: 1.8;
       color: var(--muted);
+      font-size: 18px;
+      box-shadow: var(--shadow);
     }
 
-    .back-btn {
+    .article-card p {
+      margin-bottom: 25px;
+    }
+
+    .back-link {
       display: inline-flex;
       align-items: center;
-      padding: 12px 30px;
-      background: var(--accent);
-      color: #fff;
+      gap: 10px;
+      color: var(--accent-2);
       text-decoration: none;
-      border-radius: 30px;
       font-weight: 700;
-      margin-top: 30px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 40px;
       transition: var(--transition);
     }
 
-    .back-btn:hover {
+    .back-link:hover {
+      color: #fff;
       transform: translateX(-5px);
-      box-shadow: 0 0 20px var(--accent-glow);
     }
 
+    /* MODAL */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -215,35 +267,46 @@
     .modal {
       background: var(--panel-2);
       border: 1px solid var(--glass-border);
-      padding: 30px;
       width: 100%;
-      max-width: 400px;
-      border-radius: 24px;
+      max-width: 440px;
+      border-radius: 30px;
+      padding: 40px;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 24px;
     }
 
     .modal-btn {
       display: block;
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       background: var(--accent);
       color: #fff;
-      text-align: center;
       text-decoration: none;
+      border-radius: 14px;
       font-family: "Oswald";
-      font-weight: 600;
-      border: none;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 15px;
       cursor: pointer;
-      border-radius: 12px;
+      transition: var(--transition);
     }
   </style>
 </head>
 
 <body>
   <div class="frame">
-    <div class="topbar">
+    <header class="topbar" id="mainTopbar">
       <a href="index.html" class="logo">
-        <div class="mark">G</div>
         <span><b>GAME</b> DEBATE</span>
+        <small>Next Gen News</small>
       </a>
       <nav class="nav">
         <a class="active" href="news.html">News</a>
@@ -254,23 +317,26 @@
         <a href="can-i-run-it.html">Can I Run It</a>
       </nav>
       <div class="auth" id="authSection">
-        <a href="login.html">Login</a>
-        <a href="register.html">Register</a>
+        <a href="login.html" class="auth-btn login">Login</a>
+        <a href="register.html" class="auth-btn register">Register</a>
       </div>
-    </div>
+    </header>
 
     <div class="page-header">
-      <h1>News</h1>
-      <p style="color: var(--accent-2); font-weight: 600;">The heartbeat of gaming tech and software.</p>
+      <h1>HEADLINES</h1>
+      <p>The daily pulse of the gaming world.</p>
     </div>
 
-    <div class="news-container">
-      <div class="news-article">
-        <p>ეს გვერდი განკუთვნილია სიახლეებისთვის. აქ შეგიძლია განათავსო ბოლო ახალი ამბები, ანონსები და სტატიები.</p>
-        <p>ჩვენ მუდმივად ვაახლებთ ინფორმაციას თამაშებისა და ტექნიკის შესახებ, რათა იყოთ ყოველთვის ინფორმირებული.</p>
-        <a class="back-btn" href="index.html">← მთავარ გვერდზე დაბრუნება</a>
+    <main class="container">
+      <div class="article-card">
+        <p>თამაშებისა და ტექნოლოგიების სამყარო არასდროს ჩერდება. ჩვენი გუნდი მუშაობს 24/7, რათა მოგაწოდოთ ყველაზე ცხელი
+          სიახლეები RTX 60 სერიის ბარათების, ახალი თაობის კონსოლებისა და იმ თამაშების შესახებ, რომლებიც 2026 წელს
+          შეცვლიან ინდუსტრიას.</p>
+        <p>დარჩით ჩვენთან და იყავით პირველები, ვინც გაიგებს GTA VI-ის ახალი თრეილერის, Elder Scrolls VI-ის გეიმფლეის ან
+          AI-ზე დაფუძნებული გრაფიკული ძრავების შესახებ.</p>
+        <a href="index.html" class="back-link">← Return to Hub</a>
       </div>
-    </div>
+    </main>
   </div>
 
   <div class="modal-overlay" id="modalOverlay">
@@ -280,34 +346,18 @@
   <script>
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-    async function syncSession() {
-      if (!currentUser) return;
-      try {
-        const response = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: currentUser.token })
-        });
-        const data = await response.json();
-        if (response.ok) {
-          localStorage.setItem('currentUser', JSON.stringify({ ...currentUser, ...data.user }));
-          updateAuthUI(data.user);
-        }
-      } catch (e) { console.error('Session sync failed:', e); }
-    }
-
     function updateAuthUI(user) {
-      const authSection = document.getElementById('authSection');
+      const section = document.getElementById('authSection');
       if (!user) return;
       const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
-      authSection.innerHTML = `
-        <div id="userNick" class="user-profile-badge">
+      section.innerHTML = `
+        <div id="userBadge" class="user-badge">
           <img src="${avatar}">
           <span>${user.username}</span>
         </div>
-        <div id="logoutBtn" class="user-logout-btn">გამოსვლა</div>
+        <button id="logoutBtn" class="logout-btn">გამოსვლა</button>
       `;
-      document.getElementById('userNick').onclick = () => showProfileModal(user);
+      document.getElementById('userBadge').onclick = () => showProfileModal(user);
       document.getElementById('logoutBtn').onclick = () => {
         localStorage.removeItem('currentUser');
         window.location.reload();
@@ -315,25 +365,25 @@
     }
 
     function showProfileModal(user) {
-      const modalOverlay = document.getElementById('modalOverlay');
-      const modalContent = document.getElementById('modalContent');
+      const overlay = document.getElementById('modalOverlay');
+      const content = document.getElementById('modalContent');
       const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
-      modalContent.innerHTML = `
+      content.innerHTML = `
+        <span class="modal-close" id="closeM">&times;</span>
         <div style="text-align: center;">
-          <img src="${avatar}" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--accent);">
-          <h2 style="font-family: Oswald; color: #fff;">${user.username}</h2>
+          <img src="${avatar}" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 20px; object-fit: cover;">
+          <h2 style="font-family: Oswald; margin: 0; font-size: 28px;">${user.username}</h2>
           <a href="admin.html" class="modal-btn">ადმინ პანელი</a>
-          <button class="modal-btn" style="background: transparent; margin-top: 10px; border: 1px solid var(--glass-border);" id="closeModal">დახურვა</button>
+          <button class="modal-btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);" id="closeNow">Close</button>
         </div>
       `;
-      modalOverlay.style.display = 'flex';
-      document.getElementById('closeModal').onclick = () => modalOverlay.style.display = 'none';
+      overlay.style.display = 'flex';
+      document.getElementById('closeM').onclick = () => overlay.style.display = 'none';
+      document.getElementById('closeNow').onclick = () => overlay.style.display = 'none';
+      overlay.onclick = (e) => { if (e.target === overlay) overlay.style.display = 'none'; };
     }
 
-    if (currentUser) {
-      updateAuthUI(currentUser);
-      syncSession();
-    }
+    if (currentUser) updateAuthUI(currentUser);
   </script>
 </body>
 
