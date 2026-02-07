@@ -464,6 +464,10 @@
                         <span class="sidebar-icon">📋</span>
                         უსაფრთხოების ლოგები
                     </li>
+                    <li class="sidebar-item" onclick="showSection('newsSection', this)">
+                        <span class="sidebar-icon">📰</span>
+                        საიტის სიახლეები
+                    </li>
                     <li style="margin-top: 50px; opacity: 0.5;" class="sidebar-item"
                         onclick="window.location.href='index.html'">
                         <span class="sidebar-icon">🏠</span>
@@ -501,32 +505,9 @@
                         </div>
                     </div>
 
-                    <div class="admin-header" style="margin-top: 20px;">
-                        <h2 style="font-family: Oswald; margin: 0; font-size: 20px; color: var(--accent-2);">სიახლეების
-                            სტატისტიკა</h2>
-                    </div>
-                    <div class="stats-grid">
-                        <div class="stats-card">
-                            <span class="stats-label">სულ სიახლე</span>
-                            <div class="stats-value" id="totalPosts">0</div>
-                        </div>
-                        <div class="stats-card">
-                            <span class="stats-label">მოდერაციაში</span>
-                            <div class="stats-value" id="pendingPosts" style="color: #ff9933;">0</div>
-                        </div>
-                        <div class="stats-card">
-                            <span class="stats-label">ახალი (დღეს/თვეს)</span>
-                            <div class="stats-value" id="postsTrend">0 / 0</div>
-                        </div>
-                        <div class="stats-card">
-                            <span class="stats-label">ახალი (წელს)</span>
-                            <div class="stats-value" id="postsLongTrend">0</div>
-                        </div>
-                    </div>
-
                     <!-- RANKINGS CONTAINER -->
                     <div class="rankings-container"
-                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px;">
+                        style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 40px;">
                         <!-- COUNTRY RANKING -->
                         <div class="country-ranking" style="margin-bottom: 0;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -536,17 +517,6 @@
                                     გასუფთავება</button>
                             </div>
                             <div class="ranking-list" id="countryRankList">
-                                <!-- Loaded via JS -->
-                            </div>
-                        </div>
-
-                        <!-- POSTS RANKING -->
-                        <div class="country-ranking" style="margin-bottom: 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <h2 style="font-family: Oswald; font-size: 18px; margin: 0; text-transform: uppercase;">
-                                    აქტიური მპოსტავები</h2>
-                            </div>
-                            <div class="ranking-list" id="postsRankList">
                                 <!-- Loaded via JS -->
                             </div>
                         </div>
@@ -570,6 +540,42 @@
                                 <!-- Loaded via JS -->
                             </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- NEWS SECTION -->
+                <div id="newsSection" class="admin-section">
+                    <div class="admin-header">
+                        <h1 style="font-family: Oswald; margin: 0; font-size: 24px;">საიტის სიახლეები</h1>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stats-card">
+                            <span class="stats-label">სულ სიახლე</span>
+                            <div class="stats-value" id="totalPosts">0</div>
+                        </div>
+                        <div class="stats-card">
+                            <span class="stats-label">მოდერაციაში</span>
+                            <div class="stats-value" id="pendingPosts" style="color: #ff9933;">0</div>
+                        </div>
+                        <div class="stats-card">
+                            <span class="stats-label">ახალი (დღეს/თვეს)</span>
+                            <div class="stats-value" id="postsTrend">0 / 0</div>
+                        </div>
+                        <div class="stats-card">
+                            <span class="stats-label">ახალი (წელს)</span>
+                            <div class="stats-value" id="postsLongTrend">0</div>
+                        </div>
+                    </div>
+
+                    <div class="country-ranking" style="margin-bottom: 40px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2 style="font-family: Oswald; font-size: 18px; margin: 0; text-transform: uppercase;">
+                                აქტიური მპოსტავები</h2>
+                        </div>
+                        <div class="ranking-list" id="postsRankList">
+                            <!-- Loaded via JS -->
+                        </div>
                     </div>
                 </div>
 
@@ -645,6 +651,7 @@
 
             if (sectionId === 'usersSection') loadUsers();
             if (sectionId === 'logsSection') loadSecurityLogs();
+            if (sectionId === 'newsSection') loadNewsStats();
         }
 
         function filterByCountry(countryCode) {
