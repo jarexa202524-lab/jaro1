@@ -352,7 +352,7 @@
                 <div
                     style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--accent); display: grid; place-items: center; color: var(--accent-2); font-weight: 700;">
                     G</div>
-                <span><b>PANEL</b> <span id="panelTitle">ADMIN</span></span>
+                <span><b>PANEL</b> <span id="panelTitle">ADMIN v1.5</span></span>
             </a>
             <div style="display: flex; align-items: center; gap: 20px;">
                 <span id="adminName" style="color: var(--muted); font-size: 14px;"></span>
@@ -644,14 +644,17 @@
                         <td style="color: var(--accent-2); font-weight: 600;">
                             ${user.last_ip || 'N/A'}<br>
                             ${getFlagImage(user.last_country)}
-                            <div style="font-size: 10px; color: #aaa; margin-top: 5px;">
-                                <span style="color: var(--accent-2);">${user.last_city || 'Unknown'}</span>, ${user.last_region || 'N/A'}<br>
-                                ${user.last_country || 'Unknown'}
+                            <div style="font-size: 10px; color: #aaa; margin-top: 5px; border-top: 1px solid #332744; padding-top: 3px;">
+                                <span style="color: #888;">ქალაქი:</span> <span style="color: #fff;">${user.last_city || 'Unknown'}</span><br>
+                                <span style="color: #888;">რეგიონი:</span> <span style="color: #fff;">${user.last_region || 'N/A'}</span>
                             </div>
                         </td>
                         <td style="font-size: 11px;">
                             <b style="color: #fff;">${user.last_browser || 'Other'}</b><br>
-                            <span style="color: var(--accent-2); font-weight: 700;">${user.last_device || 'PC / Desktop'}</span>
+                            <div style="margin-top: 5px; background: rgba(138, 77, 255, 0.1); padding: 4px; border-radius: 4px; border: 1px solid rgba(138, 77, 255, 0.3);">
+                                <span style="color: #aaa; font-size: 9px; text-transform: uppercase;">მოწყობილობა:</span><br>
+                                <span style="color: var(--accent-2); font-weight: 700; font-size: 12px;">${user.last_device || 'PC / Desktop'}</span>
+                            </div>
                         </td>
                     <td style="font-size: 11px; color: var(--muted);">${lastLogin}</td>
                     <td>
@@ -698,15 +701,17 @@
                         <td style="font-weight: 600;">
                             ${log.ip_address}<br>
                             ${getFlagImage(log.country)}
-                            <div style="font-size: 10px; color: #aaa; margin-top: 5px;">
-                                <span style="color: var(--accent-2);">${log.city || 'Unknown'}</span>, ${log.region || 'N/A'}<br>
-                                ${log.country || 'Unknown'}
+                            <div style="font-size: 10px; color: #aaa; margin-top: 5px; border-top: 1px solid #332744; padding-top: 3px;">
+                                <span style="color: #888;">📍 ქალაქი:</span> <span style="color: #fff;">${log.city || 'Unknown'}</span><br>
+                                <span style="color: #888;">🏷️ რეგიონი:</span> <span style="color: #fff;">${log.region || 'N/A'}</span>
                             </div>
                         </td>
                         <td style="font-size: 10px; color: var(--muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${log.user_agent || 'N/A'}">
                             <b style="color: #fff;">${log.browser || 'Other'}</b><br>
-                            <span style="color: var(--accent-2); font-weight: 700;">${log.device || 'PC / Desktop'}</span><br>
-                            ${log.user_agent || 'N/A'}
+                            <div style="margin-top: 5px; background: rgba(138, 77, 255, 0.1); padding: 4px; border-radius: 4px; border: 1px solid rgba(138, 77, 255, 0.3);">
+                                <span style="color: #aaa; font-size: 9px; text-transform: uppercase;">📱 მოწყობილობა:</span><br>
+                                <span style="color: var(--accent-2); font-weight: 700; font-size: 12px;">${log.device || 'PC / Desktop'}</span>
+                            </div>
                         </td>
                         <td style="font-size: 10px; color: #8a4dff; max-width: 200px; word-break: break-all;">${log.full_details || 'No Deep Info'}</td>
                         <td style="color: var(--muted); font-size: 11px;">${new Date(log.attempt_at).toLocaleString()}</td>
