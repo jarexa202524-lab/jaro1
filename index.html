@@ -203,13 +203,15 @@
       align-items: center;
       gap: 12px;
       cursor: pointer;
-      padding: 6px 16px;
+      padding: 0 16px;
+      height: 48px;
+      /* Fixed height */
       border-radius: 30px;
       background: rgba(138, 77, 255, 0.1);
       border: 1px solid rgba(138, 77, 255, 0.2);
       transition: all 0.3s;
-      min-width: 140px;
-      /* Ensure somewhat consistent width */
+      min-width: 150px;
+      /* Consistent width */
     }
 
     .user-profile-badge:hover {
@@ -234,8 +236,12 @@
     .user-logout-btn {
       display: flex;
       align-items: center;
+      justify-content: center;
+      /* Center content */
       cursor: pointer;
-      padding: 6px 20px;
+      padding: 0 16px;
+      height: 48px;
+      /* Same fixed height */
       border-radius: 30px;
       background: rgba(231, 76, 60, 0.1);
       border: 1px solid rgba(231, 76, 60, 0.3);
@@ -245,6 +251,8 @@
       font-weight: 700;
       letter-spacing: 0.5px;
       white-space: nowrap;
+      min-width: 150px;
+      /* Same consistent width */
     }
 
     .user-logout-btn:hover {
