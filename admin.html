@@ -349,13 +349,10 @@
 
         const isAdmin = true; // jaro is always admin now
 
-        function getFlagEmoji(countryCode) {
-            if (!countryCode || countryCode === 'Unknown') return '❓';
-            const codePoints = countryCode
-                .toUpperCase()
-                .split('')
-                .map(char => 127397 + char.charCodeAt());
-            return String.fromCodePoint(...codePoints);
+        function getFlagImage(countryCode) {
+            if (!countryCode || countryCode === 'Unknown') return '<span style="font-size: 16px;">❓</span>';
+            const code = countryCode.toLowerCase();
+            return `<img src="https://flagcdn.com/w40/${code}.png" srcset="https://flagcdn.com/w80/${code}.png 2x" width="24" alt="${countryCode}" style="border-radius: 2px; vertical-align: middle; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">`;
         }
 
         function showSection(sectionId, btn) {
@@ -388,8 +385,8 @@
                         <td>${user.email}</td>
                         <td style="color: var(--accent-2); font-weight: 600;">
                             ${user.last_ip || 'N/A'}<br>
-                            <span style="font-size: 16px;">${getFlagEmoji(user.last_country)}</span>
-                            <span style="font-size: 10px; color: #aaa;">${user.last_country || 'Unknown'}</span>
+                            ${getFlagImage(user.last_country)}
+                            <span style="font-size: 10px; color: #aaa; margin-left: 5px;">${user.last_country || 'Unknown'}</span>
                         </td>
                         <td style="font-size: 11px;">${user.last_browser || 'Unknown'}</td>
                         <td style="font-size: 11px; color: var(--muted);">${lastLogin}</td>
@@ -437,8 +434,8 @@
                         <td style="color: ${eventColor}; font-weight: 700;">${log.event_type}</td>
                         <td style="font-weight: 600;">
                             ${log.ip_address}<br>
-                            <span style="font-size: 16px;">${getFlagEmoji(log.country)}</span>
-                            <span style="font-size: 10px; color: #aaa;">${log.country || 'Unknown'}</span>
+                            ${getFlagImage(log.country)}
+                            <span style="font-size: 10px; color: #aaa; margin-left: 5px;">${log.country || 'Unknown'}</span>
                         </td>
                         <td style="font-size: 10px; color: var(--muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${log.user_agent || 'N/A'}">
                             <b>${log.browser || 'Other'}</b><br>
