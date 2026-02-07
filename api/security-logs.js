@@ -31,9 +31,20 @@ export default async function handler(req, res) {
         try { await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS user_agent TEXT`; } catch (e) { }
         try { await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS full_details TEXT`; } catch (e) { }
 
-        // Fetch last 50 security events
-        const logs = await sql`SELECT * FROM security_logs ORDER BY attempt_at DESC LIMIT 50`;
-        return res.status(200).json(logs);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 50;
+        const offset = (page - 1) * limit;
+
+        // Fetch paginated security events and total count
+        const logs = await sql`SELECT * FROM security_logs ORDER BY attempt_at DESC LIMIT ${limit} OFFSET ${offset}`;
+        const totalCount = await sql`SELECT count(*) FROM security_logs`;
+
+        return res.status(200).json({
+            logs,
+            total: parseInt(totalCount[0].count),
+            page,
+            limit
+        });
     } catch (error) {
         return res.status(500).json({ error: 'შეცდომა ლოგების კითხვისას: ' + error.message });
     }

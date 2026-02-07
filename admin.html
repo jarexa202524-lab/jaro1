@@ -312,6 +312,35 @@
             display: none;
             z-index: 3000;
         }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 30px;
+            padding: 20px 0;
+        }
+
+        .btn-page {
+            padding: 8px 16px;
+            background: var(--panel-2);
+            border: 1px solid #332744;
+            color: #fff;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        .btn-page:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: var(--accent-2);
+        }
+
+        .btn-page:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -415,7 +444,7 @@
                 <!-- LOGS SECTION -->
                 <div id="logsSection" class="admin-section">
                     <div class="admin-header">
-                        <h1 style="font-family: Oswald; margin: 0; font-size: 24px;">უსაფრთხოების ლოგები (ბოლო 50)</h1>
+                        <h1 style="font-family: Oswald; margin: 0; font-size: 24px;">უსაფრთხოების ლოგები</h1>
                     </div>
                     <table class="user-table">
                         <thead>
@@ -432,6 +461,12 @@
                             <!-- Loaded via JS -->
                         </tbody>
                     </table>
+
+                    <div class="pagination">
+                        <button class="btn-page" id="prevLogs" onclick="changeLogsPage(-1)">← წინა</button>
+                        <span id="logsPageIndicator" style="font-weight: 700; color: var(--accent-2);">გვერდი 1</span>
+                        <button class="btn-page" id="nextLogs" onclick="changeLogsPage(1)">შემდეგი →</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -452,6 +487,8 @@
         const isAdmin = true; // jaro is always admin now
         let allUsers = [];
         let currentFilter = { country: null };
+        let logsCurrentPage = 1;
+        const logsLimit = 50;
 
         function getFlagImage(countryCode) {
             if (!countryCode || countryCode === 'Unknown') return '<span style="font-size: 16px;">❓</span>';
@@ -600,14 +637,14 @@
         async function loadSecurityLogs() {
             const tbody = document.getElementById('securityLogsBody');
             try {
-                const response = await fetch('/api/security-logs', {
+                const response = await fetch(`/api/security-logs?page=${logsCurrentPage}&limit=${logsLimit}`, {
                     headers: { 'Authorization': `Bearer ${currentUser.token}` }
                 });
-                const logs = await response.json();
-                if (!response.ok) throw new Error(logs.error);
-                tbody.innerHTML = '';
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error);
 
-                logs.forEach(log => {
+                tbody.innerHTML = '';
+                data.logs.forEach(log => {
                     const tr = document.createElement('tr');
                     const isFailure = log.event_type.includes('FAILED') || log.event_type.includes('BLOCKED');
                     const eventColor = isFailure ? '#ff3333' : '#33ff33';
@@ -629,7 +666,18 @@
                     `;
                     tbody.appendChild(tr);
                 });
+
+                // Update Pagination Controls
+                document.getElementById('logsPageIndicator').textContent = `გვერდი ${logsCurrentPage} / ${Math.ceil(data.total / logsLimit) || 1}`;
+                document.getElementById('prevLogs').disabled = logsCurrentPage === 1;
+                document.getElementById('nextLogs').disabled = logsCurrentPage * logsLimit >= data.total;
+
             } catch (e) { console.error(e); }
+        }
+
+        function changeLogsPage(dir) {
+            logsCurrentPage += dir;
+            loadSecurityLogs();
         }
 
         function getRoleLabel(role) {
