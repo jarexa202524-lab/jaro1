@@ -38,6 +38,7 @@
     }
 
     .frame {
+      width: 95%;
       max-width: 1200px;
       margin: 28px auto 48px;
       background: var(--panel);
@@ -411,6 +412,7 @@
         margin: 0;
         border: none;
         box-shadow: none;
+        width: 100%;
       }
 
       .topbar {
@@ -471,6 +473,92 @@
 
       .mascot {
         display: none;
+      }
+    }
+
+    /* Large Screens (2K / 1440p) */
+    @media (min-width: 1441px) {
+      .frame {
+        max-width: 1400px;
+      }
+
+      .hero {
+        min-height: 350px;
+      }
+
+      .hero-title {
+        font-size: 24px;
+      }
+
+      .card {
+        min-height: 160px;
+      }
+
+      .card h4 {
+        font-size: 18px;
+      }
+
+      .card p {
+        font-size: 14px;
+      }
+
+      .tile {
+        min-height: 180px;
+      }
+    }
+
+    /* 4K Screens */
+    @media (min-width: 2500px) {
+      .frame {
+        max-width: 80%;
+        margin-top: 50px;
+      }
+
+      body {
+        font-size: 18px;
+      }
+
+      .hero {
+        min-height: 500px;
+      }
+
+      .hero-title {
+        font-size: 36px;
+        bottom: 30px;
+        left: 30px;
+      }
+
+      .card {
+        min-height: 240px;
+        padding: 25px;
+      }
+
+      .card h4 {
+        font-size: 24px;
+      }
+
+      .card p {
+        font-size: 18px;
+      }
+
+      .nav {
+        font-size: 18px;
+        gap: 30px;
+      }
+
+      .logo span {
+        font-size: 32px;
+      }
+
+      .logo .mark {
+        width: 50px;
+        height: 50px;
+        font-size: 28px;
+      }
+
+      .sidebar .btn {
+        font-size: 16px;
+        padding: 20px;
       }
     }
   </style>
