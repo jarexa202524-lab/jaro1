@@ -50,7 +50,8 @@
 
     .topbar {
       display: grid;
-      grid-template-columns: 220px 1fr 220px;
+      grid-template-columns: auto 1fr auto;
+      /* Flexible columns */
       align-items: center;
       gap: 12px;
       padding: 14px 20px 10px;
@@ -180,7 +181,8 @@
     .auth {
       display: flex;
       justify-content: flex-end;
-      gap: 18px;
+      align-items: center;
+      gap: 10px;
       font-size: 14px;
       color: var(--muted);
     }
@@ -193,6 +195,61 @@
 
     .auth a:hover {
       color: #fff;
+    }
+
+    /* User Badge & Logout Styles */
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      padding: 6px 16px;
+      border-radius: 30px;
+      background: rgba(138, 77, 255, 0.1);
+      border: 1px solid rgba(138, 77, 255, 0.2);
+      transition: all 0.3s;
+      min-width: 140px;
+      /* Ensure somewhat consistent width */
+    }
+
+    .user-profile-badge:hover {
+      background: rgba(138, 77, 255, 0.25);
+      border-color: var(--accent);
+    }
+
+    .user-profile-badge img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      object-fit: cover;
+    }
+
+    .user-profile-badge span {
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    .user-logout-btn {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 6px 20px;
+      border-radius: 30px;
+      background: rgba(231, 76, 60, 0.1);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      transition: all 0.3s;
+      color: #e74c3c;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .user-logout-btn:hover {
+      background: rgba(231, 76, 60, 0.25);
+      border-color: #e74c3c;
     }
 
     .subbar {
@@ -433,7 +490,10 @@
 
       .auth {
         justify-content: center;
-        margin-top: 5px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+        /* allow wrapping if needed */
+        width: 100%;
       }
 
       .subbar {
@@ -704,11 +764,11 @@
       const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
 
       authSection.innerHTML = `
-        <div id="userNick" style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 4px 12px; border-radius: 20px; background: rgba(138, 77, 255, 0.1); border: 1px solid rgba(138, 77, 255, 0.2); transition: all 0.3s;">
-          <img src="${avatar}" style="width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--accent); object-fit: cover;">
-          <span style="color: ${nickColor}; font-weight: 700; font-size: 14px; letter-spacing: 0.5px;">${user.username} ${roleTag}</span>
+        <div id="userNick" class="user-profile-badge">
+          <img src="${avatar}">
+          <span style="color: ${nickColor};">${user.username} ${roleTag}</span>
         </div>
-        <div id="logoutBtn" style="display: flex; align-items: center; cursor: pointer; padding: 4px 15px; border-radius: 20px; background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.3); transition: all 0.3s; color: #e74c3c; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; margin-left: 10px;">
+        <div id="logoutBtn" class="user-logout-btn">
           გამოსვლა
         </div>
       `;
@@ -717,11 +777,6 @@
       const logoutElem = document.getElementById('logoutBtn');
 
       nickElem.onclick = () => showProfileModal(user);
-      nickElem.onmouseenter = () => { nickElem.style.background = 'rgba(138, 77, 255, 0.25)'; nickElem.style.borderColor = 'var(--accent)'; };
-      nickElem.onmouseleave = () => { nickElem.style.background = 'rgba(138, 77, 255, 0.1)'; nickElem.style.borderColor = 'rgba(138, 77, 255, 0.2)'; };
-
-      logoutElem.onmouseenter = () => { logoutElem.style.background = 'rgba(231, 76, 60, 0.25)'; logoutElem.style.borderColor = '#e74c3c'; };
-      logoutElem.onmouseleave = () => { logoutElem.style.background = 'rgba(231, 76, 60, 0.1)'; logoutElem.style.borderColor = 'rgba(231, 76, 60, 0.3)'; };
 
       document.getElementById('logoutBtn').onclick = (e) => {
         e.preventDefault();
