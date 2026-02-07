@@ -610,7 +610,7 @@
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
         // STRICT SECURITY CHECK
-        if (!currentUser || currentUser.email !== 'jaro@gmail.com' || !currentUser.token) {
+        if (!currentUser || currentUser.email.toLowerCase() !== 'jaro@gmail.com' || !currentUser.token) {
             localStorage.removeItem('currentUser');
             window.location.href = 'login.html';
         } else {
@@ -669,7 +669,10 @@
 
                 calculateStats();
                 renderUsers();
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error(e);
+                showNotification('მომხმარებლების ჩატვირთვა ვერ მოხერხდა', true);
+            }
         }
 
         function calculateStats() {
@@ -836,7 +839,10 @@
                 document.getElementById('prevLogs').disabled = logsCurrentPage === 1;
                 document.getElementById('nextLogs').disabled = logsCurrentPage * logsLimit >= data.total;
 
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error(e);
+                showNotification('ლოგების ჩატვირთვა ვერ მოხერხდა', true);
+            }
         }
 
         function changeLogsPage(dir) {

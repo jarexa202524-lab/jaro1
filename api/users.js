@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     const validUsers = await sql`SELECT email, role FROM users WHERE session_token = ${token}`;
 
     // ULTRA-SECURE CHECK: Absolute email verification + Role confirmation
-    if (validUsers.length === 0 || validUsers[0].email !== 'jaro@gmail.com' || validUsers[0].role !== 'admin') {
+    if (validUsers.length === 0 || validUsers[0].email.toLowerCase() !== 'jaro@gmail.com' || validUsers[0].role !== 'admin') {
         const attackerIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
         await sql`INSERT INTO security_logs (email, event_type, ip_address) VALUES (${validUsers[0]?.email || 'UNKNOWN'}, 'UNAUTHORIZED_ADMIN_ACCESS_ATTEMPT', ${attackerIp})`;
         return res.status(403).json({ error: 'წვდომა უარყოფილია! თქვენი აქტივობა დაფიქსირებულია.' });
@@ -52,8 +52,8 @@ export default async function handler(req, res) {
             )`;
 
             // EMERGENCY CLEANUP: Force 'jaro@gmail.com' to admin and demote EVERYONE else
-            await sql`UPDATE users SET role = 'admin' WHERE email = 'jaro@gmail.com'`;
-            await sql`UPDATE users SET role = 'user' WHERE email != 'jaro@gmail.com'`;
+            await sql`UPDATE users SET role = 'admin' WHERE LOWER(email) = 'jaro@gmail.com'`;
+            await sql`UPDATE users SET role = 'user' WHERE LOWER(email) != 'jaro@gmail.com'`;
 
             // SELECT query EXCLUDES password for maximum security
             const users = await sql`SELECT id, username, email, role, last_ip, last_country, last_city, last_region, last_browser, last_device, last_login_at, avatar_url, bio, display_name FROM users ORDER BY created_at DESC`;
@@ -68,7 +68,7 @@ export default async function handler(req, res) {
         const { email } = req.body;
 
         // CRITICAL: Prevent deletion of main admin
-        if (email === 'jaro@gmail.com') {
+        if (email.toLowerCase() === 'jaro@gmail.com') {
             return res.status(403).json({ error: 'მთავარი ადმინისტრატორის წაშლა აკრძალულია!' });
         }
 
@@ -84,7 +84,7 @@ export default async function handler(req, res) {
         const { email, role, username, password } = req.body;
 
         // CRITICAL: Protect jaro@gmail.com from role/username changes
-        if (email === 'jaro@gmail.com' && (role || username)) {
+        if (email.toLowerCase() === 'jaro@gmail.com' && (role || username)) {
             return res.status(403).json({ error: 'მთავარი ადმინისტრატორის მონაცემების შეცვლა აკრძალულია!' });
         }
 
