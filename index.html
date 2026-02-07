@@ -58,10 +58,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px 40px;
+      padding: 18px 40px;
       background: rgba(9, 5, 13, 0.85);
-      backdrop-filter: blur(20px) saturate(160%);
-      border-bottom: 1px solid var(--glass-border);
+      backdrop-filter: blur(25px) saturate(180%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .topbar.scrolled {
@@ -505,8 +507,8 @@
       </nav>
 
       <div class="auth" id="authSection">
-        <a href="login.html" class="auth-btn login">Login</a>
-        <a href="register.html" class="auth-btn register">Register</a>
+        <a href="login.html" class="auth-btn login">შესვლა</a>
+        <a href="register.html" class="auth-btn register">რეგისტრაცია</a>
       </div>
     </header>
 

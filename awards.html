@@ -45,17 +45,19 @@
       position: relative;
     }
 
-    .topbar {
+        .topbar {
       position: sticky;
       top: 0;
       z-index: 1000;
-      display: grid;
-      grid-template-columns: auto 1fr auto;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      padding: 15px 40px;
+      padding: 18px 40px;
       background: rgba(9, 5, 13, 0.85);
-      backdrop-filter: blur(15px);
-      border-bottom: 1px solid var(--glass-border);
+      backdrop-filter: blur(25px) saturate(180%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .logo {
@@ -204,9 +206,9 @@
         <a href="awards.html">Awards</a>
         <a href="can-i-run-it.html">Can I Run It</a>
       </nav>
-      <div class="auth" id="authSection">
-        <a href="login.html">Login</a>
-        <a href="register.html">Register</a>
+            <div class="auth" id="authSection">
+        <a href="login.html" class="auth-btn login">áƒ¨áƒ”áƒ¡áƒ•áƒšáƒ</a>
+        <a href="register.html" class="auth-btn register">áƒ áƒ”áƒ’áƒ˜áƒ¡áƒ¢áƒ áƒáƒªáƒ˜áƒ</a>
       </div>
     </div>
         <span><b>GAME</b> DEBATE</span>
@@ -220,9 +222,9 @@
         <a href="can-i-run-it.html">Can I Run It</a>
         <a href="future-proof.html">Future-Proof My PC</a>
       </nav>
-      <div class="auth" id="authSection">
-        <a href="login.html">Login</a>
-        <a href="register.html">Register</a>
+            <div class="auth" id="authSection">
+        <a href="login.html" class="auth-btn login">áƒ¨áƒ”áƒ¡áƒ•áƒšáƒ</a>
+        <a href="register.html" class="auth-btn register">áƒ áƒ”áƒ’áƒ˜áƒ¡áƒ¢áƒ áƒáƒªáƒ˜áƒ</a>
       </div>
     </div>
     <div class="modal-overlay" id="modalOverlay">
@@ -304,3 +306,4 @@
   </div></div><div class="modal-overlay" id="modalOverlay"><div class="modal" id="modalContent"></div></div></body>
 
 </html>
+
