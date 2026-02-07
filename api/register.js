@@ -12,11 +12,15 @@ export default async function handler(req, res) {
     const realIp = req.headers['x-real-ip'];
     const vercelIp = req.headers['x-vercel-forwarded-for'];
     const country = req.headers['x-vercel-ip-country'] || 'Unknown';
+    const city = req.headers['x-vercel-ip-city'] ? decodeURIComponent(req.headers['x-vercel-ip-city']) : 'Unknown';
+    const region = req.headers['x-vercel-ip-country-region'] || 'Unknown';
+    const location = `${city}, ${region}, ${country}`;
+
     const ip = forwarded ? forwarded.split(',')[0].trim() : (realIp || req.socket.remoteAddress || 'unknown');
-    const fullIpInfo = `Client: ${ip}, Country: ${country}, Forwarded: ${forwarded || 'none'}, RealIP: ${realIp || 'none'}, Vercel: ${vercelIp || 'none'}`;
+    const fullIpInfo = `Client: ${ip}, Location: ${location}, Forwarded: ${forwarded || 'none'}`;
     const userAgent = req.headers['user-agent'] || 'unknown';
 
-    // Simple browser detection from userAgent
+    // Simple browser & device detection
     let browser = "Other";
     if (userAgent.includes("Firefox")) browser = "Firefox";
     else if (userAgent.includes("SamsungBrowser")) browser = "Samsung Browser";
@@ -25,6 +29,18 @@ export default async function handler(req, res) {
     else if (userAgent.includes("Edge") || userAgent.includes("Edg")) browser = "Edge";
     else if (userAgent.includes("Chrome")) browser = "Chrome";
     else if (userAgent.includes("Safari")) browser = "Safari";
+
+    let device = "PC / Desktop";
+    if (userAgent.includes("Mobi")) {
+        device = "Mobile";
+        if (userAgent.includes("iPhone")) device = "iPhone";
+        else if (userAgent.includes("iPad")) device = "iPad";
+        else {
+            const match = userAgent.match(/\(([^;]+);[^;]+; ([^?);]+)/);
+            if (match && match[2]) device = match[2].trim();
+            else if (userAgent.includes("Android")) device = "Android Device";
+        }
+    }
 
     try {
         // RATE LIMITING: Max 3 registrations per IP per hour
@@ -60,13 +76,12 @@ export default async function handler(req, res) {
             attempt_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         )`;
         try {
-            await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_country TEXT`;
-            await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_browser TEXT`;
-            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS user_agent TEXT`;
-            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS full_details TEXT`;
-            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS browser TEXT`;
-            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS country TEXT`;
+            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS city TEXT`;
+            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS region TEXT`;
+            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS device TEXT`;
         } catch (e) { }
+        // End of migrations block
+
 
         // Check if user exists
         const existing = await sql`SELECT * FROM users WHERE email = ${email} OR username = ${username}`;
@@ -87,7 +102,8 @@ export default async function handler(req, res) {
         await sql`INSERT INTO users (username, email, password, last_ip, last_country, last_browser, last_login_at) VALUES (${username}, ${email}, ${hashedPassword}, ${ip}, ${country}, ${browser}, CURRENT_TIMESTAMP)`;
 
         // Log registration with Proxy Info
-        await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details, browser, country) VALUES (${email}, 'USER_REGISTERED', ${ip}, ${userAgent}, ${fullIpInfo}, ${browser}, ${country})`;
+        await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details, browser, country, city, region, device) 
+                  VALUES (${email}, 'USER_REGISTERED', ${ip}, ${userAgent}, ${fullIpInfo}, ${browser}, ${country}, ${city}, ${region}, ${device})`;
 
         return res.status(200).json({ message: 'წარმატებით დარეგისტრირდით!' });
     } catch (error) {

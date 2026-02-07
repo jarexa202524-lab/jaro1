@@ -30,6 +30,9 @@ export default async function handler(req, res) {
         try { await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS country TEXT`; } catch (e) { }
         try { await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS user_agent TEXT`; } catch (e) { }
         try { await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS full_details TEXT`; } catch (e) { }
+        try { await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS city TEXT`; } catch (e) { }
+        try { await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS region TEXT`; } catch (e) { }
+        try { await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS device TEXT`; } catch (e) { }
 
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 50;

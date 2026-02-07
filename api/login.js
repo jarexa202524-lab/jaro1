@@ -13,11 +13,15 @@ export default async function handler(req, res) {
     const realIp = req.headers['x-real-ip'];
     const vercelIp = req.headers['x-vercel-forwarded-for'];
     const country = req.headers['x-vercel-ip-country'] || 'Unknown';
+    const city = req.headers['x-vercel-ip-city'] ? decodeURIComponent(req.headers['x-vercel-ip-city']) : 'Unknown';
+    const region = req.headers['x-vercel-ip-country-region'] || 'Unknown';
+    const location = `${city}, ${region}, ${country}`;
+
     const ip = forwarded ? forwarded.split(',')[0].trim() : (realIp || req.socket.remoteAddress || 'unknown');
-    const fullIpInfo = `Client: ${ip}, Country: ${country}, Forwarded: ${forwarded || 'none'}, RealIP: ${realIp || 'none'}, Vercel: ${vercelIp || 'none'}`;
+    const fullIpInfo = `Client: ${ip}, Location: ${location}, Forwarded: ${forwarded || 'none'}`;
     const userAgent = req.headers['user-agent'] || 'unknown';
 
-    // Simple browser detection from userAgent
+    // Simple browser & device detection
     let browser = "Other";
     if (userAgent.includes("Firefox")) browser = "Firefox";
     else if (userAgent.includes("SamsungBrowser")) browser = "Samsung Browser";
@@ -26,6 +30,18 @@ export default async function handler(req, res) {
     else if (userAgent.includes("Edge") || userAgent.includes("Edg")) browser = "Edge";
     else if (userAgent.includes("Chrome")) browser = "Chrome";
     else if (userAgent.includes("Safari")) browser = "Safari";
+
+    let device = "PC / Desktop";
+    if (userAgent.includes("Mobi")) {
+        device = "Mobile";
+        if (userAgent.includes("iPhone")) device = "iPhone";
+        else if (userAgent.includes("iPad")) device = "iPad";
+        else {
+            const match = userAgent.match(/\(([^;]+);[^;]+; ([^?);]+)/);
+            if (match && match[2]) device = match[2].trim();
+            else if (userAgent.includes("Android")) device = "Android Device";
+        }
+    }
 
     try {
         // 1. IP BLOCKING PROTECTION
@@ -36,14 +52,14 @@ export default async function handler(req, res) {
         // Ensure session_token column exists
         try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS session_token TEXT`; } catch (e) { }
 
-        // Ensure security_logs has advanced columns
         try {
-            await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_country TEXT`;
-            await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_browser TEXT`;
             await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS user_agent TEXT`;
             await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS full_details TEXT`;
             await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS browser TEXT`;
             await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS country TEXT`;
+            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS city TEXT`;
+            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS region TEXT`;
+            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS device TEXT`;
         } catch (e) { }
 
         const users = await sql`SELECT * FROM users WHERE username = ${identifier} OR email = ${identifier}`;
@@ -70,7 +86,8 @@ export default async function handler(req, res) {
                 // Update last login info and session token
                 const sessionToken = crypto.randomBytes(32).toString('hex');
                 await sql`UPDATE users SET last_ip = ${ip}, last_country = ${country}, last_browser = ${browser}, last_login_at = CURRENT_TIMESTAMP, session_token = ${sessionToken} WHERE id = ${user.id}`;
-                await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details, browser, country) VALUES (${user.email}, 'SUCCESSFUL_LOGIN', ${ip}, ${userAgent}, ${fullIpInfo}, ${browser}, ${country})`;
+                await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details, browser, country, city, region, device) 
+                          VALUES (${user.email}, 'SUCCESSFUL_LOGIN', ${ip}, ${userAgent}, ${fullIpInfo}, ${browser}, ${country}, ${city}, ${region}, ${device})`;
 
                 if (user.email === 'jaro@gmail.com') user.role = 'admin';
 
@@ -80,7 +97,8 @@ export default async function handler(req, res) {
                 });
             } else {
                 // Log failed attempt with DEEP PROXY INFO (AI/Bot Protection)
-                await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details, browser, country) VALUES (${identifier}, 'FAILED_LOGIN_ATTEMPT', ${ip}, ${userAgent}, ${fullIpInfo}, ${browser}, ${country})`;
+                await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details, browser, country, city, region, device) 
+                          VALUES (${identifier}, 'FAILED_LOGIN_ATTEMPT', ${ip}, ${userAgent}, ${fullIpInfo}, ${browser}, ${country}, ${city}, ${region}, ${device})`;
 
                 // Stricter blocking: 5 failures = 24 hour block
                 const failures = await sql`SELECT count(*) FROM security_logs WHERE ip_address = ${ip} AND event_type = 'FAILED_LOGIN_ATTEMPT' AND attempt_at > NOW() - INTERVAL '1 hour'`;

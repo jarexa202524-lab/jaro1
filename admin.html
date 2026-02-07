@@ -488,8 +488,8 @@
                             <tr>
                                 <th>Target Email/User</th>
                                 <th>Event Type</th>
-                                <th>IP / Country</th>
-                                <th>Browser / Device</th>
+                                <th>IP / ზუსტი ლოკაცია</th>
+                                <th>ბრაუზერი / მოწყობილობა</th>
                                 <th>Proxy Path (Deep Info)</th>
                                 <th>Time</th>
                             </tr>
@@ -692,10 +692,14 @@
                         <td style="font-weight: 600;">
                             ${log.ip_address}<br>
                             ${getFlagImage(log.country)}
-                            <span style="font-size: 10px; color: #aaa; margin-left: 5px;">${log.country || 'Unknown'}</span>
+                            <div style="font-size: 10px; color: #aaa; margin-top: 5px;">
+                                <span style="color: var(--accent-2);">${log.city || 'Unknown'}</span>, ${log.region || 'N/A'}<br>
+                                ${log.country || 'Unknown'}
+                            </div>
                         </td>
                         <td style="font-size: 10px; color: var(--muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${log.user_agent || 'N/A'}">
-                            <b>${log.browser || 'Other'}</b><br>
+                            <b style="color: #fff;">${log.browser || 'Other'}</b><br>
+                            <span style="color: var(--accent-2); font-weight: 700;">${log.device || 'PC / Desktop'}</span><br>
                             ${log.user_agent || 'N/A'}
                         </td>
                         <td style="font-size: 10px; color: #8a4dff; max-width: 200px; word-break: break-all;">${log.full_details || 'No Deep Info'}</td>
