@@ -642,6 +642,9 @@
             document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
             btn.classList.add('active');
+
+            if (sectionId === 'usersSection') loadUsers();
+            if (sectionId === 'logsSection') loadSecurityLogs();
         }
 
         function filterByCountry(countryCode) {
@@ -955,8 +958,10 @@
         }
 
         // Initialize
+        // Initialize
         loadUsers();
         loadNewsStats();
+        loadSecurityLogs();
     </script>
 </body>
 
