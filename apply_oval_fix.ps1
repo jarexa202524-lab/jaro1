@@ -7,49 +7,51 @@ $modernStylesPart = @'
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 40px;
-      width: calc(100% - 60px);
+      padding: 10px 40px;
+      width: 95%;
       max-width: 1400px;
-      margin: 20px auto;
-      background: rgba(15, 10, 25, 0.7);
+      margin: 0 auto;
+      background: rgba(15, 10, 25, 0.75);
       backdrop-filter: blur(30px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 100px; /* Oval Style */
-      box-shadow: 
-        0 10px 40px rgba(0, 0, 0, 0.4),
-        inset 0 1px 1px rgba(255, 255, 255, 0.05);
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 60px; /* Modern Oval */
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .topbar.scrolled {
       top: 10px;
-      padding: 8px 40px;
-      background: rgba(15, 10, 25, 0.9);
-      width: calc(100% - 40px);
-      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+      padding: 6px 40px;
+      background: rgba(15, 10, 25, 0.95);
+      width: 98%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     }
+
+    .logo {
 '@
 
 $files = @("awards.html", "can-i-run-it.html", "future-proof.html", "games.html", "hardware.html", "news.html", "reviews.html")
 
 foreach ($file in $files) {
     if (Test-Path $file) {
-        $c = Get-Content $file -Raw
+        $content = Get-Content $file -Raw
         
-        # Replace Topbar CSS (handles both .topbar and .topbar.scrolled if present)
-        # We look for the comment or the specific class and replace the block
-        if ($c -match '/\* MODERNIST TOPBAR \*/') {
-            $c = $c -replace '(?s)/\* MODERNIST TOPBAR \*/.*?(\.logo|body)', ($modernStylesPart + "`r`n`r`n    $1")
-        }
-        elseif ($c -match '/\* MODERNIST FLOATING OVAL TOPBAR \*/') {
-            $c = $c -replace '(?s)/\* MODERNIST FLOATING OVAL TOPBAR \*/.*?(\.logo|body)', ($modernStylesPart + "`r`n`r`n    $1")
+        # Regex to match from .topbar { (including potential comment above) 
+        # until the start of the logo block (either .logo or the mark class)
+        $pattern = '(?s)(/\*.*?\*/\s*)?\.topbar\s*\{.*?\.topbar\.scrolled\s*\{.*?\}(\s*|(?=\.logo))'
+        
+        if ($content -match $pattern) {
+            $content = $content -replace $pattern, ($modernStylesPart + " ")
         }
         else {
-            # Fallback for simpler matches
-            $c = $c -replace '(?s)\.topbar \{.*?\s*\}', $modernStylesPart
+            # Fallback if the scrolled block isn't present or name is different
+            $content = $content -replace '(?s)\.topbar\s*\{.*?\}', $modernStylesPart
         }
         
-        Set-Content $file $c -Encoding UTF8
+        # Specific fix for the "clipped" logo class
+        $content = $content -replace '(\n\s*)\{\s*\n', "`$1.logo {`n"
+
+        Set-Content $file $content -Encoding UTF8
     }
 }
-Write-Host "✅ Global Oval Style Applied."
+Write-Host "✅ Global Oval Style Applied Robustly."
