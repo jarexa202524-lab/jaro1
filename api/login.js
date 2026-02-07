@@ -12,9 +12,20 @@ export default async function handler(req, res) {
     const forwarded = req.headers['x-forwarded-for'];
     const realIp = req.headers['x-real-ip'];
     const vercelIp = req.headers['x-vercel-forwarded-for'];
+    const country = req.headers['x-vercel-ip-country'] || 'Unknown';
     const ip = forwarded ? forwarded.split(',')[0].trim() : (realIp || req.socket.remoteAddress || 'unknown');
-    const fullIpInfo = `Client: ${ip}, Forwarded: ${forwarded || 'none'}, RealIP: ${realIp || 'none'}, Vercel: ${vercelIp || 'none'}`;
+    const fullIpInfo = `Client: ${ip}, Country: ${country}, Forwarded: ${forwarded || 'none'}, RealIP: ${realIp || 'none'}, Vercel: ${vercelIp || 'none'}`;
     const userAgent = req.headers['user-agent'] || 'unknown';
+
+    // Simple browser detection from userAgent
+    let browser = "Other";
+    if (userAgent.includes("Firefox")) browser = "Firefox";
+    else if (userAgent.includes("SamsungBrowser")) browser = "Samsung Browser";
+    else if (userAgent.includes("Opera") || userAgent.includes("OPR")) browser = "Opera";
+    else if (userAgent.includes("Trident")) browser = "Internet Explorer";
+    else if (userAgent.includes("Edge") || userAgent.includes("Edg")) browser = "Edge";
+    else if (userAgent.includes("Chrome")) browser = "Chrome";
+    else if (userAgent.includes("Safari")) browser = "Safari";
 
     try {
         // 1. IP BLOCKING PROTECTION
@@ -27,8 +38,12 @@ export default async function handler(req, res) {
 
         // Ensure security_logs has advanced columns
         try {
+            await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_country TEXT`;
+            await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_browser TEXT`;
             await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS user_agent TEXT`;
             await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS full_details TEXT`;
+            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS browser TEXT`;
+            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS country TEXT`;
         } catch (e) { }
 
         const users = await sql`SELECT * FROM users WHERE username = ${identifier} OR email = ${identifier}`;
@@ -54,8 +69,8 @@ export default async function handler(req, res) {
             if (isMatch) {
                 // Update last login info and session token
                 const sessionToken = crypto.randomBytes(32).toString('hex');
-                await sql`UPDATE users SET last_ip = ${ip}, last_login_at = CURRENT_TIMESTAMP, session_token = ${sessionToken} WHERE id = ${user.id}`;
-                await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details) VALUES (${user.email}, 'SUCCESSFUL_LOGIN', ${ip}, ${userAgent}, ${fullIpInfo})`;
+                await sql`UPDATE users SET last_ip = ${ip}, last_country = ${country}, last_browser = ${browser}, last_login_at = CURRENT_TIMESTAMP, session_token = ${sessionToken} WHERE id = ${user.id}`;
+                await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details, browser, country) VALUES (${user.email}, 'SUCCESSFUL_LOGIN', ${ip}, ${userAgent}, ${fullIpInfo}, ${browser}, ${country})`;
 
                 if (user.email === 'jaro@gmail.com') user.role = 'admin';
 
@@ -65,7 +80,7 @@ export default async function handler(req, res) {
                 });
             } else {
                 // Log failed attempt with DEEP PROXY INFO (AI/Bot Protection)
-                await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details) VALUES (${identifier}, 'FAILED_LOGIN_ATTEMPT', ${ip}, ${userAgent}, ${fullIpInfo})`;
+                await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details, browser, country) VALUES (${identifier}, 'FAILED_LOGIN_ATTEMPT', ${ip}, ${userAgent}, ${fullIpInfo}, ${browser}, ${country})`;
 
                 // Stricter blocking: 5 failures = 24 hour block
                 const failures = await sql`SELECT count(*) FROM security_logs WHERE ip_address = ${ip} AND event_type = 'FAILED_LOGIN_ATTEMPT' AND attempt_at > NOW() - INTERVAL '1 hour'`;

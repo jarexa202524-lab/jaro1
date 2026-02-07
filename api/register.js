@@ -11,9 +11,20 @@ export default async function handler(req, res) {
     const forwarded = req.headers['x-forwarded-for'];
     const realIp = req.headers['x-real-ip'];
     const vercelIp = req.headers['x-vercel-forwarded-for'];
+    const country = req.headers['x-vercel-ip-country'] || 'Unknown';
     const ip = forwarded ? forwarded.split(',')[0].trim() : (realIp || req.socket.remoteAddress || 'unknown');
-    const fullIpInfo = `Client: ${ip}, Forwarded: ${forwarded || 'none'}, RealIP: ${realIp || 'none'}, Vercel: ${vercelIp || 'none'}`;
+    const fullIpInfo = `Client: ${ip}, Country: ${country}, Forwarded: ${forwarded || 'none'}, RealIP: ${realIp || 'none'}, Vercel: ${vercelIp || 'none'}`;
     const userAgent = req.headers['user-agent'] || 'unknown';
+
+    // Simple browser detection from userAgent
+    let browser = "Other";
+    if (userAgent.includes("Firefox")) browser = "Firefox";
+    else if (userAgent.includes("SamsungBrowser")) browser = "Samsung Browser";
+    else if (userAgent.includes("Opera") || userAgent.includes("OPR")) browser = "Opera";
+    else if (userAgent.includes("Trident")) browser = "Internet Explorer";
+    else if (userAgent.includes("Edge") || userAgent.includes("Edg")) browser = "Edge";
+    else if (userAgent.includes("Chrome")) browser = "Chrome";
+    else if (userAgent.includes("Safari")) browser = "Safari";
 
     try {
         // RATE LIMITING: Max 3 registrations per IP per hour
@@ -49,8 +60,12 @@ export default async function handler(req, res) {
             attempt_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         )`;
         try {
+            await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_country TEXT`;
+            await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_browser TEXT`;
             await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS user_agent TEXT`;
             await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS full_details TEXT`;
+            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS browser TEXT`;
+            await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS country TEXT`;
         } catch (e) { }
 
         // Check if user exists
@@ -69,10 +84,10 @@ export default async function handler(req, res) {
         const hashedPassword = await bcrypt.hash(password, 12);
 
         // Insert user
-        await sql`INSERT INTO users (username, email, password, last_ip, last_login_at) VALUES (${username}, ${email}, ${hashedPassword}, ${ip}, CURRENT_TIMESTAMP)`;
+        await sql`INSERT INTO users (username, email, password, last_ip, last_country, last_browser, last_login_at) VALUES (${username}, ${email}, ${hashedPassword}, ${ip}, ${country}, ${browser}, CURRENT_TIMESTAMP)`;
 
         // Log registration with Proxy Info
-        await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details) VALUES (${email}, 'USER_REGISTERED', ${ip}, ${userAgent}, ${fullIpInfo})`;
+        await sql`INSERT INTO security_logs (email, event_type, ip_address, user_agent, full_details, browser, country) VALUES (${email}, 'USER_REGISTERED', ${ip}, ${userAgent}, ${fullIpInfo}, ${browser}, ${country})`;
 
         return res.status(200).json({ message: 'წარმატებით დარეგისტრირდით!' });
     } catch (error) {

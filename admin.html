@@ -217,7 +217,8 @@
                     <tr>
                         <th>Username</th>
                         <th>Email</th>
-                        <th>Last IP</th>
+                        <th>IP / Country</th>
+                        <th>Browser</th>
                         <th>Last Login</th>
                         <th>Role / Group</th>
                         <th>New Password (optional)</th>
@@ -237,7 +238,7 @@
                     <tr>
                         <th>Target Email/User</th>
                         <th>Event Type</th>
-                        <th>IP Address</th>
+                        <th>IP / Country</th>
                         <th>Browser / Device</th>
                         <th>Proxy Path (Deep Info)</th>
                         <th>Time</th>
@@ -285,7 +286,11 @@
                             ${isAdmin ? `<input type="text" class="edit-input" value="${user.username}" id="u_${user.id}">` : user.username}
                         </td>
                         <td>${user.email}</td>
-                        <td style="color: var(--accent-2); font-weight: 600;">${user.last_ip || 'N/A'}</td>
+                        <td style="color: var(--accent-2); font-weight: 600;">
+                            ${user.last_ip || 'N/A'}<br>
+                            <span style="font-size: 10px; color: #aaa;">${user.last_country || 'Unknown'}</span>
+                        </td>
+                        <td style="font-size: 11px;">${user.last_browser || 'Unknown'}</td>
                         <td style="font-size: 11px; color: var(--muted);">${lastLogin}</td>
                         <td>
                             ${isAdmin ? `
@@ -329,8 +334,14 @@
                     tr.innerHTML = `
                         <td>${log.email}</td>
                         <td style="color: ${eventColor}; font-weight: 700;">${log.event_type}</td>
-                        <td style="font-weight: 600;">${log.ip_address}</td>
-                        <td style="font-size: 10px; color: var(--muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${log.user_agent || 'N/A'}">${log.user_agent || 'N/A'}</td>
+                        <td style="font-weight: 600;">
+                            ${log.ip_address}<br>
+                            <span style="font-size: 10px; color: #aaa;">${log.country || 'Unknown'}</span>
+                        </td>
+                        <td style="font-size: 10px; color: var(--muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${log.user_agent || 'N/A'}">
+                            <b>${log.browser || 'Other'}</b><br>
+                            ${log.user_agent || 'N/A'}
+                        </td>
                         <td style="font-size: 10px; color: #8a4dff; max-width: 200px; word-break: break-all;">${log.full_details || 'No Deep Info'}</td>
                         <td style="color: var(--muted); font-size: 11px;">${new Date(log.attempt_at).toLocaleString()}</td>
                     `;
