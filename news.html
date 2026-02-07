@@ -12,14 +12,18 @@
     rel="stylesheet" />
   <style>
     :root {
-      --bg: #110b18;
-      --panel: #1b1426;
-      --panel-2: #241b33;
+      --bg: #09050d;
+      --panel: rgba(27, 20, 38, 0.7);
+      --panel-2: rgba(36, 27, 51, 0.8);
       --accent: #8a4dff;
+      --accent-glow: rgba(138, 77, 255, 0.4);
       --accent-2: #b58bff;
-      --muted: #c6bbd8;
+      --muted: #a496b8;
       --text: #f2eef7;
-      --shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+      --glass: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * {
@@ -29,190 +33,177 @@
     body {
       margin: 0;
       color: var(--text);
-      font-family: "Rajdhani", "Oswald", sans-serif;
-      background:
-        radial-gradient(1200px 600px at 75% -100px, #3a2a56 0%, #1c1427 40%, #110b18 70%),
-        linear-gradient(180deg, #0f0a16 0%, #110b18 60%, #0b0712 100%);
+      font-family: "Rajdhani", sans-serif;
+      background: #09050d;
+      background-image: radial-gradient(circle at 20% 20%, rgba(138, 77, 255, 0.15) 0%, transparent 40%);
+      background-attachment: fixed;
+      min-height: 100vh;
     }
 
     .frame {
-      max-width: 1200px;
-      margin: 28px auto 48px;
-      background: var(--panel);
-      border: 1px solid #2f243d;
-      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
       position: relative;
-      overflow: hidden;
     }
 
     .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
       display: grid;
-      grid-template-columns: 220px 1fr 220px;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
-      gap: 12px;
-      padding: 14px 20px 10px;
-      background: linear-gradient(180deg, #261c34, #1a1225);
-      border-bottom: 2px solid #140f1b;
+      padding: 15px 40px;
+      background: rgba(9, 5, 13, 0.85);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid var(--glass-border);
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-family: "Oswald", sans-serif;
-      letter-spacing: 1px;
+      gap: 12px;
       text-decoration: none;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
     }
 
     .logo .mark {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--accent);
       display: grid;
       place-items: center;
-      color: var(--accent-2);
-      font-weight: 700;
-      font-size: 18px;
+      color: #fff;
     }
 
     .logo span {
-      display: inline-block;
-      color: #e5e5ea;
+      color: #fff;
       font-size: 20px;
-    }
-
-    .logo span b {
-      color: var(--accent);
+      text-transform: uppercase;
     }
 
     .nav {
       display: flex;
-      gap: 18px;
+      gap: 24px;
       justify-content: center;
-      color: var(--muted);
-      font-size: 14px;
     }
 
     .nav a {
-      color: inherit;
+      color: var(--muted);
       text-decoration: none;
-      padding-bottom: 6px;
-      border-bottom: 2px solid transparent;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      transition: var(--transition);
     }
 
-    .nav a.active,
-    .nav a:hover {
+    .nav a:hover,
+    .nav a.active {
       color: #fff;
-      border-bottom-color: var(--accent);
     }
 
     .auth {
       display: flex;
-      justify-content: flex-end;
-      gap: 18px;
-      font-size: 14px;
-      color: var(--muted);
+      gap: 15px;
     }
 
     .auth a {
-      color: inherit;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .auth a:hover {
+      padding: 6px 20px;
+      border-radius: 30px;
+      border: 1px solid var(--accent);
       color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 12px;
+      transition: var(--transition);
     }
 
-    .subbar {
-      display: grid;
-      grid-template-columns: 1fr 220px;
-      gap: 0;
-      border-top: 1px solid #120c19;
-      background: #1a1323;
-    }
-
-    .subnav {
-      display: flex;
-      gap: 18px;
-      padding: 12px 20px;
-      border-right: 1px solid #261b34;
-      font-size: 13px;
-      color: #d6cae4;
-    }
-
-    .search {
+    .user-profile-badge {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 0 16px;
-      background: #241b32;
-      color: #d4c6e4;
-      font-size: 13px;
-      border-left: 1px solid #2a2037;
+      cursor: pointer;
+      background: var(--glass);
+      padding: 4px 12px 4px 4px;
+      border-radius: 30px;
+      border: 1px solid var(--glass-border);
     }
 
-    .search input {
-      width: 100%;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #f2eef7;
-      font-family: inherit;
+    .user-profile-badge img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
     }
 
-    .page {
-      padding: 26px 24px 40px;
-      border-top: 1px solid #2a2037;
+    .user-logout-btn {
+      padding: 8px 16px;
+      border-radius: 30px;
+      background: rgba(231, 76, 60, 0.1);
+      color: #e74c3c;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
     }
 
-    .page h1 {
-      margin: 0 0 8px 0;
-      font-size: 28px;
+    .page-header {
+      padding: 60px 40px 30px;
+      text-align: center;
     }
 
-    .page p {
-      margin: 0;
-      color: #d7cbe8;
-      max-width: 760px;
-      line-height: 1.6;
+    .page-header h1 {
+      font-family: "Oswald", sans-serif;
+      font-size: 48px;
+      text-transform: uppercase;
+      margin: 0 0 10px;
+      letter-spacing: 2px;
     }
 
-    .back {
-      display: inline-block;
-      margin-top: 16px;
+    .news-container {
+      padding: 0 40px 60px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .news-article {
+      background: var(--panel);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 40px;
+      margin-bottom: 30px;
+    }
+
+    .news-article p {
+      font-size: 18px;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 30px;
+      background: var(--accent);
       color: #fff;
       text-decoration: none;
-      border-bottom: 2px solid var(--accent);
+      border-radius: 30px;
+      font-weight: 700;
+      margin-top: 30px;
+      transition: var(--transition);
     }
 
-    @media (max-width: 980px) {
-      .frame {
-        margin: 0;
-      }
-
-      .topbar {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-
-      .auth {
-        justify-content: center;
-      }
-
-      .subbar {
-        grid-template-columns: 1fr;
-      }
+    .back-btn:hover {
+      transform: translateX(-5px);
+      box-shadow: 0 0 20px var(--accent-glow);
     }
 
-    /* Modal Styles */
     .modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(5px);
       display: none;
@@ -222,51 +213,27 @@
     }
 
     .modal {
-      background: #241b33;
-      border: 1px solid var(--accent);
+      background: var(--panel-2);
+      border: 1px solid var(--glass-border);
       padding: 30px;
       width: 100%;
       max-width: 400px;
-      position: relative;
-      box-shadow: 0 0 50px rgba(138, 77, 255, 0.2);
-    }
-
-    .modal h2 {
-      margin: 0 0 15px;
-      font-family: "Oswald", sans-serif;
-      color: var(--accent-2);
-      text-align: center;
-    }
-
-    .modal .rank {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 14px;
-      color: var(--muted);
+      border-radius: 24px;
     }
 
     .modal-btn {
       display: block;
       width: 100%;
       padding: 12px;
-      background: linear-gradient(180deg, #b78bff, #7c46f2);
+      background: var(--accent);
       color: #fff;
       text-align: center;
       text-decoration: none;
-      font-family: "Oswald", sans-serif;
+      font-family: "Oswald";
       font-weight: 600;
-      margin-bottom: 10px;
       border: none;
       cursor: pointer;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 20px;
+      border-radius: 12px;
     }
   </style>
 </head>
@@ -285,116 +252,89 @@
         <a href="reviews.html">Reviews</a>
         <a href="awards.html">Awards</a>
         <a href="can-i-run-it.html">Can I Run It</a>
-        <a href="future-proof.html">Future-Proof My PC</a>
       </nav>
       <div class="auth" id="authSection">
         <a href="login.html">Login</a>
         <a href="register.html">Register</a>
       </div>
     </div>
-    <div class="modal-overlay" id="modalOverlay">
-      <div class="modal">
-        <span class="modal-close" id="modalClose">&times;</span>
-        <h2 id="modalUser">Username</h2>
-        <div class="rank" id="modalRank">წოდება: მომხმარებელი</div>
-        <div id="adminLinkContainer"></div>
-        <button class="modal-btn" onclick="window.location.reload()">Refresh Page</button>
-      </div>
-    </div>
-    <script>
-      async function syncSession() {
-        const storedUser = JSON.parse(localStorage.getItem('currentUser'));
-        if (!storedUser || !storedUser.email) return;
-        try {
-          const response = await fetch('/api/me', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: storedUser.email, token: storedUser.token })
-          });
-          if (response.ok) {
-            const freshUser = await response.json();
-            freshUser.token = storedUser.token;
-            if (freshUser.role !== storedUser.role || freshUser.username !== storedUser.username) {
-              localStorage.setItem('currentUser', JSON.stringify(freshUser));
-              updateAuthUI(freshUser);
-            }
-          } else if (response.status === 401 || response.status === 404) {
-            localStorage.removeItem('currentUser');
-            window.location.reload();
-          }
-        } catch (e) { console.error('Session sync failed:', e); }
-      }
 
-      function updateAuthUI(user) {
-        const authSection = document.getElementById('authSection');
-        if (!user) return;
-        const isAdmin = user.role === 'admin' || user.role === 'moderator' || user.email === 'jaro@gmail.com';
-        let nickColor = '#33ff33';
-        let roleTag = '';
-        if (user.role === 'admin' || user.email === 'jaro@gmail.com') {
-          nickColor = '#ff3333';
-          roleTag = '<span style="color: #ff3333; font-size: 10px;">[ADMIN]</span>';
-        } else if (user.role === 'moderator') {
-          nickColor = '#ff9933';
-          roleTag = '<span style="color: #ff9933; font-size: 10px;">[MOD]</span>';
-        }
-        authSection.innerHTML = `
-          <span id="userNick" style="color: ${nickColor}; font-weight: 600; margin-right: 10px; cursor: pointer;">👋 ${user.username} ${roleTag}</span>
-          <a href="#" id="logoutBtn" style="color: #e74c3c; text-decoration: none; font-size: 13px;">გამოსვლა</a>
-        `;
-        document.getElementById('userNick').onclick = () => showProfileModal(user);
-        document.getElementById('logoutBtn').onclick = (e) => {
-          e.preventDefault();
-          localStorage.removeItem('currentUser');
-          window.location.reload();
-        };
-      }
-
-      function showProfileModal(user) {
-        const modalOverlay = document.getElementById('modalOverlay');
-        const modalUser = document.getElementById('modalUser');
-        const modalRank = document.getElementById('modalRank');
-        const adminLinkContainer = document.getElementById('adminLinkContainer');
-        modalUser.textContent = user.username;
-        let roleText = 'მომხმარებელი';
-        let roleColor = '#33ff33';
-        adminLinkContainer.innerHTML = '';
-        if (user.role === 'admin' || user.email === 'jaro@gmail.com') {
-          roleText = 'ადმინისტრატორი';
-          roleColor = '#ff3333';
-          adminLinkContainer.innerHTML = `<a href="admin.html" class="modal-btn" style="background: var(--accent);">ადმინ პანელი</a>`;
-        } else if (user.role === 'moderator') {
-          roleText = 'მოდერატორი';
-          roleColor = '#ff9933';
-          adminLinkContainer.innerHTML = `<a href="admin.html" class="modal-btn" style="background: var(--accent);">ადმინ პანელი</a>`;
-        }
-        modalRank.innerHTML = `წოდება: <b style="color: ${roleColor}">${roleText}</b>`;
-        modalOverlay.style.display = 'flex';
-      }
-
-      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      if (currentUser) {
-        updateAuthUI(currentUser);
-        syncSession();
-      }
-      document.getElementById('modalClose').onclick = () => document.getElementById('modalOverlay').style.display = 'none';
-      window.onclick = (e) => {
-        if (e.target === document.getElementById('modalOverlay')) document.getElementById('modalOverlay').style.display = 'none';
-      };
-    </script>
-    <div class="subbar">
-      <div class="subnav">News • Games • Hardware • Reviews • Awards • Can I Run It</div>
-      <div class="search">
-        🔍
-        <input type="text" placeholder="Search" />
-      </div>
-    </div>
-    <div class="page">
+    <div class="page-header">
       <h1>News</h1>
-      <p>ეს გვერდი განკუთვნილია სიახლეებისთვის. აქ შეგიძლია განათავსო ბოლო ახალი ამბები, ანონსები და სტატიები.</p>
-      <a class="back" href="index.html">← მთავარ გვერდზე დაბრუნება</a>
+      <p style="color: var(--accent-2); font-weight: 600;">The heartbeat of gaming tech and software.</p>
+    </div>
+
+    <div class="news-container">
+      <div class="news-article">
+        <p>ეს გვერდი განკუთვნილია სიახლეებისთვის. აქ შეგიძლია განათავსო ბოლო ახალი ამბები, ანონსები და სტატიები.</p>
+        <p>ჩვენ მუდმივად ვაახლებთ ინფორმაციას თამაშებისა და ტექნიკის შესახებ, რათა იყოთ ყოველთვის ინფორმირებული.</p>
+        <a class="back-btn" href="index.html">← მთავარ გვერდზე დაბრუნება</a>
+      </div>
     </div>
   </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modalContent"></div>
+  </div>
+
+  <script>
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    async function syncSession() {
+      if (!currentUser) return;
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: currentUser.token })
+        });
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.setItem('currentUser', JSON.stringify({ ...currentUser, ...data.user }));
+          updateAuthUI(data.user);
+        }
+      } catch (e) { console.error('Session sync failed:', e); }
+    }
+
+    function updateAuthUI(user) {
+      const authSection = document.getElementById('authSection');
+      if (!user) return;
+      const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
+      authSection.innerHTML = `
+        <div id="userNick" class="user-profile-badge">
+          <img src="${avatar}">
+          <span>${user.username}</span>
+        </div>
+        <div id="logoutBtn" class="user-logout-btn">გამოსვლა</div>
+      `;
+      document.getElementById('userNick').onclick = () => showProfileModal(user);
+      document.getElementById('logoutBtn').onclick = () => {
+        localStorage.removeItem('currentUser');
+        window.location.reload();
+      };
+    }
+
+    function showProfileModal(user) {
+      const modalOverlay = document.getElementById('modalOverlay');
+      const modalContent = document.getElementById('modalContent');
+      const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
+      modalContent.innerHTML = `
+        <div style="text-align: center;">
+          <img src="${avatar}" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--accent);">
+          <h2 style="font-family: Oswald; color: #fff;">${user.username}</h2>
+          <a href="admin.html" class="modal-btn">ადმინ პანელი</a>
+          <button class="modal-btn" style="background: transparent; margin-top: 10px; border: 1px solid var(--glass-border);" id="closeModal">დახურვა</button>
+        </div>
+      `;
+      modalOverlay.style.display = 'flex';
+      document.getElementById('closeModal').onclick = () => modalOverlay.style.display = 'none';
+    }
+
+    if (currentUser) {
+      updateAuthUI(currentUser);
+      syncSession();
+    }
+  </script>
 </body>
 
 </html>
