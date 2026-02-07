@@ -46,30 +46,38 @@
       margin: 0 auto;
     }
 
-    /* MODERNIST TOPBAR */
-        .topbar {
+    /* MODERNIST FLOATING OVAL TOPBAR */
+    .topbar {
       position: sticky;
-      top: 0;
+      top: 20px;
       z-index: 1000;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 18px 40px;
-      background: rgba(9, 5, 13, 0.85);
-      backdrop-filter: blur(25px) saturate(180%);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      padding: 12px 40px;
+      width: calc(100% - 60px);
+      max-width: 1400px;
+      margin: 20px auto;
+      background: rgba(15, 10, 25, 0.7);
+      backdrop-filter: blur(30px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 100px;
+      /* Oval Style */
+      box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.05);
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .logo {
-      display: flex;
-      flex-direction: column;
-      text-decoration: none;
-      line-height: 1.1;
+    .topbar.scrolled {
+      top: 10px;
+      padding: 8px 40px;
+      background: rgba(15, 10, 25, 0.9);
+      width: calc(100% - 40px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
     }
 
-    .logo span {
+    span {
       color: #fff;
       font-family: "Oswald";
       font-size: 20px;
@@ -195,7 +203,7 @@
 
     /* NEWS HEADER */
     .page-header {
-      padding: 80px 40px 40px;
+      padding: 120px 40px 40px;
       text-align: center;
     }
 
@@ -318,7 +326,7 @@
         <a href="awards.html">Awards</a>
         <a href="can-i-run-it.html">Can I Run It</a>
       </nav>
-            <div class="auth" id="authSection">
+      <div class="auth" id="authSection">
         <a href="login.html" class="auth-btn login">áƒ¨áƒ”áƒ¡áƒ•áƒšáƒ</a>
         <a href="register.html" class="auth-btn register">áƒ áƒ”áƒ’áƒ˜áƒ¡áƒ¢áƒ áƒáƒªáƒ˜áƒ</a>
       </div>
