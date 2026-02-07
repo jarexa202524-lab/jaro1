@@ -5,7 +5,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin Dashboard — Game Debate</title>
-    <!-- Vercel Refresh: 12:35 -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -87,6 +86,8 @@
             background: #241b33;
             border: 1px solid #332744;
             font-size: 14px;
+            min-width: 800px;
+            /* Force min width for scrolling */
         }
 
         .user-table th,
@@ -361,6 +362,77 @@
         .new-data-badge {
             animation: glow 2s infinite;
         }
+
+        /* Responsive Styles */
+        @media (max-width: 980px) {
+            .frame {
+                margin: 0;
+                border: none;
+                box-shadow: none;
+            }
+
+            .admin-main {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #2f243d;
+                padding: 0;
+            }
+
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                background: #181122;
+                padding: 10px;
+            }
+
+            .sidebar-item {
+                flex: 1;
+                justify-content: center;
+                padding: 15px;
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                font-size: 13px;
+                gap: 8px;
+            }
+
+            .sidebar-item:hover,
+            .sidebar-item.active {
+                background: #241b33;
+                border-left-color: transparent;
+                border-bottom-color: var(--accent);
+            }
+
+            .topbar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .admin-content {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rankings-container {
+                grid-template-columns: 1fr !important;
+            }
+
+            .country-ranking {
+                padding: 15px;
+            }
+
+            .ranking-list {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -453,7 +525,8 @@
                     </div>
 
                     <!-- RANKINGS CONTAINER -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px;">
+                    <div class="rankings-container"
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px;">
                         <!-- COUNTRY RANKING -->
                         <div class="country-ranking" style="margin-bottom: 0;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -479,23 +552,25 @@
                         </div>
                     </div>
 
-                    <table class="user-table">
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>IP / ზუსტი ლოკაცია</th>
-                                <th>ბრაუზერი / მოწყობილობა</th>
-                                <th>Last Login</th>
-                                <th>Role / Group</th>
-                                <th>New Password (optional)</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="userTableBody">
-                            <!-- Loaded via JS -->
-                        </tbody>
-                    </table>
+                    <div style="overflow-x: auto; border-radius: 8px; border: 1px solid #332744; margin-bottom: 30px;">
+                        <table class="user-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>IP / ზუსტი ლოკაცია</th>
+                                    <th>ბრაუზერი / მოწყობილობა</th>
+                                    <th>Last Login</th>
+                                    <th>Role / Group</th>
+                                    <th>New Password (optional)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <!-- Loaded via JS -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- LOGS SECTION -->
@@ -503,21 +578,23 @@
                     <div class="admin-header">
                         <h1 style="font-family: Oswald; margin: 0; font-size: 24px;">უსაფრთხოების ლოგები</h1>
                     </div>
-                    <table class="user-table">
-                        <thead>
-                            <tr>
-                                <th>Target Email/User</th>
-                                <th>Event Type</th>
-                                <th>IP / ზუსტი ლოკაცია</th>
-                                <th>ბრაუზერი / მოწყობილობა</th>
-                                <th>Proxy Path (Deep Info)</th>
-                                <th>Time</th>
-                            </tr>
-                        </thead>
-                        <tbody id="securityLogsBody">
-                            <!-- Loaded via JS -->
-                        </tbody>
-                    </table>
+                    <div style="overflow-x: auto; border-radius: 8px; border: 1px solid #332744;">
+                        <table class="user-table">
+                            <thead>
+                                <tr>
+                                    <th>Target Email/User</th>
+                                    <th>Event Type</th>
+                                    <th>IP / ზუსტი ლოკაცია</th>
+                                    <th>ბრაუზერი / მოწყობილობა</th>
+                                    <th>Proxy Path (Deep Info)</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="securityLogsBody">
+                                <!-- Loaded via JS -->
+                            </tbody>
+                        </table>
+                    </div>
 
                     <div class="pagination">
                         <button class="btn-page" id="prevLogs" onclick="changeLogsPage(-1)">← წინა</button>
@@ -800,19 +877,15 @@
                     rankList.appendChild(div);
                 });
 
-            } catch (e) { console.error('Error loading news stats:', e); }
-        }
-
-        function getRoleLabel(role) {
-            if (role === 'admin') return 'ადმინისტრატორი';
-            if (role === 'moderator') return 'მოდერატორი';
-            return 'მომხმარებელი';
+            } catch (e) { console.error(e); }
         }
 
         async function updateUser(id, email) {
-            const username = document.getElementById(`u_${id}`).value;
-            const password = document.getElementById(`p_${id}`).value;
-            const role = document.getElementById(`r_${id}`).value;
+            const newUsername = document.getElementById(`u_${id}`).value;
+            const newRole = document.getElementById(`r_${id}`).value;
+            const newPassword = document.getElementById(`p_${id}`).value;
+
+            if (!confirm(`Are you sure you want to update ${email}?`)) return;
 
             try {
                 const response = await fetch('/api/users', {
@@ -821,17 +894,27 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${currentUser.token}`
                     },
-                    body: JSON.stringify({ email, username, password, role })
+                    body: JSON.stringify({
+                        id,
+                        username: newUsername,
+                        role: newRole,
+                        password: newPassword
+                    })
                 });
+
                 if (response.ok) {
-                    showNotification('მონაცემები წარმატებით განახლდა!');
+                    showNotification('User updated successfully');
                     loadUsers();
+                } else {
+                    const data = await response.json();
+                    showNotification(data.error, true);
                 }
             } catch (e) { console.error(e); }
         }
 
         async function deleteUser(email) {
-            if (!confirm('ნამდვილად გსურთ წაშლა?')) return;
+            if (!confirm(`DANGER: Are you sure you want to delete ${email}? This cannot be undone!`)) return;
+
             try {
                 const response = await fetch('/api/users', {
                     method: 'DELETE',
@@ -841,30 +924,33 @@
                     },
                     body: JSON.stringify({ email })
                 });
+
                 if (response.ok) {
-                    showNotification('მომხმარებელი წაიშალა!');
+                    showNotification('User deleted');
                     loadUsers();
+                } else {
+                    showNotification('Error deleting user', true);
                 }
             } catch (e) { console.error(e); }
         }
 
-        function showNotification(text) {
+        function showNotification(text, isError = false) {
             const n = document.getElementById('notification');
             n.textContent = text;
+            n.style.background = isError ? 'var(--danger)' : 'var(--accent)';
             n.style.display = 'block';
             setTimeout(() => n.style.display = 'none', 3000);
         }
 
-        loadUsers();
-        loadSecurityLogs();
-        loadNewsStats();
+        function getRoleLabel(role) {
+            if (role === 'admin') return 'ადმინისტრატორი';
+            if (role === 'moderator') return 'მოდერატორი';
+            return 'მომხმარებელი';
+        }
 
-        // Auto-refresh every 30 seconds
-        setInterval(() => {
-            loadUsers();
-            loadSecurityLogs();
-            loadNewsStats();
-        }, 30000);
+        // Initialize
+        loadUsers();
+        loadNewsStats();
     </script>
 </body>
 
