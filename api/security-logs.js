@@ -26,6 +26,10 @@ export default async function handler(req, res) {
             ip_address TEXT,
             attempt_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         )`;
+        try { await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS browser TEXT`; } catch (e) { }
+        try { await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS country TEXT`; } catch (e) { }
+        try { await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS user_agent TEXT`; } catch (e) { }
+        try { await sql`ALTER TABLE security_logs ADD COLUMN IF NOT EXISTS full_details TEXT`; } catch (e) { }
 
         // Fetch last 50 security events
         const logs = await sql`SELECT * FROM security_logs ORDER BY attempt_at DESC LIMIT 50`;

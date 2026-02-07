@@ -34,6 +34,8 @@ export default async function handler(req, res) {
 
             try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_ip TEXT`; } catch (e) { }
             try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP WITH TIME ZONE`; } catch (e) { }
+            try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_country TEXT`; } catch (e) { }
+            try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_browser TEXT`; } catch (e) { }
 
             await sql`CREATE TABLE IF NOT EXISTS security_logs (
                 id SERIAL PRIMARY KEY,
