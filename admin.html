@@ -40,7 +40,8 @@
         }
 
         .frame {
-            max-width: 1400px;
+            width: 95%;
+            max-width: 1600px;
             margin: 28px auto 48px;
             background: var(--panel);
             border: 1px solid #2f243d;
@@ -369,6 +370,7 @@
                 margin: 0;
                 border: none;
                 box-shadow: none;
+                width: 100%;
             }
 
             .admin-main {
@@ -433,6 +435,58 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Large Screens (2K / 1440p) */
+        @media (min-width: 1441px) {
+            .frame {
+                max-width: 90%;
+            }
+
+            .stats-value {
+                font-size: 32px;
+            }
+
+            .sidebar {
+                width: 300px;
+            }
+        }
+
+        /* 4K Screens */
+        @media (min-width: 2500px) {
+            .frame {
+                max-width: 80%;
+                margin-top: 50px;
+            }
+
+            body {
+                font-size: 18px;
+            }
+
+            .sidebar {
+                width: 400px;
+            }
+
+            .sidebar-item {
+                padding: 25px 40px;
+                font-size: 20px;
+            }
+
+            .stats-value {
+                font-size: 48px;
+            }
+
+            .stats-label {
+                font-size: 16px;
+            }
+
+            h1 {
+                font-size: 36px !important;
+            }
+
+            h2 {
+                font-size: 28px !important;
+            }
+        }
     </style>
 </head>
 
@@ -460,15 +514,15 @@
                         <span class="sidebar-icon">👥</span>
                         მომხმარებლები
                     </li>
-                    <li class="sidebar-item" onclick="showSection('logsSection', this)">
-                        <span class="sidebar-icon">📋</span>
-                        უსაფრთხოების ლოგები
-                    </li>
                     <li class="sidebar-item" onclick="showSection('newsSection', this)">
                         <span class="sidebar-icon">📰</span>
                         საიტის სიახლეები
                     </li>
-                    <li style="margin-top: 50px; opacity: 0.5;" class="sidebar-item"
+                    <li class="sidebar-item" onclick="showSection('logsSection', this)">
+                        <span class="sidebar-icon">📋</span>
+                        უსაფრთხოების ლოგები
+                    </li>
+                    <li style="margin-top: auto; border-top: 1px solid #2f243d;" class="sidebar-item"
                         onclick="window.location.href='index.html'">
                         <span class="sidebar-icon">🏠</span>
                         მთავარზე დაბრუნება
