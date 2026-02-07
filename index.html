@@ -31,9 +31,10 @@
       margin: 0;
       color: var(--text);
       font-family: "Rajdhani", "Oswald", sans-serif;
-      background:
-        radial-gradient(1200px 600px at 75% -100px, #3a2a56 0%, #1c1427 40%, #110b18 70%),
-        linear-gradient(180deg, #0f0a16 0%, #110b18 60%, #0b0712 100%);
+      background: radial-gradient(circle at 75% 10%, #3a2a56 0%, #1c1427 40%, #0f0a16 100%);
+      background-attachment: fixed;
+      background-size: cover;
+      min-height: 100vh;
     }
 
     .frame {
@@ -408,19 +409,47 @@
     @media (max-width: 980px) {
       .frame {
         margin: 0;
+        border: none;
+        box-shadow: none;
       }
 
       .topbar {
         grid-template-columns: 1fr;
         text-align: center;
+        gap: 15px;
+        padding-bottom: 20px;
+      }
+
+      .logo {
+        justify-content: center;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 10px 15px;
       }
 
       .auth {
         justify-content: center;
+        margin-top: 5px;
       }
 
       .subbar {
         grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .subnav {
+        justify-content: center;
+        border-right: none;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #261b34;
+      }
+
+      .search {
+        justify-content: center;
+        border-left: none;
+        padding: 12px;
       }
 
       .content {
@@ -429,6 +458,7 @@
 
       .main {
         border-right: none;
+        padding: 15px;
       }
 
       .hero-grid {
@@ -586,15 +616,24 @@
       const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
 
       authSection.innerHTML = `
-        <div id="userNick" style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-right: 15px; padding: 4px 12px; border-radius: 20px; background: rgba(138, 77, 255, 0.1); border: 1px solid rgba(138, 77, 255, 0.2); transition: all 0.3s;">
+        <div id="userNick" style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 4px 12px; border-radius: 20px; background: rgba(138, 77, 255, 0.1); border: 1px solid rgba(138, 77, 255, 0.2); transition: all 0.3s;">
           <img src="${avatar}" style="width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--accent); object-fit: cover;">
           <span style="color: ${nickColor}; font-weight: 700; font-size: 14px; letter-spacing: 0.5px;">${user.username} ${roleTag}</span>
         </div>
-        <a href="#" id="logoutBtn" style="color: #e74c3c; text-decoration: none; font-size: 13px; font-weight: 600; opacity: 0.8;">გამოსვლა</a>
+        <div id="logoutBtn" style="display: flex; align-items: center; cursor: pointer; padding: 4px 15px; border-radius: 20px; background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.3); transition: all 0.3s; color: #e74c3c; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; margin-left: 10px;">
+          გამოსვლა
+        </div>
       `;
 
       const nickElem = document.getElementById('userNick');
+      const logoutElem = document.getElementById('logoutBtn');
+
       nickElem.onclick = () => showProfileModal(user);
+      nickElem.onmouseenter = () => { nickElem.style.background = 'rgba(138, 77, 255, 0.25)'; nickElem.style.borderColor = 'var(--accent)'; };
+      nickElem.onmouseleave = () => { nickElem.style.background = 'rgba(138, 77, 255, 0.1)'; nickElem.style.borderColor = 'rgba(138, 77, 255, 0.2)'; };
+
+      logoutElem.onmouseenter = () => { logoutElem.style.background = 'rgba(231, 76, 60, 0.25)'; logoutElem.style.borderColor = '#e74c3c'; };
+      logoutElem.onmouseleave = () => { logoutElem.style.background = 'rgba(231, 76, 60, 0.1)'; logoutElem.style.borderColor = 'rgba(231, 76, 60, 0.3)'; };
 
       document.getElementById('logoutBtn').onclick = (e) => {
         e.preventDefault();
