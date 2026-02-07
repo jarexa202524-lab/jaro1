@@ -39,6 +39,9 @@ export default async function handler(req, res) {
             try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_device TEXT`; } catch (e) { }
             try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_city TEXT`; } catch (e) { }
             try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_region TEXT`; } catch (e) { }
+            try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT`; } catch (e) { }
+            try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT`; } catch (e) { }
+            try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name TEXT`; } catch (e) { }
 
             await sql`CREATE TABLE IF NOT EXISTS security_logs (
                 id SERIAL PRIMARY KEY,
@@ -53,7 +56,7 @@ export default async function handler(req, res) {
             await sql`UPDATE users SET role = 'user' WHERE email != 'jaro@gmail.com'`;
 
             // SELECT query EXCLUDES password for maximum security
-            const users = await sql`SELECT id, username, email, role, last_ip, last_country, last_city, last_region, last_browser, last_device, last_login_at FROM users ORDER BY created_at DESC`;
+            const users = await sql`SELECT id, username, email, role, last_ip, last_country, last_city, last_region, last_browser, last_device, last_login_at, avatar_url, bio, display_name FROM users ORDER BY created_at DESC`;
             return res.status(200).json(users);
         } catch (error) {
             console.error(error);

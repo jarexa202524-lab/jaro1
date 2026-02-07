@@ -664,7 +664,14 @@
 
                 tr.innerHTML = `
                     <td>
-                        ${isAdmin ? `<input type="text" class="edit-input" value="${user.username}" id="u_${user.id}">` : user.username}
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="${user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`}" 
+                                 style="width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--accent);">
+                            <div>
+                                ${isAdmin ? `<input type="text" class="edit-input" value="${user.username}" id="u_${user.id}">` : user.username}
+                                <div style="font-size: 10px; color: var(--accent-2);">${user.display_name || ''}</div>
+                            </div>
+                        </div>
                     </td>
                     <td>${user.email}</td>
                         <td style="color: var(--accent-2); font-weight: 600;">
