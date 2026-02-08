@@ -653,6 +653,8 @@
             <div class="news-footer">
               <div class="news-stats">
                 <div class="stat-item"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span>${formatStat(statsStore[`views-${item.id}`])}</span></div>
+                <div class="stat-item like"><svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg><span>${statsStore[`likes-${item.id}`]}</span></div>
+                <div class="stat-item dislike"><svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg><span>${statsStore[`dislikes-${item.id}`]}</span></div>
                 <div class="stat-item"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>${statsStore[`comments-${item.id}`]}</span></div>
               </div>
               <a href="javascript:void(0)" class="full-btn" onclick="openArticle(${item.id})">სრულად ნახვა</a>
@@ -667,9 +669,23 @@
 
     function openArticle(id) {
       statsStore[`views-${id}`]++;
-      localStorage.setItem('newsStatsLiveV2', JSON.stringify(statsStore));
+      localStorage.setItem('newsStatsLiveV3', JSON.stringify(statsStore));
       location.hash = `article-${id}`;
       renderDetail(newsData.find(n => n.id === id));
+    }
+
+    function rateArticle(id, type) {
+      const key = `${type}s-${id}`;
+      statsStore[key]++;
+      localStorage.setItem('newsStatsLiveV3', JSON.stringify(statsStore));
+
+      const countEl = document.getElementById(`${type}-count-${id}`);
+      if (countEl) countEl.innerText = statsStore[key];
+
+      // Proactive feedback
+      const btn = event.currentTarget;
+      btn.classList.add('active');
+      setTimeout(() => btn.classList.remove('active'), 300);
     }
 
     function renderDetail(item) {
@@ -680,6 +696,16 @@
         <div class="detail-meta">
           <span>${item.date}</span> | <span style="color:var(--accent-2)">${item.category}</span> | 
           <span>👁️ ${formatStat(statsStore[`views-${item.id}`])} ნახვა</span>
+        </div>
+        <div class="rating-controls">
+          <button class="rate-btn like" onclick="rateArticle(${item.id}, 'like')">
+            <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+            <span id="like-count-${item.id}">${statsStore[`likes-${item.id}`]}</span> მოწონება
+          </button>
+          <button class="rate-btn dislike" onclick="rateArticle(${item.id}, 'dislike')">
+            <svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
+            <span id="dislike-count-${item.id}">${statsStore[`dislikes-${item.id}`]}</span> არ მომწონს
+          </button>
         </div>
         <div class="detail-content">${item.full}</div>
       `;
