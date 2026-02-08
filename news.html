@@ -1153,30 +1153,39 @@
 
     function renderDetail(item) {
       if (!item) return renderFeed();
+
+      // Ensure view is visible first
+      document.getElementById('newsFeed').style.display = 'none';
+      document.getElementById('detailView').style.display = 'block';
+      window.scrollTo(0, 0);
+
+      const stats = statsStore || {};
+      const comments = (commentsStore && commentsStore[item.id]) ? commentsStore[item.id] : [];
+
       document.getElementById('detailContentBlock').innerHTML = `
-        <div class="detail-hero"><img src="${item.img}"></div>
-        <h1 class="detail-title">${item.title}</h1>
+        <div class="detail-hero"><img src="${item.img || ''}"></div>
+        <h1 class="detail-title">${item.title || 'სათაური არ არის'}</h1>
         <div class="detail-meta">
           <div class="meta-left">
-            <span>${item.date}</span> | <span style="color:var(--accent-2)">${item.category}</span> | 
-            <span>👁️ ${formatStat(statsStore[`views-${item.id}`])} ნახვა</span>
+            <span>${item.date || ''}</span> | <span style="color:var(--accent-2)">${item.category || ''}</span> | 
+            <span>👁️ ${formatStat(stats[`views-${item.id}`] || 0)} ნახვა</span>
           </div>
           <div class="rating-controls">
             <button class="rate-btn like" onclick="rateArticle(${item.id}, 'like')">
               <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
-              <span id="like-count-${item.id}">${statsStore[`likes-${item.id}`]}</span>
+              <span id="like-count-${item.id}">${stats[`likes-${item.id}`] || 0}</span>
             </button>
-            <div style="width:1px; height:16px; background:rgba(255,255,255,0.1);"></div>
+            <div style="width:1px; height:20px; background:rgba(255,255,255,0.1);"></div>
             <button class="rate-btn dislike" onclick="rateArticle(${item.id}, 'dislike')">
               <svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
-              <span id="dislike-count-${item.id}">${statsStore[`dislikes-${item.id}`]}</span>
+              <span id="dislike-count-${item.id}">${stats[`dislikes-${item.id}`] || 0}</span>
             </button>
           </div>
         </div>
-        <div class="detail-content">${item.full}</div>
+        <div class="detail-content">${item.full || ''}</div>
 
         <section class="comments-section" id="commentsArea">
-          <h3 class="comments-title">კომენტარები (<b>${commentsStore[item.id].length}</b>)</h3>
+          <h3 class="comments-title">კომენტარები (<b>${comments.length}</b>)</h3>
           
           ${currentUser ? `
             <div class="comment-input-area">
@@ -1191,77 +1200,67 @@
 
           <div class="comments-list" id="commentsList">
             ${(() => {
-          const allCmts = commentsStore[item.id];
-          // Calculate total count (Roots + Replies)
-          const totalCount = allCmts.length;
+          if (comments.length === 0) return '<div class="comment-auth-prompt" style="border-style:solid; opacity:0.5;">ჯერჯერობით კომენტარები არ არის. იყავი პირველი!</div>';
 
-          const roots = allCmts.filter(c => !c.parentId)
-            .sort((a, b) => {
-              const scoreA = (a.likes || 0) - (a.dislikes || 0);
-              const scoreB = (b.likes || 0) - (b.dislikes || 0);
-              return scoreB - scoreA; // Highest score first
-            });
+          const roots = comments.filter(c => !c.parentId)
+            .sort((a, b) => ((b.likes || 0) - (b.dislikes || 0)) - ((a.likes || 0) - (a.dislikes || 0)));
 
           const isAdmin = currentUser && currentUser.email === 'jaro@gmail.com';
 
-          if (roots.length === 0) return '<div class="comment-auth-prompt" style="border-style:solid; opacity:0.5;">ჯერჯერობით კომენტარები არ არის. იყავი პირველი!</div>';
-
           return roots.map(c => {
-            const replies = allCmts.filter(r => r.parentId === c.id)
-              .sort((a, b) => (b.likes || 0) - (a.likes || 0)); // Sort replies too
+            const replies = comments.filter(r => r.parentId === c.id)
+              .sort((a, b) => (b.likes || 0) - (a.likes || 0));
+
             const renderSingleComment = (cmt, isReply = false) => `
-                    <div class="comment-item" ${isReply ? 'style="border-color:rgba(138, 77, 255, 0.1);"' : ''}>
-                      <img src="${cmt.avatar}" class="comment-avatar">
-                      <div class="comment-main">
-                        <div class="comment-header">
-                          <span class="comment-user">
-                            ${cmt.username}
-                            <span class="comment-role ${cmt.role === 'admin' ? 'role-admin' : 'role-user'}">
-                              ${cmt.role === 'admin' ? 'ადმინისტრატორი' : 'მომხმარებელი'}
-                            </span>
-                          </span>
-                          <span class="comment-time">${cmt.time}</span>
+                        <div class="comment-item" ${isReply ? 'style="border-color:rgba(138, 77, 255, 0.1);"' : ''}>
+                          <img src="${cmt.avatar}" class="comment-avatar">
+                          <div class="comment-main">
+                            <div class="comment-header">
+                              <span class="comment-user">
+                                ${cmt.username}
+                                <span class="comment-role ${cmt.role === 'admin' ? 'role-admin' : 'role-user'}">
+                                  ${cmt.role === 'admin' ? 'ადმინისტრატორი' : 'მომხმარებელი'}
+                                </span>
+                              </span>
+                              <span class="comment-time">${cmt.time}</span>
+                            </div>
+                            <p class="comment-text" id="comment-text-${cmt.id}">${cmt.text}</p>
+                            
+                            <div class="comment-actions">
+                              <button class="action-btn like-btn" onclick="rateComment(${item.id}, ${cmt.id}, 'like')">
+                                <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                                ${cmt.likes || 0}
+                              </button>
+                              <button class="action-btn dislike-btn" onclick="rateComment(${item.id}, ${cmt.id}, 'dislike')">
+                                <svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
+                                ${cmt.dislikes || 0}
+                              </button>
+                              ${currentUser ? `<button class="action-btn" onclick="showReplyField(${cmt.id})">პასუხი</button>` : ''}
+                              ${isAdmin ? `
+                                <button class="action-btn edit-btn" onclick="editComment(${cmt.id})">რედაქტირება</button>
+                                <button class="action-btn del-btn" onclick="deleteComment(${item.id}, ${cmt.id})">წაშლა</button>
+                              ` : ''}
+                            </div>
+      
+                            <div id="reply-field-${cmt.id}" style="display:none; margin-top:15px;">
+                              <textarea id="replyText-${cmt.id}" class="reply-textarea" placeholder="დაწერეთ პასუხი..."></textarea>
+                              <button class="modal-btn" style="padding: 5px 15px; font-size:12px; margin-top:5px;" onclick="submitComment(${item.id}, ${cmt.id})">გაგზავნა</button>
+                            </div>
+                          </div>
                         </div>
-                        <p class="comment-text" id="comment-text-${cmt.id}">${cmt.text}</p>
-                        
-                        <div class="comment-actions">
-                          <button class="action-btn like-btn" onclick="rateComment(${item.id}, ${cmt.id}, 'like')">
-                            <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
-                            ${cmt.likes || 0}
-                          </button>
-                          <button class="action-btn dislike-btn" onclick="rateComment(${item.id}, ${cmt.id}, 'dislike')">
-                            <svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
-                            ${cmt.dislikes || 0}
-                          </button>
-                          ${currentUser ? `<button class="action-btn" onclick="showReplyField(${cmt.id})">პასუხი</button>` : ''}
-                          ${isAdmin ? `
-                            <button class="action-btn edit-btn" onclick="editComment(${cmt.id})">რედაქტირება</button>
-                            <button class="action-btn del-btn" onclick="deleteComment(${item.id}, ${cmt.id})">წაშლა</button>
-                          ` : ''}
-                        </div>
-  
-                        <div id="reply-field-${cmt.id}" style="display:none; margin-top:15px;">
-                          <textarea id="replyText-${cmt.id}" class="reply-textarea" placeholder="დაწერეთ პასუხი..."></textarea>
-                          <button class="modal-btn" style="padding: 5px 15px; font-size:12px; margin-top:5px;" onclick="submitComment(${item.id}, ${cmt.id})">გაგზავნა</button>
-                        </div>
-                      </div>
-                    </div>
-                  `;
+                      `;
 
             return `
-                    ${renderSingleComment(c)}
-                    <div class="comment-replies">
-                      ${replies.map(r => renderSingleComment(r, true)).join('')}
-                    </div>
-                  `;
+                        ${renderSingleComment(c)}
+                        <div class="comment-replies">
+                          ${replies.map(r => renderSingleComment(r, true)).join('')}
+                        </div>
+                      `;
           }).join('');
         })()}
           </div>
         </section>
       `;
-      document.getElementById('newsFeed').style.display = 'none';
-      document.getElementById('detailView').style.display = 'block';
-      window.scrollTo(0, 0);
     }
 
     function goBack() { location.hash = ''; renderFeed(); }
