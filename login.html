@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ka">
 
 <head>
@@ -200,10 +200,50 @@
       position: relative;
       z-index: 1;
     }
-  </style>
+  /* ðŸ“± PROJECT-WIDE RESPONSIVE SYSTEM */
+@media (max-width: 1024px) {
+  .topbar { width: 96% !important; margin: 10px auto !important; top: 10px !important; padding: 8px 15px !important; }
+  .nav { display: none !important; }
+  .auth { min-width: unset !important; gap: 8px !important; }
+  .auth-btn { padding: 8px 16px !important; font-size: 11px !important; }
+  .mobile-toggle { display: flex !important; }
+}
+@media (max-width: 500px) {
+  .logo span { font-size: 16px !important; }
+  .logo small { display: none !important; }
+  .auth { display: none !important; }
+  .user-badge span { display: none !important; }
+}
+.mobile-toggle { display: none; width: 40px; height: 40px; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; z-index: 1100; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; margin-left: 10px; }
+.mobile-toggle span { width: 20px; height: 2px; background: #fff; border-radius: 2px; transition: all 0.3s ease; }
+.mobile-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.mobile-toggle.active span:nth-child(2) { opacity: 0; }
+.mobile-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-menu { position: fixed; inset: 0; background: rgba(9, 5, 13, 0.98); backdrop-filter: blur(25px); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 25px; opacity: 0; visibility: hidden; transition: all 0.4s ease; }
+.mobile-menu.active { opacity: 1; visibility: visible; }
+.mobile-menu a { font-family: "Oswald"; font-size: 28px; color: #fff; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
+@media (max-width: 1024px) {
+  .hero-container { padding: 20px 15px !important; }
+  .slider-wrapper { height: 350px !important; }
+  .slide-title { font-size: 32px !important; }
+}
+@media (max-width: 1100px) {
+  .content-grid { grid-template-columns: 1fr !important; padding: 0 15px 40px !important; gap: 30px !important; }
+}
+</style>
 </head>
 
 <body>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">áƒ›áƒ—áƒáƒ•áƒáƒ áƒ˜</a>
+    <a href="news.html">áƒ¡áƒ˜áƒáƒ®áƒšáƒ”áƒ”áƒ‘áƒ˜</a>
+    <a href="games.html">áƒ—áƒáƒ›áƒáƒ¨áƒ”áƒ‘áƒ˜</a>
+    <a href="hardware.html">áƒáƒžáƒáƒ áƒáƒ¢áƒ£áƒ áƒ</a>
+    <a href="reviews.html">áƒ›áƒ˜áƒ›áƒáƒ®áƒ˜áƒšáƒ•áƒ</a>
+    <a href="awards.html">áƒ¯áƒ˜áƒšáƒ“áƒáƒ”áƒ‘áƒ˜</a>
+    <a href="can-i-run-it.html">áƒ’áƒáƒ•áƒ¥áƒáƒ©áƒáƒ•?</a>
+    <div id="mobileAuthContainer" style="margin-top: 20px; display: flex; gap: 10px;"></div>
+  </div>
   <div id="modern-background"></div>
     <div id="messageBox" class="message-box"></div>
     <div class="auth-card">
@@ -257,7 +297,27 @@
             setTimeout(() => { box.style.display = 'none'; }, 3000);
         }
     </script>
-</body>
+<script>    (function() {
+      const t = document.getElementById('mobileToggle');
+      const m = document.getElementById('mobileMenu');
+      const ac = document.getElementById('mobileAuthContainer');
+      const da = document.getElementById('authSection');
+      if (t && m) {
+        t.onclick = () => {
+          t.classList.toggle('active');
+          m.classList.toggle('active');
+          document.body.style.overflow = m.classList.contains('active') ? 'hidden' : '';
+          if (ac && da && ac.children.length === 0) ac.innerHTML = da.innerHTML;
+        };
+        m.querySelectorAll('a').forEach(l => {
+          l.onclick = () => {
+            t.classList.remove('active');
+            m.classList.remove('active');
+            document.body.style.overflow = '';
+          };
+        });
+      }
+    })();</script></body>
 
 </html>
 
