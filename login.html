@@ -370,6 +370,14 @@ body { overflow-x: hidden; width: 100vw; background: #050208; }
     display: flex; align-items: center; justify-content: center; color: #fff; font-size: 44px; cursor: pointer; z-index: 30001 !important; transition: 0.4s;
 }
 .menu-close-btn:hover { background: #ff4757; transform: rotate(90deg); box-shadow: 0 0 30px rgba(255, 71, 87, 0.4); }
+@media (max-width: 600px) {
+    .hero-container { padding: 10px !important; }
+    .slider-wrapper { height: 400px !important; border-radius: 20px !important; }
+    .slide { background-position: center 20% !important; } /* Focus on the character's upper body */
+    .slide-content { left: 20px !important; bottom: 30px !important; width: calc(100% - 40px) !important; }
+    .slide-title { font-size: 32px !important; margin-bottom: 5px !important; }
+    .slide-desc { font-size: 14px !important; line-height: 1.4 !important; }
+}
 </style>
 </head>
 
