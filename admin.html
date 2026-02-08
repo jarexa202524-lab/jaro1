@@ -597,8 +597,7 @@
         }
 
         // STATE
-        let allUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
-        // Sync newsData from news.html's source or localStorage if edited
+        let allUsers = [];
         let activeNews = JSON.parse(localStorage.getItem('siteNewsData')) || [
             { id: 1, category: "Hardware", title: "NVIDIA RTX 60 სერიის პირველი დეტალები", date: "2026-02-08", excerpt: "ინსაიდერული ინფორმაციით, NVIDIA-ს ახალი თაობის ვიდეო ბარათები 3-ჯერ უფრო სწრაფი იქნება AI გამოთვლებში.", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200" },
             { id: 2, category: "Games", title: "GTA VI-ის ახალი რეკორდი - 100 მილიონი", date: "2026-02-07", excerpt: "Rockstar Games-მა ოფიციალურად დაადასტურა, რომ GTA VI გახდა ყველაზე მოთხოვნადი მედია პროდუქტი.", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200" },
@@ -608,15 +607,26 @@
 
         let editingNewsId = null;
 
+        // AUTH HEADER HELPER
+        function getHeader() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${currentUser.token}`
+            };
+        }
+
         // CORE UI
-        function showSection(id) {
+        async function showSection(id) {
             document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
             document.getElementById(id + 'Section').style.display = 'block';
             document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-            event.target.closest('.menu-item').classList.add('active');
-            if (id === 'users') renderUsers();
+            if (event) {
+                const item = event.target.closest('.menu-item');
+                if (item) item.classList.add('active');
+            }
+            if (id === 'users') await fetchUsers();
             if (id === 'news') renderNews();
-            if (id === 'logs') renderLogs();
+            if (id === 'logs') await fetchLogs();
         }
 
         function notify(text) {
@@ -627,24 +637,36 @@
         }
 
         // USERS LOGIC
+        async function fetchUsers() {
+            try {
+                const res = await fetch('/api/users', { headers: getHeader() });
+                if (!res.ok) throw new Error('წვდომა უვარგისია');
+                allUsers = await res.json();
+                renderUsers();
+            } catch (err) {
+                notify('შეცდომა მომხმარებლების წაკითხვისას');
+                console.error(err);
+            }
+        }
+
         function renderUsers() {
             const tbody = document.getElementById('userTableBody');
             const search = document.getElementById('userSearch').value.toLowerCase();
-            const filtered = allUsers.filter(u => u.username.toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
+            const filtered = allUsers.filter(u => u.username?.toLowerCase().includes(search) || u.email?.toLowerCase().includes(search));
 
             document.getElementById('statTotalUsers').textContent = allUsers.length;
-            document.getElementById('statAdmins').textContent = allUsers.filter(u => u.email === 'jaro@gmail.com').length;
+            document.getElementById('statAdmins').textContent = allUsers.filter(u => u.role === 'admin' || u.email === 'jaro@gmail.com').length;
 
             tbody.innerHTML = filtered.map(u => `
         <tr>
           <td style="display:flex; align-items:center; gap:12px;">
-            <img src="${u.avatar_url || 'https://ui-avatars.com/api/?name=' + u.username}" style="width:32px; height:32px; border-radius:50%;">
+            <img src="${u.avatar_url || 'https://ui-avatars.com/api/?name=' + u.username}" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
             <span style="font-weight:700;">${u.username}</span>
           </td>
           <td style="color:var(--muted)">${u.email}</td>
-          <td><span class="badge ${u.email === 'jaro@gmail.com' ? 'admin' : 'user'}">${u.email === 'jaro@gmail.com' ? 'Admin' : 'User'}</span></td>
-          <td style="font-family:monospace; opacity:0.8;">192.168.1.${Math.floor(Math.random() * 255)}</td>
-          <td style="font-size:12px;">${new Date().toLocaleDateString('ka-GE')}</td>
+          <td><span class="badge ${u.role === 'admin' ? 'admin' : 'user'}">${u.role || 'User'}</span></td>
+          <td style="font-family:monospace; opacity:0.8;">${u.last_ip || 'Hidden'}</td>
+          <td style="font-size:12px;">${u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('ka-GE') : 'დაფიქსირებული არ არის'}</td>
           <td>
             <button class="action-btn" onclick="editUser('${u.email}')">Edit</button>
             <button class="action-btn del" onclick="deleteUser('${u.email}')">Ban</button>
@@ -655,13 +677,27 @@
 
         document.getElementById('userSearch').oninput = renderUsers;
 
-        function deleteUser(email) {
+        async function deleteUser(email) {
             if (email === 'jaro@gmail.com') return notify('ადმინისტრატორის წაშლა შეუძლებელია!');
             if (!confirm('დარწმუნებული ხართ?')) return;
-            allUsers = allUsers.filter(u => u.email !== email);
-            localStorage.setItem('registeredUsers', JSON.stringify(allUsers));
-            renderUsers();
-            notify('მომხმარებელი დაბლოკილია');
+
+            try {
+                const res = await fetch('/api/users', {
+                    method: 'DELETE',
+                    headers: getHeader(),
+                    body: JSON.stringify({ email })
+                });
+                if (res.ok) {
+                    allUsers = allUsers.filter(u => u.email !== email);
+                    renderUsers();
+                    notify('მომხმარებელი დაბლოკილია');
+                } else {
+                    const data = await res.json();
+                    notify(data.error || 'შეცდომა წაშლისას');
+                }
+            } catch (err) {
+                notify('სერვერის შეცდომა');
+            }
         }
 
         // NEWS LOGIC
@@ -743,24 +779,30 @@
         }
 
         // LOGS LOGIC
-        function renderLogs() {
-            const tbody = document.getElementById('logsTableBody');
-            const events = ['Login Success', 'Login Attempt', 'Password Change', 'Avatar Update'];
-            tbody.innerHTML = Array(15).fill(0).map((_, i) => `
-        <tr>
-          <td>user_${Math.floor(Math.random() * 100)}</td>
-          <td><b style="color:${i % 4 === 1 ? 'var(--danger)' : 'var(--success)'}">${events[Math.floor(Math.random() * 4)]}</b></td>
-          <td style="font-family:monospace;">178.54.32.${Math.floor(Math.random() * 255)}</td>
-          <td style="font-size:11px;">Windows 11 / Chrome 124.0</td>
-          <td style="font-size:12px;">${new Date().toLocaleTimeString()}</td>
-        </tr>
-      `).join('');
+        async function fetchLogs() {
+            try {
+                const res = await fetch('/api/security-logs', { headers: getHeader() });
+                const data = await res.json();
+                const tbody = document.getElementById('logsTableBody');
+
+                tbody.innerHTML = data.logs.map(log => `
+            <tr>
+              <td>${log.email}</td>
+              <td><b style="color:${log.event_type.includes('SUCCESS') ? 'var(--success)' : 'var(--danger)'}">${log.event_type}</b></td>
+              <td style="font-family:monospace;">${log.ip_address || 'Unknown'} (${log.country || '??'})</td>
+              <td style="font-size:11px;">${log.device || 'Unknown'} / ${log.browser || 'Unknown'}</td>
+              <td style="font-size:12px;">${new Date(log.attempt_at).toLocaleString('ka-GE')}</td>
+            </tr>
+          `).join('');
+            } catch (err) {
+                notify('შეცდომა ლოგების კითხვისას');
+            }
         }
 
         // INIT
         document.getElementById('adminName').textContent = currentUser.username;
         document.getElementById('adminAvatar').src = currentUser.avatar_url || 'https://ui-avatars.com/api/?name=' + currentUser.username;
-        renderUsers();
+        fetchUsers();
     </script>
 </body>
 
