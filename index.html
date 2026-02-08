@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="referrer" content="no-referrer" />
-  <title>Game Debate — Modernist v3.0</title>
+  <title>Game Debate — Modernist v3.1</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -191,11 +191,13 @@
       background-size: cover;
       background-position: center;
       transform: scale(1.1);
+      z-index: 1;
     }
 
     .slide.active {
       opacity: 1;
       transform: scale(1);
+      z-index: 2;
     }
 
     .slide-overlay {
@@ -212,6 +214,7 @@
       transform: translateY(40px);
       opacity: 0;
       transition: 1s 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 3;
     }
 
     .slide.active .slide-content {
@@ -370,6 +373,60 @@
       margin-top: 2px;
     }
 
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(15px);
+      z-index: 30000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal {
+      background: var(--panel-2);
+      border: 1px solid var(--glass-border);
+      width: 90%;
+      max-width: 420px;
+      border-radius: 30px;
+      padding: 40px;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 30px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .modal-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      border-radius: 15px;
+      font-family: "Oswald";
+      font-weight: 700;
+      text-align: center;
+      margin-top: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .modal-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px var(--accent-glow);
+    }
+
     /* MOBILE TOGGLE */
     .mobile-toggle {
       display: none;
@@ -465,17 +522,6 @@
         display: flex;
       }
     }
-
-    @media (max-width: 700px) {
-      .featured-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .slide-content {
-        left: 30px;
-        bottom: 40px;
-      }
-    }
   </style>
 </head>
 
@@ -490,9 +536,12 @@
     <a href="games.html">თამაშები</a>
     <a href="hardware.html">აპარატურა</a>
     <a href="reviews.html">მიმოხილვა</a>
-    <a href="awards.html">ჯილდოები</a>
-    <a href="can-i-run-it.html">გავქაჩავ?</a>
-    <div id="mobileAuth" style="margin-top: 40px;"></div>
+    <div id="mobileAuth"
+      style="margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 15px;"></div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modalContent"></div>
   </div>
 
   <div class="frame">
@@ -517,9 +566,7 @@
     </header>
 
     <div class="hero-container">
-      <div class="slider-wrapper" id="heroSlider">
-        <!-- Slides injected via JS -->
-      </div>
+      <div class="slider-wrapper" id="heroSlider"></div>
     </div>
 
     <main class="content-grid">
@@ -530,32 +577,24 @@
             style="color:var(--accent-2); text-decoration:none; font-size:12px; font-weight:700; text-transform:uppercase;">ყველას
             ნახვა &rarr;</a>
         </div>
-        <div class="featured-grid" id="featuredNews">
-          <!-- News injected via JS -->
-        </div>
+        <div class="featured-grid" id="featuredNews"></div>
       </section>
 
       <aside>
         <div class="section-header">
           <div class="section-title">მალე გამოვა</div>
         </div>
-        <div class="sidebar-card" id="countdowns">
-          <!-- Countdowns injected via JS -->
-        </div>
+        <div class="sidebar-card" id="countdowns"></div>
       </aside>
     </main>
   </div>
 
   <script>
-    // SHARED NEWS DATA
     const newsData = [
       { id: 1, category: "Hardware", title: "NVIDIA RTX 60 სერიის პირველი დეტალები", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200", excerpt: "ინსაიდერული ინფორმაციით, NVIDIA-ს ახალი თაობის ვიდეო ბარათები 3-ჯერ უფრო სწრაფი იქნება AI გამოთვლებში." },
-      { id: 2, category: "Games", title: "GTA VI-ის ახალი რეკორდი - 100 მილიონი", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200", excerpt: "Rockstar Games-მა ოფიციალურად დაადასტურა, რომ GTA VI გახდა ყველაზე მოთხოვნადი მედია პროდუქტი." },
-      { id: 3, category: "Exclusives", title: "Elder Scrolls VI-ის გეიმფლეი", img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200", excerpt: "Bethesda-ს ხელმძღვანელობამ განაცხადა, რომ თამაში მზადების ბოლო ეტაპზეა." },
-      { id: 4, category: "Games", title: "The Witcher 4 (Polaris) წარმოება", img: "https://images.unsplash.com/photo-1534423861386-85a16f5d13fd?q=80&w=1200", excerpt: "CD Projekt Red-მა ოფიციალურად დაადასტურა, რომ პროექტზე უკვე 400-ზე მეტი დეველოპერი მუშაობს." }
+      { id: 2, category: "Games", title: "GTA VI-ის ახალი რეკორდი - 100 მილიონი", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200", excerpt: "Rockstar Games-მა ოფიციალურად დაადასტურა, რომ GTA VI გახდა ყველაზე მოთხოვნადი მედია პროდუქტი." }
     ];
 
-    // SLIDER LOGIC
     const sliderData = [
       { title: "Red Dead Redemption 2", desc: "გამოსცადეთ ყველა დროის ერთ-ერთი საუკეთესო როკსთარის შედევრი.", img: "https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/library_hero.jpg" },
       { title: "GTA VI: Vice City Returns", desc: "ყველაზე მოსალოდნელი თამაში ისტორიაში — ნახეთ პირველი გეიმფლეი დეტალები.", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200" },
@@ -564,6 +603,7 @@
 
     function initSlider() {
       const slider = document.getElementById('heroSlider');
+      if (!slider) return;
       slider.innerHTML = sliderData.map((s, i) => `
         <div class="slide ${i === 0 ? 'active' : ''}" style="background-image:url('${s.img}')">
           <div class="slide-overlay"></div>
@@ -577,31 +617,24 @@
       let cur = 0;
       setInterval(() => {
         const slides = document.querySelectorAll('.slide');
+        if (slides.length === 0) return;
         slides[cur].classList.remove('active');
         cur = (cur + 1) % slides.length;
         slides[cur].classList.add('active');
       }, 7000);
     }
 
-    // NEWS FEED LOGIC
     function initFeed() {
       const feed = document.getElementById('featuredNews');
-      const stats = JSON.parse(localStorage.getItem('newsStatsLiveV3')) || {};
-
+      if (!feed) return;
       feed.innerHTML = newsData.map(n => `
         <a href="news.html#article-${n.id}" class="news-card">
-          <div class="news-img" style="background-image:url('${n.img}')">
-            <span class="news-tag">${n.category}</span>
-          </div>
-          <div class="news-info">
-            <h3>${n.title}</h3>
-            <p>${n.excerpt}</p>
-          </div>
+          <div class="news-img" style="background-image:url('${n.img}')"><span class="news-tag">${n.category}</span></div>
+          <div class="news-info"><h3>${n.title}</h3><p>${n.excerpt}</p></div>
         </a>
       `).join('');
     }
 
-    // COUNTDOWNS
     const releaseGames = [
       { name: "GTA VI", date: "2026-03-15" },
       { name: "The Witcher 4", date: "2026-11-20" },
@@ -610,6 +643,7 @@
 
     function updateCountdowns() {
       const cont = document.getElementById('countdowns');
+      if (!cont) return;
       cont.innerHTML = releaseGames.map(g => {
         const diff = new Date(g.date) - new Date();
         const d = Math.max(0, Math.floor(diff / 86400000));
@@ -620,16 +654,13 @@
             <div class="game-name">${g.name}</div>
             <div class="release-date">გამოდის: ${new Date(g.date).toLocaleDateString('ka-GE')}</div>
             <div class="timer">
-              <span>${d}<small>დღე</small></span>
-              <span>${h}<small>სთ</small></span>
-              <span>${m}<small>წთ</small></span>
+              <span>${d}<small>დღე</small></span><span>${h}<small>სთ</small></span><span>${m}<small>წთ</small></span>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    // AUTH & UI
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     function updateAuthUI(user) {
       const desktop = document.getElementById('authSection');
@@ -637,24 +668,48 @@
       if (!user) return;
       const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
       const html = `
-        <div class="user-badge" onclick="window.location.href='profile.html'">
+        <div class="user-badge" id="badgeTrigger">
           <img src="${avatar}">
           <span>${user.username}</span>
         </div>
         <button class="logout-btn" onclick="localStorage.removeItem('currentUser'); window.location.reload();">გამოსვლა</button>
       `;
-      desktop.innerHTML = html;
-      mobile.innerHTML = html;
+      if (desktop) desktop.innerHTML = html;
+      if (mobile) mobile.innerHTML = html;
+
+      const trigger = document.getElementById('badgeTrigger');
+      if (trigger) trigger.onclick = () => showProfileModal(user);
     }
 
-    // MOBILE MENU
+    function showProfileModal(user) {
+      const overlay = document.getElementById('modalOverlay');
+      const content = document.getElementById('modalContent');
+      const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
+      let roleText = user.email === 'jaro@gmail.com' ? 'ადმინისტრატორი' : 'მომხმარებელი';
+      let roleColor = user.email === 'jaro@gmail.com' ? '#ff3333' : '#33ff33';
+
+      content.innerHTML = `
+        <span class="modal-close" onclick="document.getElementById('modalOverlay').style.display='none'">&times;</span>
+        <div style="text-align: center;">
+          <img src="${avatar}" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 20px; object-fit: cover;">
+          <h2 style="font-family: Oswald; margin: 0; font-size: 28px;">${user.username}</h2>
+          <div style="font-size: 12px; margin: 10px 0 25px; text-transform: uppercase; letter-spacing: 2px;">წოდება: <b style="color: ${roleColor}">${roleText}</b></div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            ${user.email === 'jaro@gmail.com' ? `<a href="admin.html" class="modal-btn">ადმინ პანელი</a>` : ''}
+            <a href="profile.html" class="modal-btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">პროფილის რედაქტირება</a>
+          </div>
+        </div>
+      `;
+      overlay.style.display = 'flex';
+      overlay.onclick = (e) => { if (e.target === overlay) overlay.style.display = 'none'; };
+    }
+
     const toggle = document.getElementById('mobileToggle');
     const menu = document.getElementById('mobileMenu');
     const close = document.getElementById('menuClose');
-    toggle.onclick = () => menu.classList.add('active');
-    close.onclick = () => menu.classList.remove('active');
+    if (toggle) toggle.onclick = () => menu.classList.add('active');
+    if (close) close.onclick = () => menu.classList.remove('active');
 
-    // INITIALIZE
     initSlider();
     initFeed();
     updateCountdowns();
@@ -663,8 +718,10 @@
 
     window.addEventListener('scroll', () => {
       const topbar = document.getElementById('mainTopbar');
-      if (window.scrollY > 50) topbar.classList.add('scrolled');
-      else topbar.classList.remove('scrolled');
+      if (topbar) {
+        if (window.scrollY > 50) topbar.classList.add('scrolled');
+        else topbar.classList.remove('scrolled');
+      }
     });
   </script>
 </body>
