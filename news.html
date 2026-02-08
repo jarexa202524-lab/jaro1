@@ -158,6 +158,11 @@
       transition: var(--transition);
     }
 
+    .user-badge:hover {
+      background: rgba(138, 77, 255, 0.2);
+      border-color: var(--accent);
+    }
+
     .user-badge img {
       width: 36px;
       height: 36px;
@@ -170,6 +175,24 @@
       font-weight: 700;
       font-size: 14px;
       color: #fff;
+    }
+
+    .logout-btn {
+      padding: 10px 20px;
+      background: rgba(231, 76, 60, 0.1);
+      border: 1px solid rgba(231, 76, 60, 0.2);
+      border-radius: 30px;
+      color: #ff6b6b;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .logout-btn:hover {
+      background: #e74c3c;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
     }
 
     /* NEWS FEED LAYOUT */
@@ -299,6 +322,52 @@
     .news-card:hover .read-more span {
       width: 50px;
       background: #fff;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20000;
+    }
+
+    .modal {
+      background: rgba(18, 12, 30, 0.95);
+      backdrop-filter: blur(40px);
+      border: 1px solid var(--glass-border);
+      width: 100%;
+      max-width: 440px;
+      border-radius: 40px;
+      position: relative;
+      padding: 40px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 14px;
+      font-family: "Oswald";
+      font-weight: 700;
+      text-align: center;
+      margin-top: 15px;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+    }
+
+    .modal-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px var(--accent-glow);
     }
 
     /* BACKGROUND */
@@ -519,13 +588,28 @@
   </div>
 
   <div class="modal-overlay" id="modalOverlay">
-    <div class="modal" id="modalContent"
-      style="background:var(--card-bg); backdrop-filter:blur(40px); border:1px solid var(--glass-border); border-radius:40px; padding:40px; width:100%; max-width:440px; position:relative;">
-    </div>
+    <div class="modal" id="modalContent"></div>
   </div>
 
   <script>
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    // AUTH UI SYNC
+    async function syncSession() {
+      if (!currentUser) return;
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: currentUser.token })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          localStorage.setItem('currentUser', JSON.stringify({ ...currentUser, ...data.user }));
+          updateAuthUI(data.user);
+        }
+      } catch (e) { console.error('Sync failed'); }
+    }
 
     function updateAuthUI(user) {
       const section = document.getElementById('authSection');
@@ -548,25 +632,33 @@
     function showProfileModal(user) {
       const overlay = document.getElementById('modalOverlay');
       const content = document.getElementById('modalContent');
+      if (!overlay || !content) return;
+
       const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
+      let roleText = user.email === 'jaro@gmail.com' ? 'ადმინისტრატორი' : 'მომხმარებელი';
+      let roleColor = user.email === 'jaro@gmail.com' ? '#ff3333' : '#33ff33';
+
       content.innerHTML = `
         <span style="position:absolute; top:20px; right:20px; font-size:24px; color:var(--muted); cursor:pointer;" id="closeM">&times;</span>
         <div style="text-align: center;">
           <img src="${avatar}" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 20px; object-fit: cover;">
           <h2 style="font-family: Oswald; margin: 0; font-size: 28px;">${user.username}</h2>
-          <div style="display: flex; flex-direction: column; gap: 10px; margin-top:20px;">
-            <a href="admin.html" style="background:var(--accent); color:#fff; text-decoration:none; padding:12px; border-radius:12px; font-family:Oswald; font-weight:700;">ადმინ პანელი</a>
-            <button style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color:#fff; padding:12px; border-radius:12px; font-family:Oswald; cursor:pointer;" id="closeNow">Close</button>
+          <div style="font-size: 12px; margin: 10px 0 25px; text-transform: uppercase; letter-spacing: 2px;">წოდება: <b style="color: ${roleColor}">${roleText}</b></div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            ${user.email === 'jaro@gmail.com' ? `<a href="admin.html" class="modal-btn">ადმინ პანელი</a>` : ''}
+            <a href="profile.html" class="modal-btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">პროფილის რედაქტირება</a>
           </div>
         </div>
       `;
       overlay.style.display = 'flex';
       document.getElementById('closeM').onclick = () => overlay.style.display = 'none';
-      document.getElementById('closeNow').onclick = () => overlay.style.display = 'none';
       overlay.onclick = (e) => { if (e.target === overlay) overlay.style.display = 'none'; };
     }
 
-    if (currentUser) updateAuthUI(currentUser);
+    if (currentUser) {
+      updateAuthUI(currentUser);
+      syncSession();
+    }
 
     // MOBILE MENU LOGIC
     (function () {
