@@ -21,8 +21,8 @@
       --text: #f2eef7;
       --glass: rgba(255, 255, 255, 0.03);
       --glass-border: rgba(255, 255, 255, 0.1);
-      --card-bg: rgba(18, 12, 30, 0.5);
-      --max-content-width: clamp(1200px, 95vw, 2400px);
+      --card-bg: rgba(18, 12, 30, 0.6);
+      --max-content-width: clamp(1000px, 70vw, 1600px);
       --side-gap: clamp(15px, 5vw, 120px);
       --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -46,15 +46,15 @@
       margin: 0 auto !important;
     }
 
-    /* TOPBAR */
+    /* TOPBAR - Unified Oval Design */
     .topbar {
-      width: clamp(92%, 96%, 98%) !important;
-      max-width: 2000px !important;
-      margin: clamp(15px, 3vh, 45px) auto !important;
-      padding: clamp(10px, 1.5vh, 22px) clamp(20px, 4vw, 70px) !important;
+      width: 95% !important;
+      max-width: 1400px !important;
+      margin: 25px auto !important;
+      padding: 12px 40px !important;
       border-radius: 100px !important;
       position: sticky;
-      top: clamp(15px, 2.5vh, 40px) !important;
+      top: 25px !important;
       z-index: 10000 !important;
       display: flex !important;
       justify-content: space-between !important;
@@ -158,11 +158,6 @@
       transition: var(--transition);
     }
 
-    .user-badge:hover {
-      background: rgba(138, 77, 255, 0.2);
-      border-color: var(--accent);
-    }
-
     .user-badge img {
       width: 36px;
       height: 36px;
@@ -187,14 +182,15 @@
       font-weight: 700;
       cursor: pointer;
       transition: var(--transition);
+      border: none;
     }
 
-    /* NEWS FEED LAYOUT */
+    /* NEWS FEED LAYOUT - Vertical Feed */
     .news-container {
-      padding: clamp(40px, 8vh, 120px) var(--side-gap);
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(clamp(320px, 30vw, 550px), 1fr));
-      gap: clamp(30px, 5vw, 80px);
+      padding: clamp(40px, 6vh, 80px) var(--side-gap);
+      display: flex;
+      flex-direction: column;
+      gap: 60px;
       max-width: var(--max-content-width);
       margin: 0 auto;
     }
@@ -203,24 +199,24 @@
       background: var(--card-bg);
       backdrop-filter: blur(40px);
       border: 1px solid var(--glass-border);
-      border-radius: 40px;
+      border-radius: 50px;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
       transition: var(--transition);
       position: relative;
-      cursor: pointer;
     }
 
     .news-card:hover {
-      transform: translateY(-15px);
+      transform: translateY(-10px) scale(1.01);
       border-color: rgba(138, 77, 255, 0.4);
-      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9), 0 0 30px rgba(138, 77, 255, 0.1);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), 0 0 30px rgba(138, 77, 255, 0.1);
     }
 
     .news-thumb {
       width: 100%;
-      height: 300px;
+      height: 100%;
+      min-height: 380px;
       position: relative;
       overflow: hidden;
     }
@@ -229,7 +225,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 1s ease;
+      transition: transform 1.2s ease;
     }
 
     .news-card:hover .news-thumb img {
@@ -238,9 +234,9 @@
 
     .news-category {
       position: absolute;
-      top: 25px;
-      left: 25px;
-      padding: 8px 18px;
+      top: 30px;
+      left: 30px;
+      padding: 8px 22px;
       background: var(--accent);
       color: #fff;
       font-size: 12px;
@@ -248,115 +244,195 @@
       text-transform: uppercase;
       letter-spacing: 2px;
       border-radius: 30px;
-      box-shadow: 0 10px 20px rgba(138, 77, 255, 0.4);
       z-index: 2;
     }
 
     .news-body {
-      padding: clamp(25px, 4vw, 40px);
+      padding: clamp(30px, 5vw, 60px);
       display: flex;
       flex-direction: column;
-      flex-grow: 1;
+      justify-content: center;
     }
 
     .news-date {
       color: var(--accent-2);
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 2px;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 15px;
     }
 
     .news-date::before {
       content: "";
-      width: 20px;
+      width: 30px;
       height: 2px;
       background: var(--accent);
     }
 
     .news-title {
       font-family: "Oswald";
-      font-size: clamp(22px, 2.5vw, 32px);
-      line-height: 1.25;
-      margin: 0 0 20px;
+      font-size: clamp(24px, 3vw, 38px);
+      line-height: 1.2;
+      margin: 0 0 25px;
       color: #fff;
-      transition: color 0.3s ease;
     }
 
     .news-excerpt {
-      font-size: clamp(15px, 1.2vw, 18px);
-      line-height: 1.7;
+      font-size: 18px;
+      line-height: 1.8;
       color: var(--muted);
-      margin: 0 0 30px;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      margin: 0 0 35px;
     }
 
-    /* NEWS STATS BAR */
     .news-footer {
-      margin-top: auto;
-      padding-top: 25px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .news-stats {
       display: flex;
-      gap: 20px;
+      gap: 25px;
     }
 
     .stat-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
     }
 
     .stat-item svg {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       stroke: var(--accent-2);
       stroke-width: 2;
       fill: none;
     }
 
-    .read-more-btn {
+    .full-view-btn {
       color: #fff;
       text-decoration: none;
       font-weight: 700;
-      font-size: 13px;
+      font-size: 14px;
       text-transform: uppercase;
       letter-spacing: 2px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      padding: 12px 28px;
+      background: rgba(138, 77, 255, 0.1);
+      border: 1px solid rgba(138, 77, 255, 0.2);
+      border-radius: 30px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .full-view-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      transform: translateX(10px);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    /* DETAIL VIEW PAGE */
+    #detailView {
+      display: none;
+      padding: clamp(40px, 8vh, 120px) var(--side-gap);
+      max-width: 1000px;
+      margin: 0 auto;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .detail-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 15px;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 40px;
+      cursor: pointer;
       transition: 0.3s;
     }
 
-    .read-more-btn span {
-      width: 30px;
-      height: 2px;
-      background: var(--accent);
-      transition: 0.4s;
-    }
-
-    .news-card:hover .read-more-btn {
+    .detail-back:hover {
       color: var(--accent-2);
     }
 
-    .news-card:hover .read-more-btn span {
-      width: 45px;
-      background: #fff;
+    .detail-back svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    .detail-hero {
+      width: 100%;
+      height: clamp(300px, 50vh, 600px);
+      border-radius: 40px;
+      overflow: hidden;
+      margin-bottom: 50px;
+      border: 1px solid var(--glass-border);
+      position: relative;
+    }
+
+    .detail-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .detail-title {
+      font-family: "Oswald";
+      font-size: clamp(32px, 5vw, 64px);
+      line-height: 1.1;
+      margin: 0 0 30px;
+      color: #fff;
+    }
+
+    .detail-meta {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 50px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .detail-content {
+      font-size: clamp(18px, 1.2vw, 22px);
+      line-height: 1.9;
+      color: var(--text);
+    }
+
+    .detail-content p {
+      margin-bottom: 30px;
+      opacity: 0.9;
     }
 
     /* BACKGROUND */
@@ -373,6 +449,29 @@
       inset: 0;
       background: radial-gradient(circle at 20% 20%, #1a0b3a 0%, #050208 100%);
       opacity: 0.8;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(20px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50000;
+    }
+
+    .modal {
+      background: rgba(18, 12, 30, 0.95);
+      border: 1px solid var(--glass-border);
+      border-radius: 40px;
+      padding: 50px;
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      text-align: center;
     }
 
     /* MOBILE TOGGLE & MENU */
@@ -395,20 +494,7 @@
       width: 22px;
       height: 2px;
       background: #fff;
-      border-radius: 2px;
       transition: 0.3s;
-    }
-
-    .mobile-toggle.active span:nth-child(1) {
-      transform: translateY(8px) rotate(45deg);
-    }
-
-    .mobile-toggle.active span:nth-child(2) {
-      opacity: 0;
-    }
-
-    .mobile-toggle.active span:nth-child(3) {
-      transform: translateY(-8px) rotate(-45deg);
     }
 
     .mobile-menu {
@@ -441,39 +527,22 @@
       transition: 0.3s;
     }
 
-    @media (max-width: 1250px) {
+    @media (max-width: 1000px) {
+      .news-card {
+        grid-template-columns: 1fr;
+      }
+
+      .news-thumb {
+        min-height: 300px;
+        height: 350px;
+      }
+
       .nav {
         display: none;
       }
 
       .mobile-toggle {
         display: flex;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .auth {
-        display: none;
-      }
-
-      .news-container {
-        padding: 80px 15px 60px;
-      }
-
-      .news-card {
-        border-radius: 35px;
-      }
-
-      .news-body {
-        padding: 25px;
-      }
-
-      .news-stats {
-        gap: 12px;
-      }
-
-      .stat-item {
-        font-size: 12px;
       }
     }
   </style>
@@ -494,243 +563,209 @@
     <a href="can-i-run-it.html">გავქაჩავ?</a>
   </div>
 
+  <header class="topbar">
+    <a href="index.html" class="logo"><span><b>GAME</b> DEBATE</span></a>
+    <nav class="nav">
+      <a href="index.html">მთავარი</a>
+      <a href="news.html" class="active">სიახლეები</a>
+      <a href="games.html">თამაშები</a>
+      <a href="hardware.html">აპარატურა</a>
+      <a href="reviews.html">მიმოხილვა</a>
+      <a href="awards.html">ჯილდოები</a>
+      <a href="can-i-run-it.html">გავქაჩავ?</a>
+    </nav>
+    <div class="auth" id="authSection">
+      <a href="login.html" class="auth-btn login">შესვლა</a>
+      <a href="register.html" class="auth-btn register">რეგისტრაცია</a>
+    </div>
+    <div class="mobile-toggle" id="mobileToggle"><span></span><span></span><span></span></div>
+  </header>
+
   <div class="frame">
-    <header class="topbar" id="mainTopbar">
-      <a href="index.html" class="logo">
-        <span><b>GAME</b> DEBATE</span>
-      </a>
-      <nav class="nav">
-        <a href="index.html">მთავარი</a>
-        <a href="news.html" class="active">სიახლეები</a>
-        <a href="games.html">თამაშები</a>
-        <a href="hardware.html">აპარატურა</a>
-        <a href="reviews.html">მიმოხილვა</a>
-        <a href="awards.html">ჯილდოები</a>
-        <a href="can-i-run-it.html">გავქაჩავ?</a>
-      </nav>
-      <div class="auth" id="authSection">
-        <a href="login.html" class="auth-btn login">შესვლა</a>
-        <a href="register.html" class="auth-btn register">რეგისტრაცია</a>
+    <!-- NEWS FEED VIEW -->
+    <main class="news-container" id="newsFeed"></main>
+
+    <!-- ARTICLE DETAIL VIEW -->
+    <main id="detailView">
+      <div class="detail-back" onclick="goBack()">
+        <svg viewBox="0 0 24 24">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        დაბრუნება
       </div>
-      <div class="mobile-toggle" id="mobileToggle">
-        <span></span><span></span><span></span>
-      </div>
-    </header>
-
-    <main class="news-container" id="newsFeed">
-      <!-- NEWS ITEM 1 -->
-      <article class="news-card" onclick="trackView(1)">
-        <div class="news-category">Hardware</div>
-        <div class="news-thumb">
-          <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200" alt="RTX 60 Series">
-        </div>
-        <div class="news-body">
-          <span class="news-date">February 08, 2026</span>
-          <h2 class="news-title">NVIDIA RTX 60 სერიის პირველი დეტალები - რევოლუცია AI გრაფიკაში</h2>
-          <p class="news-excerpt">ინსაიდერული ინფორმაციით, NVIDIA-ს ახალი თაობის ვიდეო ბარათები 3-ჯერ უფრო სწრაფი იქნება
-            AI გამოთვლებში, რაც სრულიად შეცვლის რეალურ დროში რენდერინგს.</p>
-
-          <div class="news-footer">
-            <div class="news-stats">
-              <div class="stat-item">
-                <svg viewBox="0 0 24 24">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-                <span id="views-1">4.2K</span>
-              </div>
-              <div class="stat-item">
-                <svg viewBox="0 0 24 24">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-                <span id="comments-1">128</span>
-              </div>
-            </div>
-            <div class="read-more-btn">ნახეთ <span></span></div>
-          </div>
-        </div>
-      </article>
-
-      <!-- NEWS ITEM 2 -->
-      <article class="news-card" onclick="trackView(2)">
-        <div class="news-category">Games</div>
-        <div class="news-thumb">
-          <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200" alt="GTA VI">
-        </div>
-        <div class="news-body">
-          <span class="news-date">February 07, 2026</span>
-          <h2 class="news-title">GTA VI-ის ახალი რეკორდი - 100 მილიონი წინასწარი შეკვეთა</h2>
-          <p class="news-excerpt">Rockstar Games-მა ოფიციალურად დაადასტურა, რომ GTA VI გახდა ყველა დროის ყველაზე
-            მოთხოვნადი მედია პროდუქტი ისტორიაში.</p>
-
-          <div class="news-footer">
-            <div class="news-stats">
-              <div class="stat-item">
-                <svg viewBox="0 0 24 24">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-                <span id="views-2">12.8K</span>
-              </div>
-              <div class="stat-item">
-                <svg viewBox="0 0 24 24">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-                <span id="comments-2">452</span>
-              </div>
-            </div>
-            <div class="read-more-btn">ნახეთ <span></span></div>
-          </div>
-        </div>
-      </article>
-
-      <!-- NEWS ITEM 3 -->
-      <article class="news-card" onclick="trackView(3)">
-        <div class="news-category">Exclusives</div>
-        <div class="news-thumb">
-          <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200" alt="Elder Scrolls VI">
-        </div>
-        <div class="news-body">
-          <span class="news-date">February 06, 2026</span>
-          <h2 class="news-title">Elder Scrolls VI-ის გეიმფლეი სექტემბერში გამოჩნდება</h2>
-          <p class="news-excerpt">Bethesda-ს ხელმძღვანელობამ განაცხადა, რომ თამაში მზადების ბოლო ეტაპზეა და ფანები
-            პირველ რეალურ გეიმფლეის შემოდგომაზე იხილავენ.</p>
-
-          <div class="news-footer">
-            <div class="news-stats">
-              <div class="stat-item">
-                <svg viewBox="0 0 24 24">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-                <span id="views-3">8.5K</span>
-              </div>
-              <div class="stat-item">
-                <svg viewBox="0 0 24 24">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-                <span id="comments-3">215</span>
-              </div>
-            </div>
-            <div class="read-more-btn">ნახეთ <span></span></div>
-          </div>
-        </div>
-      </article>
+      <div id="detailContentBlock"></div>
     </main>
   </div>
 
   <div class="modal-overlay" id="modalOverlay">
-    <div class="modal" id="modalContent"
-      style="background:rgba(18, 12, 30, 0.95); backdrop-filter:blur(40px); border:1px solid var(--glass-border); border-radius:40px; padding:40px; width:100%; max-width:440px; position:relative;">
-    </div>
+    <div class="modal" id="modalContent"></div>
   </div>
 
   <script>
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const newsData = [
+      {
+        id: 1,
+        category: "Hardware",
+        title: "NVIDIA RTX 60 სერიის პირველი დეტალები - რევოლუცია AI გრაფიკაში",
+        date: "February 08, 2026",
+        img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200",
+        excerpt: "ინსაიდერული ინფორმაციით, NVIDIA-ს ახალი თაობის ვიდეო ბარათები 3-ჯერ უფრო სწრაფი იქნება AI გამოთვლებში, რაც სრულიად შეცვლის რეალურ დროში რენდერინგს.",
+        full: "<p>NVIDIA-ს Blackwell არქიტექტურის შემდეგ, RTX 60 სერია გვპირდება რევოლუციურ ნახტომს Ray Tracing-ში. ახალი ტიპის AI ბირთვები საშუალებას იძლევა გრაფიკის გენერირება მოხდეს თითქმის ნულოვანი დანახარჯით.</p><p>ტექნოლოგიური ექსპერტები ვარაუდობენ, რომ RTX 6090 გახდება პირველი ვიდეო ბარათი, რომელიც 8K რეზოლუციაზე 144 FPS-ს უპრობლემოდ დააფიქსირებს ყველა თანამედროვე თამაშში.</p><p>გამოშვების სავარაუდო თარიღი 2026 წლის ბოლოსაა და მისი ფასი, ინსაიდერების თქმით, წინა თაობასთან შედარებით 10%-ით გაიზრდება, თუმცა წარმადობის ზრდა ამას სავსებით გაამართლებს.</p>"
+      },
+      {
+        id: 2,
+        category: "Games",
+        title: "GTA VI-ის ახალი რეკორდი - 100 მილიონი წინასწარი შეკვეთა",
+        date: "February 07, 2026",
+        img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200",
+        excerpt: "Rockstar Games-მა ოფიციალურად დაადასტურა, რომ GTA VI გახდა ყველა დროის ყველაზე მოთხოვნადი მედია პროდუქტი ისტორიაში.",
+        full: "<p>Rockstar-ის მიერ გამოქვეყნებული მონაცემები შოკისმომგვრელია. თამაში, რომელიც ჯერ კიდევ არ გამოსულა, უკვე მომგებიანია. წინასწარმა შეკვეთებმა გადააჭარბა ნებისმიერ ფილმს თუ ალბომს კაცობრიობის ისტორიაში.</p><p>თამაში გვპირდება Vice City-ს სრულ რეკონსტრუქციას, სადაც ყოველი შენობა ინტერაქტიული იქნება. NPC-ების ქცევა სრულად დაფუძნებულია AI-ზე, რაც სამყაროს წარმოუდგენლად რეალურს ხდის.</p><p>GTA VI-ის გამოსვლა დაგეგმილია 2026 წლის მარტისთვის და ის უკვე ითვლება ათწლეულის მთავარ მოვლენად გეიმინგ ინდუსტრიაში.</p>"
+      },
+      {
+        id: 3,
+        category: "Exclusives",
+        title: "Elder Scrolls VI-ის გეიმფლეი სექტემბერში გამოჩნდება",
+        date: "February 06, 2026",
+        img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200",
+        excerpt: "Bethesda-ს ხელმძღვანელობამ განაცხადა, რომ თამაში მზადების ბოლო ეტაპზეა და ფანები პირველ რეალურ გეიმფლეის შემოდგომაზე იხილავენ.",
+        full: "<p>თითქმის 15-წლიანი ლოდინის შემდეგ, Skyrim-ის მემკვიდრე საბოლოოდ მზად არის საჩვენებლად. Todd Howard-მა განაცხადა, რომ Elder Scrolls VI იქნება Bethesda-ს ყველაზე მასშტაბური პროექტი.</p><p>თამაშის მოქმედება ხდება Hammerfell-ში, სადაც მოთამაშეებს მოუწევთ პოლიტიკურ ინტრიგებში ჩართვა და უძველესი საფრთხის შეჩერება. ახალი ძრავა Creation Engine 2 საშუალებას იძლევა ასობით პერსონაჟი ერთდროულად იყოს ეკრანზე დეტალიზაციის დაკარგვის გარეშე.</p><p>სექტემბრის პრეზენტაციაზე მოსალოდნელია 20 წუთიანი უწყვეტი გეიმფლეი დემონსტრირება.</p>"
+      }
+    ];
 
-    // SIMULATED STATISTICS LOGIC
-    const statsStore = JSON.parse(localStorage.getItem('newsStats')) || {
-      'views-1': 4200, 'comments-1': 128,
-      'views-2': 12800, 'comments-2': 452,
-      'views-3': 8500, 'comments-3': 215
-    };
+    const statsStore = JSON.parse(localStorage.getItem('newsStats')) || {};
+    newsData.forEach(item => {
+      if (!statsStore[`views-${item.id}`]) statsStore[`views-${item.id}`] = Math.floor(Math.random() * 5000) + 1000;
+      if (!statsStore[`comments-${item.id}`]) statsStore[`comments-${item.id}`] = Math.floor(Math.random() * 200) + 10;
+    });
 
-    function updateDisplayStats() {
-      Object.keys(statsStore).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          const val = statsStore[id];
-          el.innerText = val >= 1000 ? (val / 1000).toFixed(1) + 'K' : val;
-        }
-      });
+    function renderFeed() {
+      const feed = document.getElementById('newsFeed');
+      feed.innerHTML = newsData.map(item => `
+        <article class="news-card">
+          <div class="news-thumb">
+            <div class="news-category">${item.category}</div>
+            <img src="${item.img}">
+          </div>
+          <div class="news-body">
+            <span class="news-date">${item.date}</span>
+            <h2 class="news-title">${item.title}</h2>
+            <p class="news-excerpt">${item.excerpt}</p>
+            <div class="news-footer">
+              <div class="news-stats">
+                <div class="stat-item">
+                  <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <span>${formatStat(statsStore[`views-${item.id}`])}</span>
+                </div>
+                <div class="stat-item">
+                  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <span>${statsStore[`comments-${item.id}`]}</span>
+                </div>
+              </div>
+              <div class="full-view-btn" onclick="openArticle(${item.id})">ნახეთ სრულად</div>
+            </div>
+          </div>
+        </article>
+      `).join('');
+      document.getElementById('newsFeed').style.display = 'flex';
+      document.getElementById('detailView').style.display = 'none';
+      window.scrollTo(0, 0);
     }
 
-    function trackView(id) {
+    function openArticle(id) {
+      const item = newsData.find(n => n.id === id);
+      if (!item) return;
+
+      // Increment Views
       statsStore[`views-${id}`]++;
       localStorage.setItem('newsStats', JSON.stringify(statsStore));
-      updateDisplayStats();
-      // In a real app, this would redirect to the article: window.location.href = `article.html?id=${id}`;
+
+      location.hash = `article-${id}`;
+      renderDetail(item);
     }
 
-    // INITIALIZE
-    updateDisplayStats();
-
-    // AUTH UI SYNC
-    async function syncSession() {
-      if (!currentUser) return;
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: currentUser.token })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          localStorage.setItem('currentUser', JSON.stringify({ ...currentUser, ...data.user }));
-          updateAuthUI(data.user);
-        }
-      } catch (e) { console.error('Sync failed'); }
+    function renderDetail(item) {
+      const detail = document.getElementById('detailContentBlock');
+      detail.innerHTML = `
+        <div class="detail-hero"><img src="${item.img}"></div>
+        <h1 class="detail-title">${item.title}</h1>
+        <div class="detail-meta">
+          <span>${item.date}</span>
+          <span style="color:var(--accent-2)">${item.category}</span>
+          <span>👁️ ${formatStat(statsStore[`views-${item.id}`])} ნახვა</span>
+        </div>
+        <div class="detail-content">${item.full}</div>
+      `;
+      document.getElementById('newsFeed').style.display = 'none';
+      document.getElementById('detailView').style.display = 'block';
+      window.scrollTo(0, 0);
     }
 
+    function goBack() {
+      location.hash = '';
+      renderFeed();
+    }
+
+    function formatStat(num) { return num >= 1000 ? (num / 1000).toFixed(1) + 'K' : num; }
+
+    // Routing Logic
+    window.addEventListener('hashchange', () => {
+      const hash = location.hash;
+      if (hash.startsWith('#article-')) {
+        const id = parseInt(hash.split('-')[1]);
+        const item = newsData.find(n => n.id === id);
+        if (item) renderDetail(item);
+      } else {
+        renderFeed();
+      }
+    });
+
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     function updateAuthUI(user) {
       const section = document.getElementById('authSection');
       if (!user || !section) return;
       const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
       section.innerHTML = `
-        <div id="userBadge" class="user-badge">
+        <div id="userBadge" class="user-badge" onclick="showProfileModal('${user.username}', '${user.email}')">
           <img src="${avatar}">
           <span>${user.username}</span>
         </div>
         <button id="logoutBtn" class="logout-btn">გამოსვლა</button>
       `;
-      document.getElementById('userBadge').onclick = () => showProfileModal(user);
-      document.getElementById('logoutBtn').onclick = () => {
-        localStorage.removeItem('currentUser');
-        window.location.reload();
-      };
+      document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('currentUser'); window.location.reload(); };
     }
 
-    function showProfileModal(user) {
+    function showProfileModal(name, email) {
       const overlay = document.getElementById('modalOverlay');
       const content = document.getElementById('modalContent');
-      if (!overlay || !content) return;
-
-      const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
-      let roleText = user.email === 'jaro@gmail.com' ? 'ადმინისტრატორი' : 'მომხმარებელი';
-      let roleColor = user.email === 'jaro@gmail.com' ? '#ff3333' : '#33ff33';
-
+      let roleText = email === 'jaro@gmail.com' ? 'ადმინისტრატორი' : 'მომხმარებელი';
+      let roleColor = email === 'jaro@gmail.com' ? '#ff3333' : '#33ff33';
       content.innerHTML = `
-        <span style="position:absolute; top:20px; right:20px; font-size:24px; color:var(--muted); cursor:pointer;" id="closeM">&times;</span>
-        <div style="text-align: center;">
-          <img src="${avatar}" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 20px; object-fit: cover;">
-          <h2 style="font-family: Oswald; margin: 0; font-size: 28px;">${user.username}</h2>
-          <div style="font-size: 12px; margin: 10px 0 25px; text-transform: uppercase; letter-spacing: 2px;">წოდება: <b style="color: ${roleColor}">${roleText}</b></div>
-          <div style="display: flex; flex-direction: column; gap: 10px;">
-            ${user.email === 'jaro@gmail.com' ? `<a href="admin.html" class="modal-btn" style="background:var(--accent); color:#fff; text-decoration:none; padding:12px; border-radius:12px; font-family:Oswald; font-weight:700; text-align:center;">ადმინ პანელი</a>` : ''}
-            <a href="profile.html" class="modal-btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color:#fff; text-decoration:none; padding:12px; border-radius:12px; font-family:Oswald; font-weight:700; text-align:center;">პროფილის რედაქტირება</a>
-          </div>
+        <span style="position:absolute; top:20px; right:20px; font-size:24px; color:var(--muted); cursor:pointer;" onclick="closeModal()">&times;</span>
+        <img src="https://ui-avatars.com/api/?name=${name}&background=8a4dff&color=fff" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--accent); margin-bottom:20px;">
+        <h2 style="font-family: Oswald; margin: 0; font-size: 28px;">${name}</h2>
+        <div style="font-size:12px; margin:10px 0 25px; text-transform:uppercase; letter-spacing:2px;">წოდება: <b style="color:${roleColor}">${roleText}</b></div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          ${email === 'jaro@gmail.com' ? `<a href="admin.html" style="background:var(--accent); color:#fff; text-decoration:none; padding:12px; border-radius:12px; font-weight:700;">ადმინ პანელი</a>` : ''}
+          <a href="profile.html" style="background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); color:#fff; text-decoration:none; padding:12px; border-radius:12px; font-weight:700;">პროფილის რედაქტირება</a>
         </div>
       `;
       overlay.style.display = 'flex';
-      document.getElementById('closeM').onclick = () => overlay.style.display = 'none';
-      overlay.onclick = (e) => { if (e.target === overlay) overlay.style.display = 'none'; };
+    }
+    window.closeModal = () => document.getElementById('modalOverlay').style.display = 'none';
+    if (currentUser) updateAuthUI(currentUser);
+
+    // Initial load check
+    if (location.hash.startsWith('#article-')) {
+      const id = parseInt(location.hash.split('-')[1]);
+      const item = newsData.find(n => n.id === id);
+      if (item) renderDetail(item); else renderFeed();
+    } else {
+      renderFeed();
     }
 
-    if (currentUser) {
-      updateAuthUI(currentUser);
-      syncSession();
-    }
-
-    // MOBILE MENU LOGIC
-    (function () {
-      const t = document.getElementById('mobileToggle');
-      const m = document.getElementById('mobileMenu');
-      const c = document.getElementById('menuCloseBtn');
-      if (t && m) {
-        t.onclick = () => { m.classList.add('active'); document.body.style.overflow = 'hidden'; };
-        if (c) c.onclick = () => { m.classList.remove('active'); document.body.style.overflow = ''; };
-      }
-    })();
+    // Mobile Toggle
+    document.getElementById('mobileToggle').onclick = () => document.getElementById('mobileMenu').classList.add('active');
+    document.getElementById('menuCloseBtn').onclick = () => document.getElementById('mobileMenu').classList.remove('active');
   </script>
 </body>
 
