@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="referrer" content="no-referrer" />
-  <title>Game Debate — Modernist v2.0</title>
+  <title>Game Debate — Modernist v3.0</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -25,6 +25,8 @@
       --glass-border: rgba(255, 255, 255, 0.08);
       --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
       --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      --max-content-width: 1440px;
+      --side-gap: 40px;
     }
 
     * {
@@ -35,31 +37,50 @@
       margin: 0;
       color: var(--text);
       font-family: "Rajdhani", sans-serif;
-      background: #09050d;
-      background-image:
-        radial-gradient(circle at 10% 10%, rgba(138, 77, 255, 0.1) 0%, transparent 40%),
-        radial-gradient(circle at 90% 90%, rgba(181, 139, 255, 0.05) 0%, transparent 40%);
-      background-attachment: fixed;
-      min-height: 100vh;
+      background: #050208;
       overflow-x: hidden;
+      width: 100vw;
+    }
+
+    #modern-background {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(-45deg, #050208, #10051f, #240c42, #0d041c);
+      background-size: 400% 400%;
+      animation: modernGradient 15s ease infinite;
+    }
+
+    @keyframes modernGradient {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
     }
 
     .frame {
       width: 100%;
-      max-width: 1440px;
+      max-width: var(--max-content-width);
       margin: 0 auto;
       position: relative;
     }
 
-    /* MODERNIST FLOATING OVAL TOPBAR */
+    /* TOPBAR */
     .topbar {
       position: sticky;
       top: 20px;
-      z-index: 1000;
+      z-index: 10000;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 40px;
+      padding: 12px 40px;
       width: 95%;
       max-width: 1400px;
       margin: 0 auto;
@@ -67,24 +88,18 @@
       backdrop-filter: blur(30px) saturate(180%);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 60px;
-      /* Modern Oval */
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
       transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .topbar.scrolled {
       top: 10px;
-      padding: 6px 40px;
       background: rgba(15, 10, 25, 0.95);
       width: 98%;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     }
 
     .logo {
-      display: flex;
-      flex-direction: column;
       text-decoration: none;
-      line-height: 1.1;
     }
 
     .logo span {
@@ -100,16 +115,6 @@
       color: var(--accent);
     }
 
-    .logo small {
-      font-size: 10px;
-      color: var(--accent-2);
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      font-weight: 600;
-      opacity: 0.7;
-    }
-
-    /* PILL NAV */
     .nav {
       display: flex;
       gap: 5px;
@@ -131,23 +136,16 @@
       transition: var(--transition);
     }
 
-    .nav a:hover {
-      color: #fff;
-      background: rgba(138, 77, 255, 0.1);
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(138, 77, 255, 0.2);
-    }
-
+    .nav a:hover,
     .nav a.active {
-      color: var(--muted);
+      color: #fff;
+      background: rgba(138, 77, 255, 0.15);
     }
 
     .auth {
       display: flex;
       gap: 12px;
       align-items: center;
-      min-width: 220px;
-      justify-content: flex-end;
     }
 
     .auth-btn {
@@ -157,86 +155,29 @@
       font-weight: 700;
       text-decoration: none;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: var(--transition);
       border: 1px solid var(--glass-border);
-    }
-
-    .auth-btn.login {
-      color: #fff;
+      transition: var(--transition);
     }
 
     .auth-btn.register {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
-      box-shadow: 0 0 20px var(--accent-glow);
     }
 
     .auth-btn:hover {
       transform: translateY(-2px);
     }
 
-    /* USER BADGE */
-    .user-badge {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 4px 16px 4px 4px;
-      background: rgba(138, 77, 255, 0.1);
-      border: 1px solid rgba(138, 77, 255, 0.2);
-      border-radius: 40px;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .user-badge:hover {
-      background: rgba(138, 77, 255, 0.2);
-      border-color: var(--accent);
-    }
-
-    .user-badge img {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
-      object-fit: cover;
-    }
-
-    .user-badge span {
-      font-weight: 700;
-      font-size: 14px;
-      color: #fff;
-    }
-
-    .logout-btn {
-      padding: 10px 18px;
-      background: rgba(231, 76, 60, 0.1);
-      border: 1px solid rgba(231, 76, 60, 0.2);
-      border-radius: 30px;
-      color: #ff6b6b;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .logout-btn:hover {
-      background: #e74c3c;
-      color: #fff;
-      box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
-    }
-
     /* HERO SLIDER */
     .hero-container {
-      padding: 30px 40px;
+      padding: 30px var(--side-gap);
     }
 
     .slider-wrapper {
       position: relative;
-      height: 500px;
-      border-radius: 30px;
+      height: clamp(400px, 60vh, 750px);
+      border-radius: 40px;
       overflow: hidden;
       border: 1px solid var(--glass-border);
       box-shadow: var(--shadow);
@@ -246,31 +187,31 @@
       position: absolute;
       inset: 0;
       opacity: 0;
-      visibility: hidden;
-      transition: opacity 1s ease-in-out;
+      transition: 1.2s cubic-bezier(0.4, 0, 0.2, 1);
       background-size: cover;
       background-position: center;
+      transform: scale(1.1);
     }
 
     .slide.active {
       opacity: 1;
-      visibility: visible;
+      transform: scale(1);
     }
 
     .slide-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(9, 5, 13, 0.95) 0%, transparent 60%);
+      background: linear-gradient(to top, rgba(9, 5, 13, 1) 0%, transparent 70%);
     }
 
     .slide-content {
       position: absolute;
       bottom: 60px;
       left: 60px;
-      max-width: 800px;
-      transform: translateY(30px);
+      max-width: 850px;
+      transform: translateY(40px);
       opacity: 0;
-      transition: all 0.8s ease-out;
+      transition: 1s 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .slide.active .slide-content {
@@ -280,14 +221,13 @@
 
     .slide-title {
       font-family: "Oswald";
-      font-size: 52px;
-      font-weight: 700;
-      margin-bottom: 10px;
+      font-size: clamp(32px, 5vw, 72px);
       line-height: 1.1;
+      margin: 0 0 15px;
     }
 
     .slide-desc {
-      font-size: 18px;
+      font-size: clamp(14px, 1.2vw, 18px);
       color: var(--muted);
       line-height: 1.6;
     }
@@ -295,42 +235,42 @@
     /* CONTENT GRID */
     .content-grid {
       display: grid;
-      grid-template-columns: 1fr 360px;
-      gap: 40px;
-      padding: 0 40px 60px;
+      grid-template-columns: 1fr 380px;
+      gap: 50px;
+      padding: 0 var(--side-gap) 80px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .section-title {
       font-family: "Oswald";
-      font-size: 26px;
+      font-size: 24px;
       text-transform: uppercase;
       letter-spacing: 2px;
-      margin-bottom: 30px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
     }
 
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--glass-border);
-    }
-
-    .news-grid {
+    /* NEWS FEED */
+    .featured-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 30px;
     }
 
     .news-card {
       background: var(--panel);
       border: 1px solid var(--glass-border);
-      border-radius: 24px;
+      border-radius: 28px;
       overflow: hidden;
       transition: var(--transition);
-      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
     }
 
     .news-card:hover {
@@ -341,29 +281,31 @@
     }
 
     .news-img {
-      height: 200px;
+      height: 220px;
       background-size: cover;
       background-position: center;
+      position: relative;
+    }
+
+    .news-tag {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      padding: 4px 14px;
+      background: var(--accent);
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
     }
 
     .news-info {
       padding: 25px;
     }
 
-    .news-tag {
-      display: inline-block;
-      padding: 4px 14px;
-      background: var(--accent);
-      border-radius: 20px;
-      font-size: 10px;
-      font-weight: 700;
-      margin-bottom: 15px;
-      text-transform: uppercase;
-    }
-
     .news-card h3 {
       font-family: "Oswald";
-      font-size: 20px;
+      font-size: 22px;
       margin: 0 0 12px;
       line-height: 1.3;
     }
@@ -375,17 +317,17 @@
       margin: 0;
     }
 
-    /* SIDEBAR COUNTDOWNS */
+    /* SIDEBAR */
     .sidebar-card {
       background: var(--panel);
       border: 1px solid var(--glass-border);
-      border-radius: 24px;
+      border-radius: 28px;
       padding: 30px;
     }
 
     .countdown-item {
       padding: 20px 0;
-      border-bottom: 1px solid var(--glass-border);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .countdown-item:last-child {
@@ -394,300 +336,69 @@
 
     .game-name {
       font-family: "Oswald";
-      color: #fff;
       font-size: 18px;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
+      color: #fff;
     }
 
     .release-date {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
-      margin-bottom: 10px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
     }
 
     .timer {
       display: flex;
       gap: 15px;
-      color: var(--accent-2);
-      font-weight: 700;
-      font-size: 22px;
     }
 
     .timer span {
       display: flex;
       flex-direction: column;
       align-items: center;
+      color: var(--accent-2);
+      font-weight: 700;
+      font-size: 20px;
     }
 
     .timer small {
-      font-size: 10px;
+      font-size: 9px;
       text-transform: uppercase;
-      opacity: 0.6;
+      opacity: 0.5;
       font-weight: 400;
       margin-top: 2px;
     }
 
-    /* MODAL */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(10px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-    }
-
-    .modal {
-      background: var(--panel-2);
-      border: 1px solid var(--glass-border);
-      width: 100%;
-      max-width: 440px;
-      border-radius: 30px;
-      position: relative;
-      padding: 40px;
-      box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 24px;
-    }
-
-    .modal-btn {
-      display: block;
-      width: 100%;
-      padding: 14px;
-      background: var(--accent);
-      color: #fff;
-      text-decoration: none;
-      border: none;
-      border-radius: 14px;
-      font-family: "Oswald";
-      font-weight: 700;
-      text-align: center;
-      margin-top: 15px;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .modal-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px var(--accent-glow);
-    }
-
-    @media (max-width: 1100px) {
-      .content-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .topbar {
-        padding: 15px 20px;
-      }
-
-      .nav {
-        display: none;
-      }
-    }
-
-    /* MODERN ANIMATED BACKGROUND */
-    #modern-background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -999;
-      background: linear-gradient(-45deg, #050208, #10051f, #240c42, #0d041c);
-      background-size: 400% 400%;
-      animation: modernGradient 15s ease infinite;
-      pointer-events: none;
-    }
-
-    /* Subtle Overlay Texture */
-    #modern-background::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-      opacity: 0.4;
-    }
-
-    @keyframes modernGradient {
-      0% {
-        background-position: 0% 50%;
-      }
-
-      50% {
-        background-position: 100% 50%;
-      }
-
-      100% {
-        background-position: 0% 50%;
-      }
-    }
-
-    /* Ensure content sits above */
-    body {
-      background: transparent !important;
-      position: relative;
-      z-index: 1;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      overflow-x: hidden;
-      width: 100vw;
-    }
-
-    .frame {
-      width: 100% !important;
-      max-width: var(--max-content-width) !important;
-      margin: 0 auto !important;
-      padding: 0 !important;
-    }
-
-    .topbar {
-      width: 95% !important;
-      max-width: 1600px !important;
-      margin: 20px auto !important;
-      padding: 10px 40px !important;
-      border-radius: 60px !important;
-      top: 20px !important;
-      display: flex !important;
-      justify-content: space-between !important;
-      align-items: center !important;
-    }
-
-    .hero-container {
-      padding: 30px var(--side-gap) !important;
-    }
-
-    .slider-wrapper {
-      height: clamp(350px, 55vh, 750px) !important;
-      border-radius: 40px !important;
-    }
-
-    .slide-title {
-      font-size: clamp(28px, 5vw, 72px) !important;
-    }
-
-    .content-grid {
-      display: grid !important;
-      grid-template-columns: 1fr 380px !important;
-      gap: 50px !important;
-      padding: 0 var(--side-gap) 100px !important;
-      max-width: 100% !important;
-    }
-
-    /* BREAKPOINTS */
-    @media (min-width: 2000px) {
-      :root {
-        --max-content-width: 2200px;
-      }
-
-      .slide-title {
-        font-size: 84px !important;
-      }
-    }
-
-    @media (max-width: 1100px) {
-      .content-grid {
-        grid-template-columns: 1fr !important;
-      }
-
-      .nav {
-        display: none !important;
-      }
-
-      .mobile-toggle {
-        display: flex !important;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .topbar {
-        width: 98% !important;
-        top: 10px !important;
-        padding: 8px 15px !important;
-      }
-
-      .auth {
-        display: none !important;
-      }
-
-      .user-badge span {
-        display: none !important;
-      }
-
-      .slider-wrapper {
-        height: 350px !important;
-      }
-
-      .content-grid {
-        padding: 0 15px 60px !important;
-      }
-    }
-
-    /* MOBILE MENU & FIXES */
+    /* MOBILE TOGGLE */
     .mobile-toggle {
       display: none;
-      width: 45px;
-      height: 45px;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
       cursor: pointer;
-      z-index: 20000 !important;
-      background: rgba(138, 77, 255, 0.15);
-      border: 1px solid var(--accent);
-      border-radius: 12px;
-      margin-left: 15px;
+      flex-direction: column;
+      gap: 6px;
     }
 
     .mobile-toggle span {
-      width: 22px;
+      width: 25px;
       height: 2px;
       background: #fff;
-      border-radius: 2px;
-      transition: 0.3s;
     }
 
-    .mobile-toggle.active span:nth-child(1) {
-      transform: translateY(8px) rotate(45deg);
-    }
-
-    .mobile-toggle.active span:nth-child(2) {
-      opacity: 0;
-    }
-
-    .mobile-toggle.active span:nth-child(3) {
-      transform: translateY(-8px) rotate(-45deg);
-    }
-
+    /* MOBILE MENU */
     .mobile-menu {
       position: fixed;
       inset: 0;
       background: rgba(5, 2, 8, 0.99);
-      backdrop-filter: blur(30px);
-      z-index: 10000 !important;
+      backdrop-filter: blur(50px);
+      z-index: 20000;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 25px;
+      gap: 30px;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.4s ease;
+      transition: 0.4s;
     }
 
     .mobile-menu.active {
@@ -701,602 +412,104 @@
       color: #fff;
       text-decoration: none;
       text-transform: uppercase;
-      letter-spacing: 2px;
     }
 
-    * {
-      box-sizing: border-box;
+    /* USER BADGE */
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 15px;
+      background: rgba(138, 77, 255, 0.1);
+      border-radius: 40px;
+      border: 1px solid rgba(138, 77, 255, 0.2);
+      cursor: pointer;
     }
 
-    body {
-      overflow-x: hidden;
-      width: 100vw;
-      background: #050208;
+    .user-badge img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
     }
 
-    .frame {
-      width: 100% !important;
-      max-width: var(--max-content-width) !important;
-      margin: 0 auto !important;
-      padding: 0 !important;
+    .logout-btn {
+      background: none;
+      border: 1px solid rgba(255, 50, 50, 0.2);
+      color: #ff5555;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.3s;
     }
 
-    .topbar {
-      width: clamp(92%, 96%, 98%) !important;
-      max-width: 1900px !important;
-      margin: clamp(10px, 2vh, 40px) auto !important;
-      padding: clamp(8px, 1.4vh, 22px) clamp(15px, 4vw, 60px) !important;
-      border-radius: 100px !important;
-      top: clamp(10px, 1.5vh, 30px) !important;
-      display: flex !important;
-      justify-content: space-between !important;
-      align-items: center !important;
-      background: rgba(15, 10, 25, 0.85) !important;
-      backdrop-filter: blur(30px) saturate(180%) !important;
-      border: 1px solid rgba(255, 255, 255, 0.12) !important;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6) !important;
-      z-index: 1000 !important;
-      transition: all 0.5s ease-out !important;
-    }
-
-    .hero-container {
-      padding: clamp(20px, 5vh, 60px) var(--side-gap) !important;
-    }
-
-    .slider-wrapper {
-      height: clamp(350px, 62vh, 850px) !important;
-      border-radius: 40px !important;
-    }
-
-    .slide-title {
-      font-size: clamp(26px, 6.5vw, 92px) !important;
-      font-weight: 700 !important;
-    }
-
-    .content-grid {
-      display: grid !important;
-      grid-template-columns: 1fr 400px !important;
-      gap: clamp(30px, 5vw, 80px) !important;
-      padding: 20px var(--side-gap) 100px !important;
+    .logout-btn:hover {
+      background: #ff3333;
+      color: #fff;
     }
 
     @media (max-width: 1200px) {
       .content-grid {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: 1fr;
       }
 
-      .nav {
-        display: none !important;
-      }
-
-      .mobile-toggle {
-        display: flex !important;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .topbar {
-        width: 95% !important;
-        border-radius: 30px !important;
-        padding: 10px 20px !important;
-      }
-
+      .nav,
       .auth {
-        display: none !important;
-      }
-    }
-
-    .mobile-toggle {
-      display: none;
-      width: 48px;
-      height: 48px;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      z-index: 30000 !important;
-      background: rgba(138, 77, 255, 0.15);
-      border: 1px solid rgba(138, 77, 255, 0.4);
-      border-radius: 50%;
-    }
-
-    .mobile-toggle span {
-      width: 22px;
-      height: 2px;
-      background: #fff;
-      border-radius: 2px;
-      transition: 0.3s;
-    }
-
-    .mobile-toggle.active span:nth-child(1) {
-      transform: translateY(8px) rotate(45deg);
-    }
-
-    .mobile-toggle.active span:nth-child(2) {
-      opacity: 0;
-    }
-
-    .mobile-toggle.active span:nth-child(3) {
-      transform: translateY(-8px) rotate(-45deg);
-    }
-
-    .mobile-menu {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(20, 10, 40, 0.98), rgba(5, 5, 10, 1));
-      backdrop-filter: blur(50px);
-      z-index: 25000 !important;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.5s ease;
-    }
-
-    .mobile-menu.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .mobile-menu a {
-      font-family: "Oswald";
-      font-size: clamp(26px, 10vw, 52px);
-      color: #fff;
-      text-decoration: none;
-      text-transform: uppercase;
-      letter-spacing: 4px;
-      transition: 0.3s;
-    }
-
-    .mobile-menu a:hover {
-      color: var(--accent);
-      transform: scale(1.1);
-    }
-
-    .menu-close-btn {
-      position: absolute;
-      top: 40px;
-      right: 40px;
-      width: 64px;
-      height: 64px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 40px;
-      cursor: pointer;
-      z-index: 30001;
-      transition: 0.3s;
-    }
-
-    .menu-close-btn:hover {
-      background: #ff4757;
-      transform: rotate(90deg);
-    }
-
-    
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      overflow-x: hidden;
-      width: 100vw;
-      background: #050208;
-    }
-
-    .frame {
-      width: 100% !important;
-      max-width: var(--max-content-width) !important;
-      margin: 0 auto !important;
-      padding: 0 !important;
-    }
-
-    /* TOPBAR - MASTER SCALING */
-    .topbar {
-      width: clamp(92%, 96%, 98%) !important;
-      max-width: 2000px !important;
-      margin: clamp(10px, 2.5vh, 45px) auto !important;
-      padding: clamp(8px, 1.4vh, 24px) clamp(15px, 4vw, 70px) !important;
-      border-radius: 100px !important;
-      top: clamp(10px, 2vh, 40px) !important;
-      display: flex !important;
-      justify-content: space-between !important;
-      align-items: center !important;
-      background: rgba(18, 12, 30, 0.85) !important;
-      backdrop-filter: blur(35px) saturate(180%) !important;
-      border: 1px solid rgba(255, 255, 255, 0.12) !important;
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.65) !important;
-      z-index: 1000 !important;
-    }
-
-    .hero-container {
-      padding: clamp(20px, 5vh, 60px) var(--side-gap) !important;
-    }
-
-    .slider-wrapper {
-      height: clamp(350px, 60vh, 900px) !important;
-      border-radius: 40px !important;
-    }
-
-    .slide-title {
-      font-size: clamp(26px, 6vw, 96px) !important;
-    }
-
-    .content-grid {
-      display: grid !important;
-      grid-template-columns: 1fr 420px !important;
-      gap: clamp(30px, 5vw, 100px) !important;
-      padding: 20px var(--side-gap) 100px !important;
-    }
-
-    @media (max-width: 1250px) {
-      .content-grid {
-        grid-template-columns: 1fr !important;
-      }
-
-      .nav {
-        display: none !important;
-      }
-
-      .mobile-toggle {
-        display: flex !important;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .topbar {
-        width: 96% !important;
-        border-radius: 35px !important;
-        padding: 10px 20px !important;
-      }
-
-      .auth {
-        display: none !important;
-      }
-
-      #userBadge {
-        display: flex !important;
-      }
-
-      #userBadge span {
         display: none;
       }
+
+      .mobile-toggle {
+        display: flex;
+      }
     }
 
-    .mobile-toggle {
-      display: none;
-      width: 52px;
-      height: 52px;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      z-index: 30000 !important;
-      background: rgba(138, 77, 255, 0.15);
-      border: 1px solid rgba(138, 77, 255, 0.4);
-      border-radius: 50%;
-    }
-
-    .mobile-toggle span {
-      width: 24px;
-      height: 2px;
-      background: #fff;
-      border-radius: 2px;
-      transition: 0.3s;
-    }
-
-    .mobile-toggle.active span:nth-child(1) {
-      transform: translateY(8px) rotate(45deg);
-    }
-
-    .mobile-toggle.active span:nth-child(2) {
-      opacity: 0;
-    }
-
-    .mobile-toggle.active span:nth-child(3) {
-      transform: translateY(-8px) rotate(-45deg);
-    }
-
-    .mobile-menu {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(30, 15, 60, 0.99), rgba(5, 5, 12, 1));
-      backdrop-filter: blur(60px);
-      z-index: 28000 !important;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 25px;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-    }
-
-    .mobile-menu.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .mobile-menu a {
-      font-family: "Oswald";
-      font-size: clamp(28px, 12vw, 56px);
-      color: #fff;
-      text-decoration: none;
-      text-transform: uppercase;
-      letter-spacing: 5px;
-      transition: 0.4s;
-    }
-
-    .mobile-menu a:hover {
-      color: var(--accent);
-      transform: scale(1.1);
-      text-shadow: 0 0 30px var(--accent-glow);
-    }
-
-    .menu-close-btn {
-      position: absolute;
-      top: 40px;
-      right: 40px;
-      width: 64px;
-      height: 64px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 44px;
-      cursor: pointer;
-      z-index: 30001 !important;
-      transition: 0.4s;
-    }
-
-    .menu-close-btn:hover {
-      background: #ff4757;
-      transform: rotate(90deg);
-      box-shadow: 0 0 30px rgba(255, 71, 87, 0.4);
-    }
-
-    @media (max-width: 600px) {
-      .hero-container {
-        padding: 10px !important;
+    @media (max-width: 700px) {
+      .featured-grid {
+        grid-template-columns: 1fr;
       }
 
-      .slider-wrapper {
-        height: 400px !important;
-        border-radius: 20px !important;
-      }
-
-      .slide {
-        background-position: center 20% !important;
-      }
-
-      /* Focus on the character's upper body */
       .slide-content {
-        left: 20px !important;
-        bottom: 30px !important;
-        width: calc(100% - 40px) !important;
-      }
-
-      .slide-title {
-        font-size: 32px !important;
-        margin-bottom: 5px !important;
-      }
-
-      .slide-desc {
-        font-size: 14px !important;
-        line-height: 1.4 !important;
+        left: 30px;
+        bottom: 40px;
       }
     }
-
-    /* MODERNIST SLIDER CONTROLS */
-    .slider-wrapper {
-      cursor: grab;
-    }
-
-    .slider-wrapper:active {
-      cursor: grabbing;
-    }
-
-    .slider-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 50px;
-      height: 50px;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #fff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 9999 !important;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      font-size: 20px;
-      user-select: none;
-    }
-
-    .slider-nav:hover {
-      background: var(--accent);
-      border-color: var(--accent);
-      box-shadow: 0 0 20px var(--accent-glow);
-    }
-
-    .slider-nav.prev {
-      left: 20px;
-    }
-
-    .slider-nav.next {
-      right: 20px;
-    }
-
-    .slider-dots {
-      position: absolute;
-      bottom: 25px;
-      right: 60px;
-      display: flex;
-      gap: 12px;
-      z-index: 9999 !important;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
-      cursor: pointer;
-      transition: all 0.4s ease;
-    }
-
-    .dot.active {
-      width: 30px;
-      background: var(--accent);
-      border-radius: 10px;
-      box-shadow: 0 0 15px var(--accent-glow);
-    }
-
-    @media (max-width: 600px) {
-      .slider-nav {
-        display: none;
-      }
-
-      .slider-dots {
-        right: 50%;
-        transform: translateX(50%);
-        bottom: 15px;
-      }
-    }
-  
-* { box-sizing: border-box; }
-body { overflow-x: hidden; width: 100vw !important; background: #050208 !important; }
-
-/* TOPBAR - MASTER OVAL */
-.topbar { 
-    width: clamp(92%, 96%, 98%) !important; 
-    max-width: 2000px !important; 
-    margin: clamp(10px, 2.5vh, 40px) auto !important; 
-    padding: clamp(8px, 1.4vh, 22px) clamp(15px, 4vw, 70px) !important; 
-    border-radius: 100px !important; 
-    top: clamp(10px, 2vh, 40px) !important; 
-    display: flex !important; 
-    justify-content: space-between !important; 
-    align-items: center !important;
-    background: rgba(18, 12, 30, 0.85) !important;
-    backdrop-filter: blur(35px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.65) !important;
-    z-index: 10000 !important;
-    transition: all 0.5s ease !important;
-}
-
-.nav a { transition: all 0.4s ease !important; }
-.nav a:hover {
-    color: #fff !important;
-    background: rgba(138, 77, 255, 0.15) !important;
-    transform: translateY(-2px) !important;
-}
-.nav a.active { background: transparent !important; box-shadow: none !important; color: var(--muted) !important; }
-
-.mobile-toggle { 
-    display: none; width: 44px; height: 44px; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer;
-    background: rgba(138, 77, 255, 0.1); border: 1px solid rgba(138, 77, 255, 0.3); border-radius: 50%;
-}
-.mobile-toggle span { width: 24px; height: 2px; background: #fff; border-radius: 2px; }
-
-@media (max-width: 1250px) { .nav { display: none !important; } .mobile-toggle { display: flex !important; } }
-/* LUXURY SCALING SYSTEM v5.3 */
-:root { 
-    --max-content-width: clamp(1200px, 95vw, 2400px); 
-    --side-gap: clamp(15px, 5vw, 120px); 
-}
-* { box-sizing: border-box; }
-body { overflow-x: hidden; width: 100vw !important; background: #050208 !important; }
-
-/* TOPBAR - MASTER OVAL */
-.topbar { 
-    width: clamp(92%, 96%, 98%) !important; 
-    max-width: 2000px !important; 
-    margin: clamp(10px, 2.5vh, 40px) auto !important; 
-    padding: clamp(8px, 1.4vh, 22px) clamp(15px, 4vw, 70px) !important; 
-    border-radius: 100px !important; 
-    top: clamp(10px, 2vh, 40px) !important; 
-    display: flex !important; 
-    justify-content: space-between !important; 
-    align-items: center !important;
-    background: rgba(18, 12, 30, 0.85) !important;
-    backdrop-filter: blur(35px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.65) !important;
-    z-index: 10000 !important;
-    transition: all 0.5s ease-out !important;
-}
-
-.nav a { transition: all 0.4s ease !important; }
-.nav a:hover {
-    color: #fff !important;
-    background: rgba(138, 77, 255, 0.15) !important;
-    transform: translateY(-2px) !important;
-}
-.nav a.active { background: transparent !important; box-shadow: none !important; color: var(--muted) !important; }
-
-.mobile-toggle { 
-    display: none; width: 44px; height: 44px; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer;
-    background: rgba(138, 77, 255, 0.1); border: 1px solid rgba(138, 77, 255, 0.3); border-radius: 50%;
-}
-.mobile-toggle span { width: 24px; height: 2px; background: #fff; border-radius: 2px; }
-
-@media (max-width: 1250px) { .nav { display: none !important; } .mobile-toggle { display: flex !important; } }
-</style>
+  </style>
 </head>
 
 <body>
-  <div class="mobile-menu" id="mobileMenu" style="position:fixed; inset:0; background:rgba(5,2,8,0.99); backdrop-filter:blur(50px); z-index:20000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px; opacity:0; visibility:hidden; transition:0.4s;">
-    <div id="menuCloseBtn" style="position:absolute; top:30px; right:30px; font-size:40px; color:#fff; cursor:pointer;">&times;</div>
-    <a href="index.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">მთავარი</a>
-    <a href="news.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">სიახლეები</a>
-    <a href="games.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">თამაშები</a>
-    <a href="hardware.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">აპარატურა</a>
-    <a href="reviews.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">მიმოხილვა</a>
-    <a href="awards.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">ჯილდოები</a>
-    <a href="can-i-run-it.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">გავქაჩავ?</a>
-    <div id="mobileAuthContainer" style="margin-top: 50px; display: flex; gap: 20px;"></div>
-  </div>
-  
-  
-    
-
   <div id="modern-background"></div>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <div style="position:absolute; top:30px; right:30px; font-size:40px; color:#fff; cursor:pointer;" id="menuClose">
+      &times;</div>
+    <a href="index.html">მთავარი</a>
+    <a href="news.html">სიახლეები</a>
+    <a href="games.html">თამაშები</a>
+    <a href="hardware.html">აპარატურა</a>
+    <a href="reviews.html">მიმოხილვა</a>
+    <a href="awards.html">ჯილდოები</a>
+    <a href="can-i-run-it.html">გავქაჩავ?</a>
+    <div id="mobileAuth" style="margin-top: 40px;"></div>
+  </div>
+
   <div class="frame">
-            <header class="topbar" id="mainTopbar">
-      <a href="index.html" class="logo" style="text-decoration:none;">
-        <span style="color:#fff; font-family:'Oswald'; font-size:22px; font-weight:700;"><b>GAME</b> DEBATE</span>
+    <header class="topbar" id="mainTopbar">
+      <a href="index.html" class="logo">
+        <span><b>GAME</b> DEBATE</span>
       </a>
       <nav class="nav">
+        <a href="index.html" class="active">მთავარი</a>
         <a href="news.html">სიახლეები</a>
         <a href="games.html">თამაშები</a>
         <a href="hardware.html">აპარატურა</a>
         <a href="reviews.html">მიმოხილვა</a>
-        <a href="awards.html">ჯილდოები</a>
-        <a href="can-i-run-it.html">გავქაჩავ?</a>
       </nav>
       <div class="auth" id="authSection">
-        <a href="login.html" class="auth-btn login" style="color:#fff; text-decoration:none; font-weight:700; font-size:13px; padding:10px 20px;">შესვლა</a>
-        <a href="register.html" class="auth-btn register" style="background:var(--accent); color:#fff; text-decoration:none; font-weight:700; font-size:13px; padding:10px 25px; border-radius:30px; box-shadow:0 0 15px var(--accent-glow);">რბგისტრაცია</a>
+        <a href="login.html" class="auth-btn login">შესვლა</a>
+        <a href="register.html" class="auth-btn register">რეგისტრაცია</a>
       </div>
       <div class="mobile-toggle" id="mobileToggle">
         <span></span><span></span><span></span>
@@ -1305,90 +518,99 @@ body { overflow-x: hidden; width: 100vw !important; background: #050208 !importa
 
     <div class="hero-container">
       <div class="slider-wrapper" id="heroSlider">
-        <div class="slider-nav prev" id="prevSlide">&#10094;</div>
-        <div class="slider-nav next" id="nextSlide">&#10095;</div>
-        <div class="slider-dots" id="sliderDots"></div>
-        <div class="slide active"
-          style="background-image: url('https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/library_hero.jpg')">
-          <div class="slide-overlay"></div>
-          <div class="slide-content">
-            <h1 class="slide-title">Red Dead Redemption 2</h1>
-            <p class="slide-desc">გამოსცადეთ ყველა დროის ერთ-ერთი საუკეთესო როკსთარის შედევრი.</p>
-          </div>
-        </div>
-        <div class="slide"
-          style="background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200')">
-          <div class="slide-overlay"></div>
-          <div class="slide-content">
-            <h1 class="slide-title">Top 10 RPGs to Watch This Year</h1>
-            <p class="slide-desc">From open-world epics to tactical marvels, the future of RPGs looks brighter than
-              ever.</p>
-          </div>
-        </div>
+        <!-- Slides injected via JS -->
       </div>
     </div>
 
     <main class="content-grid">
       <section>
-        <div class="section-title">ბოლო სიახლეები</div>
-        <div class="news-grid" id="newsFeed">
-          <article class="news-card">
-            <div class="news-img"
-              style="background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=400')">
-            </div>
-            <div class="news-info">
-              <span class="news-tag">Hardware</span>
-              <h3>RTX 6090 Leaks: 128GB VRAM?</h3>
-              <p>Late-night rumors suggest a massive jump in memory bandwidth for the upcoming flagship.</p>
-            </div>
-          </article>
-          <article class="news-card">
-            <div class="news-img"
-              style="background-image: url('https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?q=80&w=400')">
-            </div>
-            <div class="news-info">
-              <span class="news-tag">Gaming</span>
-              <h3>Cyberpunk: Orion Reveal Imminent</h3>
-              <p>CD Projekt Red hints at a major presentation at the upcoming global tech summit.</p>
-            </div>
-          </article>
+        <div class="section-header">
+          <div class="section-title">აქტუალური სიახლეები</div>
+          <a href="news.html"
+            style="color:var(--accent-2); text-decoration:none; font-size:12px; font-weight:700; text-transform:uppercase;">ყველას
+            ნახვა &rarr;</a>
+        </div>
+        <div class="featured-grid" id="featuredNews">
+          <!-- News injected via JS -->
         </div>
       </section>
 
       <aside>
-        <div class="section-title">გამოსვლის თარიღები</div>
-        <div class="sidebar-card" id="gameCountdowns">
-          <!-- Countdowns injected here -->
+        <div class="section-header">
+          <div class="section-title">მალე გამოვა</div>
+        </div>
+        <div class="sidebar-card" id="countdowns">
+          <!-- Countdowns injected via JS -->
         </div>
       </aside>
     </main>
   </div>
 
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal" id="modalContent"></div>
-  </div>
-
   <script>
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    // SHARED NEWS DATA
+    const newsData = [
+      { id: 1, category: "Hardware", title: "NVIDIA RTX 60 სერიის პირველი დეტალები", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200", excerpt: "ინსაიდერული ინფორმაციით, NVIDIA-ს ახალი თაობის ვიდეო ბარათები 3-ჯერ უფრო სწრაფი იქნება AI გამოთვლებში." },
+      { id: 2, category: "Games", title: "GTA VI-ის ახალი რეკორდი - 100 მილიონი", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200", excerpt: "Rockstar Games-მა ოფიციალურად დაადასტურა, რომ GTA VI გახდა ყველაზე მოთხოვნადი მედია პროდუქტი." },
+      { id: 3, category: "Exclusives", title: "Elder Scrolls VI-ის გეიმფლეი", img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200", excerpt: "Bethesda-ს ხელმძღვანელობამ განაცხადა, რომ თამაში მზადების ბოლო ეტაპზეა." },
+      { id: 4, category: "Games", title: "The Witcher 4 (Polaris) წარმოება", img: "https://images.unsplash.com/photo-1534423861386-85a16f5d13fd?q=80&w=1200", excerpt: "CD Projekt Red-მა ოფიციალურად დაადასტურა, რომ პროექტზე უკვე 400-ზე მეტი დეველოპერი მუშაობს." }
+    ];
 
-    // STICKY HEADER
-    window.addEventListener('scroll', () => {
-      const topbar = document.getElementById('mainTopbar');
-      if (window.scrollY > 50) topbar.classList.add('scrolled');
-      else topbar.classList.remove('scrolled');
-    });
+    // SLIDER LOGIC
+    const sliderData = [
+      { title: "Red Dead Redemption 2", desc: "გამოსცადეთ ყველა დროის ერთ-ერთი საუკეთესო როკსთარის შედევრი.", img: "https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/library_hero.jpg" },
+      { title: "GTA VI: Vice City Returns", desc: "ყველაზე მოსალოდნელი თამაში ისტორიაში — ნახეთ პირველი გეიმფლეი დეტალები.", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200" },
+      { title: "Next-Gen Gaming Hardware", desc: "NVIDIA და AMD ემზადებიან 2026 წლის რევოლუციისთვის.", img: "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200" }
+    ];
+
+    function initSlider() {
+      const slider = document.getElementById('heroSlider');
+      slider.innerHTML = sliderData.map((s, i) => `
+        <div class="slide ${i === 0 ? 'active' : ''}" style="background-image:url('${s.img}')">
+          <div class="slide-overlay"></div>
+          <div class="slide-content">
+            <h1 class="slide-title">${s.title}</h1>
+            <p class="slide-desc">${s.desc}</p>
+          </div>
+        </div>
+      `).join('');
+
+      let cur = 0;
+      setInterval(() => {
+        const slides = document.querySelectorAll('.slide');
+        slides[cur].classList.remove('active');
+        cur = (cur + 1) % slides.length;
+        slides[cur].classList.add('active');
+      }, 7000);
+    }
+
+    // NEWS FEED LOGIC
+    function initFeed() {
+      const feed = document.getElementById('featuredNews');
+      const stats = JSON.parse(localStorage.getItem('newsStatsLiveV3')) || {};
+
+      feed.innerHTML = newsData.map(n => `
+        <a href="news.html#article-${n.id}" class="news-card">
+          <div class="news-img" style="background-image:url('${n.img}')">
+            <span class="news-tag">${n.category}</span>
+          </div>
+          <div class="news-info">
+            <h3>${n.title}</h3>
+            <p>${n.excerpt}</p>
+          </div>
+        </a>
+      `).join('');
+    }
 
     // COUNTDOWNS
-    const games = [
+    const releaseGames = [
       { name: "GTA VI", date: "2026-03-15" },
-      { name: "Elder Scrolls VI", date: "2026-11-20" },
-      { name: "Polaris (Witcher 4)", date: "2026-06-10" }
+      { name: "The Witcher 4", date: "2026-11-20" },
+      { name: "PS6 Premiere", date: "2027-01-10" }
     ];
 
     function updateCountdowns() {
-      const cont = document.getElementById('gameCountdowns');
-      if (!cont) return;
-      cont.innerHTML = games.map(g => {
+      const cont = document.getElementById('countdowns');
+      cont.innerHTML = releaseGames.map(g => {
         const diff = new Date(g.date) - new Date();
         const d = Math.max(0, Math.floor(diff / 86400000));
         const h = Math.max(0, Math.floor((diff % 86400000) / 3600000));
@@ -1396,184 +618,55 @@ body { overflow-x: hidden; width: 100vw !important; background: #050208 !importa
         return `
           <div class="countdown-item">
             <div class="game-name">${g.name}</div>
-            <div class="release-date">Target: ${new Date(g.date).toLocaleDateString()}</div>
+            <div class="release-date">გამოდის: ${new Date(g.date).toLocaleDateString('ka-GE')}</div>
             <div class="timer">
-              <span>${d}<small>Days</small></span>
-              <span>${h}<small>Hrs</small></span>
-              <span>${m}<small>Mins</small></span>
+              <span>${d}<small>დღე</small></span>
+              <span>${h}<small>სთ</small></span>
+              <span>${m}<small>წთ</small></span>
             </div>
           </div>
         `;
       }).join('');
     }
-    updateCountdowns();
-    setInterval(updateCountdowns, 60000);
 
-    // AUTH UI
-    async function syncSession() {
-      if (!currentUser) return;
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: currentUser.token })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          localStorage.setItem('currentUser', JSON.stringify({ ...currentUser, ...data.user }));
-          updateAuthUI(data.user);
-        }
-      } catch (e) { console.error('Sync failed'); }
-    }
-
+    // AUTH & UI
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     function updateAuthUI(user) {
-      const section = document.getElementById('authSection');
+      const desktop = document.getElementById('authSection');
+      const mobile = document.getElementById('mobileAuth');
       if (!user) return;
       const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
-      section.innerHTML = `
-        <div id="userBadge" class="user-badge">
+      const html = `
+        <div class="user-badge" onclick="window.location.href='profile.html'">
           <img src="${avatar}">
           <span>${user.username}</span>
         </div>
-        <button id="logoutBtn" class="logout-btn">გამოსვლა</button>
+        <button class="logout-btn" onclick="localStorage.removeItem('currentUser'); window.location.reload();">გამოსვლა</button>
       `;
-      document.getElementById('userBadge').onclick = () => showProfileModal(user);
-      document.getElementById('logoutBtn').onclick = () => {
-        localStorage.removeItem('currentUser');
-        window.location.reload();
-      };
+      desktop.innerHTML = html;
+      mobile.innerHTML = html;
     }
 
-    function showProfileModal(user) {
-      const overlay = document.getElementById('modalOverlay');
-      const content = document.getElementById('modalContent');
-      const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
-      let roleText = user.email === 'jaro@gmail.com' ? 'ადმინისტრატორი' : 'მომხმარებელი';
-      let roleColor = user.email === 'jaro@gmail.com' ? '#ff3333' : '#33ff33';
+    // MOBILE MENU
+    const toggle = document.getElementById('mobileToggle');
+    const menu = document.getElementById('mobileMenu');
+    const close = document.getElementById('menuClose');
+    toggle.onclick = () => menu.classList.add('active');
+    close.onclick = () => menu.classList.remove('active');
 
-      content.innerHTML = `
-        <span class="modal-close" id="closeM">&times;</span>
-        <div style="text-align: center;">
-          <img src="${avatar}" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 20px; object-fit: cover;">
-          <h2 style="font-family: Oswald; margin: 0; font-size: 28px;">${user.username}</h2>
-          <div style="font-size: 12px; margin: 10px 0 25px; text-transform: uppercase; letter-spacing: 2px;">წოდება: <b style="color: ${roleColor}">${roleText}</b></div>
-          <div style="display: flex; flex-direction: column; gap: 10px;">
-            ${user.email === 'jaro@gmail.com' ? `<a href="admin.html" class="modal-btn">ადმინ პანელი</a>` : ''}
-            <a href="profile.html" class="modal-btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">პროფილის რედაქტირება</a>
-          </div>
-        </div>
-      `;
-      overlay.style.display = 'flex';
-      document.getElementById('closeM').onclick = () => overlay.style.display = 'none';
-      overlay.onclick = (e) => { if (e.target === overlay) overlay.style.display = 'none'; };
-    }
+    // INITIALIZE
+    initSlider();
+    initFeed();
+    updateCountdowns();
+    setInterval(updateCountdowns, 60000);
+    if (currentUser) updateAuthUI(currentUser);
 
-    if (currentUser) {
-      updateAuthUI(currentUser);
-      syncSession();
-    }
+    window.addEventListener('scroll', () => {
+      const topbar = document.getElementById('mainTopbar');
+      if (window.scrollY > 50) topbar.classList.add('scrolled');
+      else topbar.classList.remove('scrolled');
+    });
   </script>
-  <script>    (function () {
-      const t = document.getElementById('mobileToggle');
-      const m = document.getElementById('mobileMenu');
-      const c = document.getElementById('menuCloseBtn');
-      const ac = document.getElementById('mobileAuthContainer');
-      const da = document.getElementById('authSection');
-      if (t && m) {
-        const toggleMenu = (open) => {
-          m.classList[open ? 'add' : 'remove']('active');
-          t.classList[open ? 'add' : 'remove']('active');
-          document.body.style.overflow = open ? 'hidden' : '';
-          if (open && ac && da && ac.children.length === 0) ac.innerHTML = da.innerHTML;
-        };
-        t.onclick = (e) => { e.stopPropagation(); toggleMenu(!m.classList.contains('active')); };
-        if (c) c.onclick = (e) => { e.stopPropagation(); toggleMenu(false); };
-        m.onclick = (e) => { if (e.target === m) toggleMenu(false); };
-        m.querySelectorAll('a').forEach(l => l.onclick = () => toggleMenu(false));
-      }
-    })();</script>
-  <script>    // UPGRADED SLIDER LOGIC (Swipe + Navigation)
-    (function () {
-      const wrapper = document.getElementById('heroSlider');
-      if (!wrapper) return;
-      const slides = wrapper.querySelectorAll('.slide');
-      const dotsCont = document.getElementById('sliderDots');
-      const prevBtn = document.getElementById('prevSlide');
-      const nextBtn = document.getElementById('nextSlide');
-      let cur = 0;
-      let startX = 0;
-      let isDragging = false;
-      let timer = null;
-
-      // Init Dots
-      if (dotsCont && dotsCont.children.length === 0) {
-        slides.forEach((_, i) => {
-          const d = document.createElement('div');
-          d.className = 'dot' + (i === 0 ? ' active' : '');
-          d.onclick = () => goTo(i);
-          dotsCont.appendChild(d);
-        });
-      }
-
-      const update = () => {
-        slides.forEach((s, i) => s.classList[i === cur ? 'add' : 'remove']('active'));
-        if (dotsCont) {
-          dotsCont.querySelectorAll('.dot').forEach((d, i) => d.classList[i === cur ? 'add' : 'remove']('active'));
-        }
-      };
-
-      const goTo = (n) => {
-        cur = (n + slides.length) % slides.length;
-        update();
-        resetTimer();
-      };
-
-      const next = () => goTo(cur + 1);
-      const prev = () => goTo(cur - 1);
-
-      if (prevBtn) prevBtn.onclick = (e) => { e.stopPropagation(); prev(); };
-      if (nextBtn) nextBtn.onclick = (e) => { e.stopPropagation(); next(); };
-
-      const resetTimer = () => {
-        clearInterval(timer);
-        timer = setInterval(next, 7000);
-      };
-      resetTimer();
-
-      // Swipe / Drag Logic
-      const handleStart = (e) => {
-        startX = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
-        isDragging = true;
-      };
-      const handleEnd = (e) => {
-        if (!isDragging) return;
-        const endX = e.type.includes('mouse') ? e.pageX : e.changedTouches[0].clientX;
-        const diff = startX - endX;
-        if (Math.abs(diff) > 50) diff > 0 ? next() : prev();
-        isDragging = false;
-      };
-
-      wrapper.addEventListener('mousedown', handleStart);
-      wrapper.addEventListener('touchstart', handleStart, { passive: true });
-      window.addEventListener('mouseup', handleEnd);
-      wrapper.addEventListener('touchend', handleEnd, { passive: true });
-    })();</script>
-<script>    (function() {
-      const toggle = document.getElementById('mobileToggle');
-      const menu = document.getElementById('mobileMenu');
-      const close = document.getElementById('menuCloseBtn');
-      if (toggle && menu) {
-        toggle.onclick = () => { menu.style.opacity = '1'; menu.style.visibility = 'visible'; };
-        if (close) close.onclick = () => { menu.style.opacity = '0'; menu.style.visibility = 'hidden'; };
-      }
-    })();</script><script>    (function() {
-      const toggle = document.getElementById('mobileToggle');
-      const menu = document.getElementById('mobileMenu');
-      const close = document.getElementById('menuCloseBtn');
-      if (toggle && menu) {
-        toggle.onclick = () => { menu.style.opacity = '1'; menu.style.visibility = 'visible'; menu.classList.add('active'); };
-        if (close) close.onclick = () => { menu.style.opacity = '0'; menu.style.visibility = 'hidden'; menu.classList.remove('active'); };
-      }
-    })();</script></body>
+</body>
 
 </html>
