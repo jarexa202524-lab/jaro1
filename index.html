@@ -1072,74 +1072,120 @@
       transform: rotate(90deg);
       box-shadow: 0 0 30px rgba(255, 71, 87, 0.4);
     }
-  @media (max-width: 600px) {
-    .hero-container { padding: 10px !important; }
-    .slider-wrapper { height: 400px !important; border-radius: 20px !important; }
-    .slide { background-position: center 20% !important; } /* Focus on the character's upper body */
-    .slide-content { left: 20px !important; bottom: 30px !important; width: calc(100% - 40px) !important; }
-    .slide-title { font-size: 32px !important; margin-bottom: 5px !important; }
-    .slide-desc { font-size: 14px !important; line-height: 1.4 !important; }
-}
 
-/* MODERNIST SLIDER CONTROLS */
-.slider-wrapper { cursor: grab; }
-.slider-wrapper:active { cursor: grabbing; }
+    @media (max-width: 600px) {
+      .hero-container {
+        padding: 10px !important;
+      }
 
-.slider-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 50px;
-  height: 50px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 20px;
-  user-select: none;
-}
-.slider-nav:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 20px var(--accent-glow);
-}
-.slider-nav.prev { left: 20px; }
-.slider-nav.next { right: 20px; }
+      .slider-wrapper {
+        height: 400px !important;
+        border-radius: 20px !important;
+      }
 
-.slider-dots {
-  position: absolute;
-  bottom: 25px;
-  right: 60px;
-  display: flex;
-  gap: 12px;
-  z-index: 10;
-}
-.dot {
-  width: 8px;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.4s ease;
-}
-.dot.active {
-  width: 30px;
-  background: var(--accent);
-  border-radius: 10px;
-  box-shadow: 0 0 15px var(--accent-glow);
-}
-@media (max-width: 600px) {
-  .slider-nav { display: none; }
-  .slider-dots { right: 50%; transform: translateX(50%); bottom: 15px; }
-}
-</style>
+      .slide {
+        background-position: center 20% !important;
+      }
+
+      /* Focus on the character's upper body */
+      .slide-content {
+        left: 20px !important;
+        bottom: 30px !important;
+        width: calc(100% - 40px) !important;
+      }
+
+      .slide-title {
+        font-size: 32px !important;
+        margin-bottom: 5px !important;
+      }
+
+      .slide-desc {
+        font-size: 14px !important;
+        line-height: 1.4 !important;
+      }
+    }
+
+    /* MODERNIST SLIDER CONTROLS */
+    .slider-wrapper {
+      cursor: grab;
+    }
+
+    .slider-wrapper:active {
+      cursor: grabbing;
+    }
+
+    .slider-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 9999 !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 20px;
+      user-select: none;
+    }
+
+    .slider-nav:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .slider-nav.prev {
+      left: 20px;
+    }
+
+    .slider-nav.next {
+      right: 20px;
+    }
+
+    .slider-dots {
+      position: absolute;
+      bottom: 25px;
+      right: 60px;
+      display: flex;
+      gap: 12px;
+      z-index: 9999 !important;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.4s ease;
+    }
+
+    .dot.active {
+      width: 30px;
+      background: var(--accent);
+      border-radius: 10px;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    @media (max-width: 600px) {
+      .slider-nav {
+        display: none;
+      }
+
+      .slider-dots {
+        right: 50%;
+        transform: translateX(50%);
+        bottom: 15px;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -1186,6 +1232,9 @@
 
     <div class="hero-container">
       <div class="slider-wrapper" id="heroSlider">
+        <div class="slider-nav prev" id="prevSlide">&#10094;</div>
+        <div class="slider-nav next" id="nextSlide">&#10095;</div>
+        <div class="slider-dots" id="sliderDots"></div>
         <div class="slide active"
           style="background-image: url('https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/library_hero.jpg')">
           <div class="slide-overlay"></div>
@@ -1370,8 +1419,8 @@
         m.querySelectorAll('a').forEach(l => l.onclick = () => toggleMenu(false));
       }
     })();</script>
-<script>    // UPGRADED SLIDER LOGIC (Swipe + Navigation)
-    (function() {
+  <script>    // UPGRADED SLIDER LOGIC (Swipe + Navigation)
+    (function () {
       const wrapper = document.getElementById('heroSlider');
       if (!wrapper) return;
       const slides = wrapper.querySelectorAll('.slide');
@@ -1409,7 +1458,7 @@
       const next = () => goTo(cur + 1);
       const prev = () => goTo(cur - 1);
 
-      if (prevBtn) prevBtn.onclick = (e) => { e.stopPropagation(); next(); };
+      if (prevBtn) prevBtn.onclick = (e) => { e.stopPropagation(); prev(); };
       if (nextBtn) nextBtn.onclick = (e) => { e.stopPropagation(); next(); };
 
       const resetTimer = () => {
@@ -1432,9 +1481,10 @@
       };
 
       wrapper.addEventListener('mousedown', handleStart);
-      wrapper.addEventListener('touchstart', handleStart, {passive: true});
+      wrapper.addEventListener('touchstart', handleStart, { passive: true });
       window.addEventListener('mouseup', handleEnd);
-      wrapper.addEventListener('touchend', handleEnd, {passive: true});
-    })();</script></body>
+      wrapper.addEventListener('touchend', handleEnd, { passive: true });
+    })();</script>
+</body>
 
 </html>
