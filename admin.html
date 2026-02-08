@@ -449,7 +449,8 @@
                 <li class="menu-item" onclick="showSection('news')"><i>📰</i> <span>სიახლეები</span></li>
                 <li class="menu-item" onclick="showSection('logs')"><i>📋</i> <span>ლოგები</span></li>
                 <li class="menu-item" onclick="window.location.href='index.html'" style="margin-top:20px; opacity:0.6;">
-                    <i>🏠</i> <span>საიტზე დაბრუნება</span></li>
+                    <i>🏠</i> <span>საიტზე დაბრუნება</span>
+                </li>
             </ul>
             <div class="user-info" id="adminBadge">
                 <img src="" class="avatar" id="adminAvatar">
@@ -597,6 +598,15 @@
 
         // STATE
         let allUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+        // Sync newsData from news.html's source or localStorage if edited
+        let activeNews = JSON.parse(localStorage.getItem('siteNewsData')) || [
+            { id: 1, category: "Hardware", title: "NVIDIA RTX 60 სერიის პირველი დეტალები", date: "2026-02-08", excerpt: "ინსაიდერული ინფორმაციით, NVIDIA-ს ახალი თაობის ვიდეო ბარათები 3-ჯერ უფრო სწრაფი იქნება AI გამოთვლებში.", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200" },
+            { id: 2, category: "Games", title: "GTA VI-ის ახალი რეკორდი - 100 მილიონი", date: "2026-02-07", excerpt: "Rockstar Games-მა ოფიციალურად დაადასტურა, რომ GTA VI გახდა ყველაზე მოთხოვნადი მედია პროდუქტი.", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200" },
+            { id: 3, category: "Exclusives", title: "Elder Scrolls VI-ის გეიმფლეი", date: "2026-02-06", excerpt: "Bethesda-ს ხელმძღვანელობამ განაცხადა, რომ თამაში მზადების ბოლო ეტაპზეა.", img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200" },
+            { id: 4, category: "Games", title: "The Witcher 4 წარმოება დაიწყო", date: "2026-02-05", excerpt: "CD Projekt Red-მა ოფიციალურად დაადასტურა, რომ პროექტზე უკვე 400-ზე მეტი დეველოპერი მუშაობს.", img: "https://images.unsplash.com/photo-1534423861386-85a16f5d13fd?q=80&w=1200" }
+        ];
+
+        let editingNewsId = null;
 
         // CORE UI
         function showSection(id) {
@@ -655,27 +665,40 @@
         }
 
         // NEWS LOGIC
-        const newsData = [
-            { id: 1, category: "Hardware", title: "NVIDIA RTX 60 სერიის პირველი დეტალები", date: "2026-02-08" },
-            { id: 2, category: "Games", title: "GTA VI-ის ახალი რეკორდი - 100 მილიონი", date: "2026-02-07" },
-            { id: 3, category: "Exclusives", title: "Elder Scrolls VI-ის გეიმფლეი", date: "2026-02-06" },
-            { id: 4, category: "Games", title: "The Witcher 4 წარმოება დაიწყო", date: "2026-02-05" }
-        ];
-
         function renderNews() {
             const tbody = document.getElementById('newsTableBody');
-            tbody.innerHTML = newsData.map(n => `
+            tbody.innerHTML = activeNews.map(n => `
         <tr>
           <td style="color:var(--accent-2); font-weight:700;">#${n.id}</td>
           <td style="font-weight:600;">${n.title}</td>
           <td><span class="badge" style="background:rgba(255,255,255,0.05); border:1px solid var(--glass-border);">${n.category}</span></td>
           <td style="font-size:12px;">${n.date}</td>
           <td>
-            <button class="action-btn">Edit</button>
-            <button class="action-btn del">Del</button>
+            <button class="action-btn" onclick="editNews(${n.id})">Edit</button>
+            <button class="action-btn del" onclick="deleteNews(${n.id})">Del</button>
           </td>
         </tr>
       `).join('');
+        }
+
+        function editNews(id) {
+            const item = activeNews.find(n => n.id === id);
+            if (!item) return;
+            editingNewsId = id;
+            document.getElementById('postTitle').value = item.title;
+            document.getElementById('postCategory').value = item.category;
+            document.getElementById('postImg').value = item.img || '';
+            document.getElementById('postExcerpt').value = item.excerpt || '';
+            document.getElementById('postFull').value = item.full || '';
+            openPostForm();
+        }
+
+        function deleteNews(id) {
+            if (!confirm('დარწმუნებული ხართ რომ გსურთ სიახლის წაშლა?')) return;
+            activeNews = activeNews.filter(n => n.id !== id);
+            localStorage.setItem('siteNewsData', JSON.stringify(activeNews));
+            renderNews();
+            notify('სიახლე წაიშალა');
         }
 
         function openPostForm() {
@@ -688,7 +711,34 @@
         }
 
         function savePost() {
-            notify('სიახლე წარმატებით გამოქვეყნდა (DEMO)');
+            const title = document.getElementById('postTitle').value;
+            const category = document.getElementById('postCategory').value;
+            const img = document.getElementById('postImg').value;
+            const excerpt = document.getElementById('postExcerpt').value;
+            const full = document.getElementById('postFull').value;
+
+            if (!title) return notify('სათაური აუცილებელია!');
+
+            if (editingNewsId) {
+                const idx = activeNews.findIndex(n => n.id === editingNewsId);
+                activeNews[idx] = { ...activeNews[idx], title, category, img, excerpt, full };
+            } else {
+                const newId = activeNews.length > 0 ? Math.max(...activeNews.map(n => n.id)) + 1 : 1;
+                activeNews.unshift({
+                    id: newId,
+                    title,
+                    category,
+                    img,
+                    excerpt,
+                    full,
+                    date: new Date().toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' })
+                });
+            }
+
+            localStorage.setItem('siteNewsData', JSON.stringify(activeNews));
+            editingNewsId = null;
+            renderNews();
+            notify('სიახლე შენახულია და გამოქვეყნებულია');
             closePostForm();
         }
 
