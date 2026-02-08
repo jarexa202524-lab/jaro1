@@ -485,7 +485,37 @@
                     </div>
                 </div>
 
-                <div class="data-table-container">
+                <div id="userEditForm" class="form-section" style="display:none;">
+                    <h2 style="font-family:Oswald; margin-top:0;">მომხმარებლის რედაქტირება</h2>
+                    <div class="form-group">
+                        <label>მომხმარებლის სახელი</label>
+                        <input type="text" id="editUsername" class="form-input" placeholder="სახელი">
+                    </div>
+                    <div class="form-group">
+                        <label>ელ-ფოსტა</label>
+                        <input type="email" id="editEmail" class="form-input" readonly
+                            style="opacity:0.6; cursor:not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label>როლი (Role)</label>
+                        <select id="editRole" class="form-input">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ახალი პაროლი (დატოვეთ ცარიელი თუ არ გსურთ შეცვლა)</label>
+                        <input type="password" id="editPassword" class="form-input" placeholder="••••••••">
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="action-btn" style="background:var(--accent); flex-grow:1; padding:15px;"
+                            onclick="updateUser()">შენახვა</button>
+                        <button class="action-btn" style="flex-grow:1; padding:15px;"
+                            onclick="closeUserForm()">გაუქმება</button>
+                    </div>
+                </div>
+
+                <div class="data-table-container" id="userTableContainer">
                     <div class="table-header">
                         <span class="table-title">მომხმარებელთა სია</span>
                         <input type="text" placeholder="ძებნა (Username, Email)..." class="form-input"
@@ -646,6 +676,54 @@
             } catch (err) {
                 notify('შეცდომა მომხმარებლების წაკითხვისას');
                 console.error(err);
+            }
+        }
+
+        function openUserForm(u) {
+            document.getElementById('userTableContainer').style.display = 'none';
+            document.getElementById('userEditForm').style.display = 'block';
+            document.getElementById('editUsername').value = u.username || '';
+            document.getElementById('editEmail').value = u.email || '';
+            document.getElementById('editRole').value = u.role || 'user';
+            document.getElementById('editPassword').value = ''; // Always empty for security
+        }
+
+        function closeUserForm() {
+            document.getElementById('userTableContainer').style.display = 'block';
+            document.getElementById('userEditForm').style.display = 'none';
+        }
+
+        function editUser(email) {
+            const user = allUsers.find(u => u.email === email);
+            if (user) openUserForm(user);
+        }
+
+        async function updateUser() {
+            const username = document.getElementById('editUsername').value;
+            const email = document.getElementById('editEmail').value;
+            const role = document.getElementById('editRole').value;
+            const password = document.getElementById('editPassword').value;
+
+            try {
+                const body = { email, username, role };
+                if (password) body.password = password;
+
+                const res = await fetch('/api/users', {
+                    method: 'PATCH',
+                    headers: getHeader(),
+                    body: JSON.stringify(body)
+                });
+
+                if (res.ok) {
+                    notify('მონაცემები წარმატებით განახლდა');
+                    await fetchUsers();
+                    closeUserForm();
+                } else {
+                    const data = await res.json();
+                    notify(data.error || 'შეცდომა განახლებისას');
+                }
+            } catch (err) {
+                notify('სერვერის შეცდომა');
             }
         }
 
