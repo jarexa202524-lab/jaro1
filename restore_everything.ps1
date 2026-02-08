@@ -1,19 +1,19 @@
-# GAME DEBATE - UNIFIED LUXURY DESIGN SYSTEM v5.2
-# Final attempt to unify ALL pages with correct encoding and layout.
+# GAME DEBATE - UNIFIED LUXURY DESIGN SYSTEM v5.3
+# Fixes orphaned links at the top of the body and ensures perfect layout.
 
 # GEORGIAN STRINGS (ASCII SAFE)
-$s_login    = [char[]]@(4328, 4308, 4321, 4309, 4314, 4304) -join ''
+$s_login = [char[]]@(4328, 4308, 4321, 4309, 4314, 4304) -join ''
 $s_register = [char[]]@(4320, 4305, 4306, 4312, 4321, 4322, 4320, 4304, 4330, 4312, 4304) -join ''
-$s_home     = [char[]]@(4315, 4311, 4304, 4309, 4304, 4320, 4312) -join ''
-$s_news     = [char[]]@(4321, 4312, 4304, 4334, 4314, 4308, 4308, 4305, 4312) -join ''
-$s_games    = [char[]]@(4311, 4304, 4315, 4304, 4328, 4308, 4305, 4312) -join ''
+$s_home = [char[]]@(4315, 4311, 4304, 4309, 4304, 4320, 4312) -join ''
+$s_news = [char[]]@(4321, 4312, 4304, 4334, 4314, 4308, 4308, 4305, 4312) -join ''
+$s_games = [char[]]@(4311, 4304, 4315, 4304, 4328, 4308, 4305, 4312) -join ''
 $s_hardware = [char[]]@(4304, 4318, 4304, 4320, 4304, 4322, 4323, 4320, 4304) -join ''
-$s_reviews  = [char[]]@(4315, 4312, 4315, 4317, 4334, 4312, 4314, 4309, 4304) -join ''
-$s_awards   = [char[]]@(4335, 4312, 4314, 4307, 4317, 4308, 4305, 4312) -join ''
-$s_runit    = ([char[]]@(4306, 4304, 4309, 4325, 4304, 4329, 4304, 4309) -join '') + "?"
+$s_reviews = [char[]]@(4315, 4312, 4315, 4317, 4334, 4312, 4314, 4309, 4304) -join ''
+$s_awards = [char[]]@(4335, 4312, 4314, 4307, 4317, 4308, 4305, 4312) -join ''
+$s_runit = ([char[]]@(4306, 4304, 4309, 4325, 4304, 4329, 4304, 4309) -join '') + "?"
 
 $modernStyles = @"
-/* LUXURY SCALING SYSTEM v5.2 */
+/* LUXURY SCALING SYSTEM v5.3 */
 :root { 
     --max-content-width: clamp(1200px, 95vw, 2400px); 
     --side-gap: clamp(15px, 5vw, 120px); 
@@ -37,7 +37,7 @@ body { overflow-x: hidden; width: 100vw !important; background: #050208 !importa
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
     box-shadow: 0 30px 60px rgba(0,0,0,0.65) !important;
     z-index: 10000 !important;
-    transition: all 0.5s ease !important;
+    transition: all 0.5s ease-out !important;
 }
 
 .nav a { transition: all 0.4s ease !important; }
@@ -100,8 +100,8 @@ $js = @"
       const menu = document.getElementById('mobileMenu');
       const close = document.getElementById('menuCloseBtn');
       if (toggle && menu) {
-        toggle.onclick = () => { menu.style.opacity = '1'; menu.style.visibility = 'visible'; };
-        if (close) close.onclick = () => { menu.style.opacity = '0'; menu.style.visibility = 'hidden'; };
+        toggle.onclick = () => { menu.style.opacity = '1'; menu.style.visibility = 'visible'; menu.classList.add('active'); };
+        if (close) close.onclick = () => { menu.style.opacity = '0'; menu.style.visibility = 'hidden'; menu.classList.remove('active'); };
       }
     })();
 "@
@@ -110,22 +110,41 @@ $files = Get-ChildItem -Path . -Filter *.html
 $opt = [System.Text.RegularExpressions.RegexOptions]::IgnoreCase
 
 foreach ($file in $files) {
-    Write-Host "Updating $($file.Name)..."
-    $c = [System.IO.File]::ReadAllText($file.FullName, [System.Text.Encoding]::UTF8)
+  Write-Host "Cleaning and Updating $($file.Name)..."
+  $c = [System.IO.File]::ReadAllText($file.FullName, [System.Text.Encoding]::UTF8)
     
-    # Clean OLD versions (Manually to avoid [regexoptions] error)
-    $c = [regex]::Replace($c, '(?s)/\* LUXURY SCALING SYSTEM .*?\*/.*?}', '', $opt)
-    $c = [regex]::Replace($c, '(?s)<header class="topbar".*?</header>', $headerHtml, $opt)
-    $c = [regex]::Replace($c, '(?s)<div class="mobile-menu".*?</div>', '', $opt)
-    $c = [regex]::Replace($c, '(?s)<div class="mobile-toggle".*?</div>', '', $opt)
+  # 1. Clean existing ডিজাইন tags
+  $c = [regex]::Replace($c, '(?s)/\* LUXURY SCALING SYSTEM .*?\*/.*?}', '', $opt)
     
-    # Inject New
-    if ($c -match '</style>') { $c = $c.Replace('</style>', "$modernStyles`n</style>") }
+  # 2. Clean orphaned links/divs and fragmented mobile menus
+  $c = [regex]::Replace($c, '(?s)<div class="mobile-menu".*?</div>\s*</div>', '', $opt)
+  $c = [regex]::Replace($c, '(?s)<div class="mobile-menu".*?</div>', '', $opt)
+  $c = [regex]::Replace($c, '(?s)<div class="mobile-toggle".*?</div>', '', $opt)
+    
+  # 3. Specifically target the "naked" links at the top of body
+  $c = [regex]::Replace($c, '(?s)<a href="index.html">.*?</a>\s*<a href="news.html">.*?</a>\s*<a href="games.html">.*?</a>\s*<a href="hardware.html">.*?</a>\s*<a href="reviews.html">.*?</a>\s*<a href="awards.html">.*?</a>\s*<a href="can-i-run-it.html">.*?</a>\s*<div id="mobileAuthContainer".*?</div>\s*</div>', '', $opt)
+    
+  # 4. Clean Header
+  $c = [regex]::Replace($c, '(?s)<header class="topbar".*?</header>', $headerHtml, $opt)
+    
+  # 5. Inject Modern Styles
+  if ($c -match '</style>') {
+    $c = $c.Replace('</style>', "$modernStyles`n</style>")
+  }
+    
+  # 6. Inject Correct Mobile Menu
+  if ($c -match '<body.*?>') {
     $c = [regex]::Replace($c, '(<body.*?>)', "`$1`n$menuHtml", $opt)
-    $c = $c.Replace('</body>', "<script>$js</script></body>")
+  }
     
-    $utf8NoBom = New-Object System.Text.UTF8Encoding $false
-    [System.IO.File]::WriteAllText($file.FullName, $c, $utf8NoBom)
+  # 7. Inject JS
+  if ($c -match '</body>') {
+    $c = [regex]::Replace($c, '(<script>\s*\(function\(\)\s*\{.*?\}\)\(\);?\s*</script>)', '', $opt)
+    $c = $c.Replace('</body>', "<script>$js</script></body>")
+  }
+    
+  $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+  [System.IO.File]::WriteAllText($file.FullName, $c, $utf8NoBom)
 }
 
 powershell -ExecutionPolicy Bypass -File sync.ps1
