@@ -588,20 +588,20 @@
       const feed = document.getElementById('newsFeed');
       feed.innerHTML = newsData.map(item => `
         <article class="news-card">
-          <div class="news-thumb">
+          <div class="news-thumb" onclick="openArticle(${item.id})" style="cursor:pointer;">
             <div class="news-category">${item.category}</div>
             <img src="${item.img}">
           </div>
           <div class="news-body">
             <span class="news-date">${item.date}</span>
-            <h2 class="news-title">${item.title}</h2>
+            <h2 class="news-title" onclick="openArticle(${item.id})" style="cursor:pointer;">${item.title}</h2>
             <p class="news-excerpt">${item.excerpt}</p>
             <div class="news-footer">
               <div class="news-stats">
                 <div class="stat-item"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span>${formatStat(statsStore[`views-${item.id}`])}</span></div>
                 <div class="stat-item"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>${statsStore[`comments-${item.id}`]}</span></div>
               </div>
-              <a href="javascript:void(0)" class="full-btn" onclick="openArticle(${item.id})">ნახეთ</a>
+              <a href="javascript:void(0)" class="full-btn" onclick="openArticle(${item.id})">სრულად ნახვა</a>
             </div>
           </div>
         </article>
