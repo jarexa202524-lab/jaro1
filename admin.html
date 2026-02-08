@@ -2,1368 +2,716 @@
 <html lang="ka">
 
 <head>
-  <meta name="referrer" content="no-referrer" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Dashboard — Game Debate</title>
+    <meta name="referrer" content="no-referrer" />
+    <title>Admin Command Center — Game Debate v4.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;700&display=swap"
         rel="stylesheet" />
     <style>
         :root {
-            --bg: #110b18;
-            --panel: #1b1426;
-            --panel-2: #241b33;
+            --bg: #050208;
+            --panel: rgba(20, 15, 30, 0.7);
+            --panel-2: rgba(30, 25, 50, 0.85);
             --accent: #8a4dff;
+            --accent-glow: rgba(138, 77, 255, 0.4);
             --accent-2: #b58bff;
-            --muted: #c6bbd8;
+            --muted: #a496b8;
             --text: #f2eef7;
-            --shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
-            --danger: #e74c3c;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --danger: #ff4757;
+            --success: #2ed573;
+            --shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * {
             box-sizing: border-box;
+            outline: none;
         }
 
         body {
             margin: 0;
             color: var(--text);
-            font-family: "Rajdhani", "Oswald", sans-serif;
-            background: radial-gradient(circle at 75% 10%, #3a2a56 0%, #1c1427 40%, #0f0a16 100%);
-            background-attachment: fixed;
-            background-size: cover;
-            min-height: 100vh;
+            font-family: "Rajdhani", sans-serif;
+            background: var(--bg);
+            overflow: hidden;
+            /* Control scroll within dashboard */
+            width: 100vw;
+            height: 100vh;
             display: none;
-            /* Hidden until role check */
+            /* Security check */
         }
 
-        .frame {
-            width: 95%;
-            max-width: 1600px;
-            margin: 28px auto 48px;
-            background: var(--panel);
-            border: 1px solid #2f243d;
-            box-shadow: var(--shadow);
-            position: relative;
-            min-height: 80vh;
+        /* CYBER BACKGROUND */
+        #modern-background {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(-45deg, #050208, #120626, #240c42, #0d041c);
+            background-size: 400% 400%;
+            animation: modernGradient 18s ease infinite;
         }
 
-        .topbar {
-            padding: 20px;
-            background: linear-gradient(180deg, #261c34, #1a1225);
-            border-bottom: 2px solid #140f1b;
+        @keyframes modernGradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* DASHBOARD LAYOUT */
+        .dashboard {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            width: 100%;
+            height: 100vh;
+            backdrop-filter: blur(20px);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 320px;
+            background: rgba(15, 10, 25, 0.9);
+            border-right: 1px solid var(--glass-border);
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .logo-area {
+            padding: 0 40px 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 30px;
         }
 
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: "Oswald", sans-serif;
+            font-family: "Oswald";
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fff;
             text-decoration: none;
-            color: #fff;
         }
 
-        .admin-content {
-            padding: 30px;
+        .logo b {
+            color: var(--accent);
         }
 
-        .admin-header {
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #332744;
-            padding-bottom: 15px;
-        }
-
-        .user-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #241b33;
-            border: 1px solid #332744;
-            font-size: 14px;
-            min-width: 800px;
-            /* Force min width for scrolling */
-        }
-
-        .user-table th,
-        .user-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #332744;
-        }
-
-        .user-table th {
-            background: #1b1426;
-            color: var(--accent-2);
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 1px;
-        }
-
-        .role-badge {
-            padding: 4px 8px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            border-radius: 3px;
-            display: inline-block;
-        }
-
-        .role-admin {
-            color: #ff3333;
-            border: 1px solid #ff3333;
-        }
-
-        .role-moderator {
-            color: #ff9933;
-            border: 1px solid #ff9933;
-        }
-
-        .role-user {
-            color: #33ff33;
-            border: 1px solid #33ff33;
-        }
-
-        .btn-action {
-            padding: 6px 12px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 12px;
-            border: 1px solid #444;
-            background: transparent;
-            color: #ccc;
-            margin-right: 5px;
-        }
-
-        .btn-action:hover {
-            border-color: var(--accent);
-            color: #fff;
-        }
-
-        .btn-delete {
-            color: var(--danger);
-            border-color: var(--danger);
-        }
-
-        .btn-delete:hover {
-            background: var(--danger);
-            color: #fff;
-        }
-
-        .edit-input {
-            background: #110b18;
-            border: 1px solid #332744;
-            color: #fff;
-            padding: 6px;
-            font-family: inherit;
-            width: 120px;
-        }
-
-        .edit-input:focus {
-            border-color: var(--accent);
-            outline: none;
-        }
-
-        .role-select {
-            background: #110b18;
-            color: #fff;
-            border: 1px solid #332744;
-            padding: 5px;
-            font-family: inherit;
-        }
-
-        .admin-main {
-            display: flex;
-            min-height: calc(80vh - 72px);
-        }
-
-        .sidebar {
-            width: 260px;
-            background: #181122;
-            border-right: 1px solid #2f243d;
-            padding: 30px 0;
-            flex-shrink: 0;
-        }
-
-        .sidebar-menu {
+        .menu {
             list-style: none;
             padding: 0;
             margin: 0;
         }
 
-        .sidebar-item {
-            padding: 15px 30px;
+        .menu-item {
+            padding: 18px 40px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             color: var(--muted);
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
             cursor: pointer;
-            border-left: 3px solid transparent;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+            font-weight: 600;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .sidebar-item:hover,
-        .sidebar-item.active {
-            background: #241b33;
-            color: var(--accent-2);
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(138, 77, 255, 0.1);
+            color: #fff;
             border-left-color: var(--accent);
         }
 
-        .sidebar-icon {
-            width: 20px;
+        .menu-item i {
+            font-size: 18px;
+            width: 24px;
             text-align: center;
         }
 
-        .admin-content {
+        .user-info {
+            margin-top: auto;
+            padding: 30px 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            object-fit: cover;
+        }
+
+        .user-details h4 {
+            margin: 0;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .user-details p {
+            margin: 0;
+            font-size: 12px;
+            color: var(--accent-2);
+            text-transform: uppercase;
+        }
+
+        /* CONTENT AREA */
+        .content {
             flex-grow: 1;
-            padding: 30px;
             overflow-y: auto;
+            padding: 40px 60px;
+            background: rgba(0, 0, 0, 0.2);
         }
 
-        .admin-section {
-            display: none;
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
         }
 
-        .admin-section.active {
-            display: block;
+        .section-title {
+            font-family: "Oswald";
+            font-size: 32px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 50px;
         }
 
-        .stats-card {
-            background: var(--panel-2);
-            padding: 20px;
-            border: 1px solid #332744;
-            border-radius: 8px;
-            text-align: center;
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 30px;
+            transition: var(--transition);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .stats-label {
-            display: block;
-            color: var(--muted);
-            font-size: 13px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
+        .stat-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
-        .stats-value {
-            font-size: 28px;
+        .stat-label {
+            font-size: 12px;
             font-weight: 700;
             color: var(--accent-2);
-            font-family: 'Oswald';
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: block;
         }
 
-        .country-ranking {
-            background: var(--panel-2);
-            padding: 25px;
-            border: 1px solid #332744;
-            border-radius: 8px;
-            margin-bottom: 40px;
+        .stat-value {
+            font-family: "Oswald";
+            font-size: 42px;
+            color: #fff;
+            font-weight: 700;
         }
 
-        .ranking-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+        /* TABLE SECTION */
+        .data-table-container {
+            background: var(--panel);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
         }
 
-        .ranking-item {
+        .table-header {
+            padding: 30px 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--glass-border);
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            background: #1b1426;
-            border: 1px solid #332744;
-            border-radius: 4px;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            padding: 20px 40px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--muted);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .data-table td {
+            padding: 18px 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 14px;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(138, 77, 255, 0.05);
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge.admin {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+            border: 1px solid #ff4757;
+        }
+
+        .badge.user {
+            background: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+            border: 1px solid #2ed573;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 12px;
+            font-size: 12px;
             cursor: pointer;
             transition: 0.3s;
+            margin-right: 5px;
         }
 
-        .ranking-item:hover {
-            border-color: var(--accent);
-            background: #241b33;
-        }
-
-        .ranking-item.active {
-            border-color: var(--accent);
+        .action-btn:hover {
             background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .action-btn.del {
+            color: var(--danger);
+        }
+
+        .action-btn.del:hover {
+            background: var(--danger);
             color: #fff;
         }
 
+        /* UTILS */
         .notification {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 15px 25px;
+            top: 30px;
+            right: 30px;
             background: var(--accent);
-            color: #fff;
-            border-radius: 4px;
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: translateX(200%);
+            transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: 10000;
+        }
+
+        .notification.active {
+            transform: translateX(0);
+        }
+
+        /* FORM SECTION */
+        .form-section {
             display: none;
-            z-index: 3000;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-top: 30px;
-            padding: 20px 0;
-        }
-
-        .btn-page {
-            padding: 8px 16px;
+            max-width: 800px;
+            margin: 0 auto;
             background: var(--panel-2);
-            border: 1px solid #332744;
+            padding: 50px;
+            border-radius: 40px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
             color: #fff;
-            cursor: pointer;
             font-family: inherit;
-            transition: 0.3s;
+            font-size: 15px;
         }
 
-        .btn-page:hover:not(:disabled) {
+        .form-input:focus,
+        .form-textarea:focus {
             border-color: var(--accent);
-            color: var(--accent-2);
         }
 
-        .btn-page:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
+        .form-textarea {
+            height: 200px;
+            resize: none;
         }
 
-        @keyframes glow {
-            0% {
-                box-shadow: 0 0 5px rgba(138, 77, 255, 0.2);
-            }
-
-            50% {
-                box-shadow: 0 0 15px rgba(138, 77, 255, 0.5);
-            }
-
-            100% {
-                box-shadow: 0 0 5px rgba(138, 77, 255, 0.2);
-            }
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
 
-        .new-data-badge {
-            animation: glow 2s infinite;
+        ::-webkit-scrollbar-track {
+            background: transparent;
         }
 
-        /* Responsive Styles */
-        @media (max-width: 980px) {
-            .frame {
-                margin: 0;
-                border: none;
-                box-shadow: none;
-                width: 100%;
-            }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(138, 77, 255, 0.3);
+            border-radius: 10px;
+        }
 
-            .admin-main {
-                flex-direction: column;
-            }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
 
+        @media (max-width: 1200px) {
             .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #2f243d;
-                padding: 0;
+                width: 80px;
+                padding: 20px 0;
             }
 
-            .sidebar-menu {
-                display: flex;
-                overflow-x: auto;
-                background: #181122;
-                padding: 10px;
+            .logo span,
+            .menu-item span,
+            .user-details {
+                display: none;
             }
 
-            .sidebar-item {
-                flex: 1;
+            .menu-item {
                 justify-content: center;
-                padding: 15px;
-                white-space: nowrap;
-                border-left: none;
-                border-bottom: 3px solid transparent;
-                font-size: 13px;
-                gap: 8px;
-            }
-
-            .sidebar-item:hover,
-            .sidebar-item.active {
-                background: #241b33;
-                border-left-color: transparent;
-                border-bottom-color: var(--accent);
-            }
-
-            .topbar {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-
-            .admin-content {
-                padding: 15px;
+                padding: 20px;
             }
 
             .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .rankings-container {
-                grid-template-columns: 1fr !important;
-            }
-
-            .country-ranking {
-                padding: 15px;
-            }
-
-            .ranking-list {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
             }
         }
-
-        /* Large Screens (2K / 1440p) */
-        @media (min-width: 1441px) {
-            .frame {
-                max-width: 90%;
-            }
-
-            .stats-value {
-                font-size: 32px;
-            }
-
-            .sidebar {
-                width: 300px;
-            }
-        }
-
-        /* 4K Screens */
-        @media (min-width: 2500px) {
-            .frame {
-                max-width: 80%;
-                margin-top: 50px;
-            }
-
-            body {
-                font-size: 18px;
-            }
-
-            .sidebar {
-                width: 400px;
-            }
-
-            .sidebar-item {
-                padding: 25px 40px;
-                font-size: 20px;
-            }
-
-            .stats-value {
-                font-size: 48px;
-            }
-
-            .stats-label {
-                font-size: 16px;
-            }
-
-            h1 {
-                font-size: 36px !important;
-            }
-
-            h2 {
-                font-size: 28px !important;
-            }
-        }
-        /* MODERN ANIMATED BACKGROUND */
-    #modern-background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -999;
-      background: linear-gradient(-45deg, #050208, #10051f, #240c42, #0d041c);
-      background-size: 400% 400%;
-      animation: modernGradient 15s ease infinite;
-      pointer-events: none;
-    }
-
-    /* Subtle Overlay Texture */
-    #modern-background::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-      opacity: 0.4;
-    }
-
-    @keyframes modernGradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    
-    /* Ensure content sits above */
-    body {
-      background: transparent !important;
-      position: relative;
-      z-index: 1;
-    }
-  
-* { box-sizing: border-box; }
-body { overflow-x: hidden; width: 100vw; }
-.frame { width: 100% !important; max-width: var(--max-content-width) !important; margin: 0 auto !important; padding: 0 !important; }
-.topbar { width: 95% !important; max-width: 1600px !important; margin: 20px auto !important; padding: 10px 40px !important; border-radius: 60px !important; top: 20px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; }
-.hero-container { padding: 30px var(--side-gap) !important; }
-.slider-wrapper { height: clamp(350px, 55vh, 750px) !important; border-radius: 40px !important; }
-.slide-title { font-size: clamp(28px, 5vw, 72px) !important; }
-.content-grid { display: grid !important; grid-template-columns: 1fr 380px !important; gap: 50px !important; padding: 0 var(--side-gap) 100px !important; max-width: 100% !important; }
-
-/* BREAKPOINTS */
-@media (min-width: 2000px) { :root { --max-content-width: 2200px; } .slide-title { font-size: 84px !important; } }
-@media (max-width: 1100px) { .content-grid { grid-template-columns: 1fr !important; } .nav { display: none !important; } .mobile-toggle { display: flex !important; } }
-@media (max-width: 600px) {
-  .topbar { width: 98% !important; top: 10px !important; padding: 8px 15px !important; }
-  .auth { display: none !important; }
-  .user-badge span { display: none !important; }
-  .slider-wrapper { height: 350px !important; }
-  .content-grid { padding: 0 15px 60px !important; }
-}
-
-/* MOBILE MENU & FIXES */
-.mobile-toggle { display: none; width: 45px; height: 45px; flex-direction: column; justify-content: center; align-items: center; gap: 6px; cursor: pointer; z-index: 20000 !important; background: rgba(138, 77, 255, 0.15); border: 1px solid var(--accent); border-radius: 12px; margin-left:15px; }
-.mobile-toggle span { width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: 0.3s; }
-.mobile-toggle.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-.mobile-toggle.active span:nth-child(2) { opacity: 0; }
-.mobile-toggle.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-.mobile-menu { position: fixed; inset: 0; background: rgba(5, 2, 8, 0.99); backdrop-filter: blur(30px); z-index: 10000 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 25px; opacity: 0; visibility: hidden; transition: all 0.4s ease; }
-.mobile-menu.active { opacity: 1; visibility: visible; }
-.mobile-menu a { font-family: "Oswald"; font-size: 32px; color: #fff; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
-
-* { box-sizing: border-box; }
-body { overflow-x: hidden; width: 100vw; background: #050208; }
-.frame { width: 100% !important; max-width: var(--max-content-width) !important; margin: 0 auto !important; padding: 0 !important; }
-
-.topbar { 
-    width: clamp(92%, 96%, 98%) !important; 
-    max-width: 1900px !important; 
-    margin: clamp(10px, 2vh, 40px) auto !important; 
-    padding: clamp(8px, 1.4vh, 22px) clamp(15px, 4vw, 60px) !important; 
-    border-radius: 100px !important; 
-    top: clamp(10px, 1.5vh, 30px) !important; 
-    display: flex !important; 
-    justify-content: space-between !important; 
-    align-items: center !important;
-    background: rgba(15, 10, 25, 0.85) !important;
-    backdrop-filter: blur(30px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.6) !important;
-    z-index: 1000 !important;
-    transition: all 0.5s ease-out !important;
-}
-
-.hero-container { padding: clamp(20px, 5vh, 60px) var(--side-gap) !important; }
-.slider-wrapper { height: clamp(350px, 62vh, 850px) !important; border-radius: 40px !important; }
-.slide-title { font-size: clamp(26px, 6.5vw, 92px) !important; font-weight: 700 !important; }
-
-.content-grid { 
-    display: grid !important; 
-    grid-template-columns: 1fr 400px !important; 
-    gap: clamp(30px, 5vw, 80px) !important; 
-    padding: 20px var(--side-gap) 100px !important; 
-}
-
-@media (max-width: 1200px) { 
-    .content-grid { grid-template-columns: 1fr !important; } 
-    .nav { display: none !important; } 
-    .mobile-toggle { display: flex !important; } 
-}
-
-@media (max-width: 600px) {
-    .topbar { width: 95% !important; border-radius: 30px !important; padding: 10px 20px !important; }
-    .auth { display: none !important; }
-}
-
-.mobile-toggle { 
-    display: none; width: 48px; height: 48px; flex-direction: column; justify-content: center; align-items: center; gap: 6px; cursor: pointer; z-index: 30000 !important; 
-    background: rgba(138, 77, 255, 0.15); border: 1px solid rgba(138, 77, 255, 0.4); border-radius: 50%;
-}
-.mobile-toggle span { width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: 0.3s; }
-.mobile-toggle.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-.mobile-toggle.active span:nth-child(2) { opacity: 0; }
-.mobile-toggle.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-
-.mobile-menu { 
-    position: fixed; inset: 0; background: radial-gradient(circle at center, rgba(20, 10, 40, 0.98), rgba(5, 5, 10, 1)); backdrop-filter: blur(50px); z-index: 25000 !important; 
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; opacity: 0; visibility: hidden; transition: all 0.5s ease;
-}
-.mobile-menu.active { opacity: 1; visibility: visible; }
-.mobile-menu a { font-family: "Oswald"; font-size: clamp(26px, 10vw, 52px); color: #fff; text-decoration: none; text-transform: uppercase; letter-spacing: 4px; transition: 0.3s; }
-.mobile-menu a:hover { color: var(--accent); transform: scale(1.1); }
-
-.menu-close-btn { 
-    position: absolute; top: 40px; right: 40px; width: 64px; height: 64px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; 
-    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 40px; cursor: pointer; z-index: 30001; transition: 0.3s;
-}
-.menu-close-btn:hover { background: #ff4757; transform: rotate(90deg); }
-
-* { box-sizing: border-box; }
-body { overflow-x: hidden; width: 100vw; background: #050208; }
-.frame { width: 100% !important; max-width: var(--max-content-width) !important; margin: 0 auto !important; padding: 0 !important; }
-
-/* TOPBAR - MASTER SCALING */
-.topbar { 
-    width: clamp(92%, 96%, 98%) !important; 
-    max-width: 2000px !important; 
-    margin: clamp(10px, 2.5vh, 45px) auto !important; 
-    padding: clamp(8px, 1.4vh, 24px) clamp(15px, 4vw, 70px) !important; 
-    border-radius: 100px !important; 
-    top: clamp(10px, 2vh, 40px) !important; 
-    display: flex !important; 
-    justify-content: space-between !important; 
-    align-items: center !important;
-    background: rgba(18, 12, 30, 0.85) !important;
-    backdrop-filter: blur(35px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.65) !important;
-    z-index: 1000 !important;
-}
-
-.hero-container { padding: clamp(20px, 5vh, 60px) var(--side-gap) !important; }
-.slider-wrapper { height: clamp(350px, 60vh, 900px) !important; border-radius: 40px !important; }
-.slide-title { font-size: clamp(26px, 6vw, 96px) !important; }
-
-.content-grid { 
-    display: grid !important; 
-    grid-template-columns: 1fr 420px !important; 
-    gap: clamp(30px, 5vw, 100px) !important; 
-    padding: 20px var(--side-gap) 100px !important; 
-}
-
-@media (max-width: 1250px) { 
-    .content-grid { grid-template-columns: 1fr !important; } 
-    .nav { display: none !important; } 
-    .mobile-toggle { display: flex !important; } 
-}
-
-@media (max-width: 600px) {
-    .topbar { width: 96% !important; border-radius: 35px !important; padding: 10px 20px !important; }
-    .auth { display: none !important; }
-    #userBadge { display: flex !important; } #userBadge span { display: none; }
-}
-
-.mobile-toggle { 
-    display: none; width: 52px; height: 52px; flex-direction: column; justify-content: center; align-items: center; gap: 6px; cursor: pointer; z-index: 30000 !important; 
-    background: rgba(138, 77, 255, 0.15); border: 1px solid rgba(138, 77, 255, 0.4); border-radius: 50%;
-}
-.mobile-toggle span { width: 24px; height: 2px; background: #fff; border-radius: 2px; transition: 0.3s; }
-.mobile-toggle.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-.mobile-toggle.active span:nth-child(2) { opacity: 0; }
-.mobile-toggle.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-
-.mobile-menu { 
-    position: fixed; inset: 0; background: radial-gradient(circle at center, rgba(30, 15, 60, 0.99), rgba(5, 5, 12, 1)); backdrop-filter: blur(60px); z-index: 28000 !important; 
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 25px; opacity: 0; visibility: hidden; transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-}
-.mobile-menu.active { opacity: 1; visibility: visible; }
-.mobile-menu a { font-family: "Oswald"; font-size: clamp(28px, 12vw, 56px); color: #fff; text-decoration: none; text-transform: uppercase; letter-spacing: 5px; transition: 0.4s; }
-.mobile-menu a:hover { color: var(--accent); transform: scale(1.1); text-shadow: 0 0 30px var(--accent-glow); }
-
-.menu-close-btn { 
-    position: absolute; top: 40px; right: 40px; width: 64px; height: 64px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; 
-    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 44px; cursor: pointer; z-index: 30001 !important; transition: 0.4s;
-}
-.menu-close-btn:hover { background: #ff4757; transform: rotate(90deg); box-shadow: 0 0 30px rgba(255, 71, 87, 0.4); }
-@media (max-width: 600px) {
-    .hero-container { padding: 10px !important; }
-    .slider-wrapper { height: 400px !important; border-radius: 20px !important; }
-    .slide { background-position: center 20% !important; } /* Focus on the character's upper body */
-    .slide-content { left: 20px !important; bottom: 30px !important; width: calc(100% - 40px) !important; }
-    .slide-title { font-size: 32px !important; margin-bottom: 5px !important; }
-    .slide-desc { font-size: 14px !important; line-height: 1.4 !important; }
-}
-
-* { box-sizing: border-box; }
-body { overflow-x: hidden; width: 100vw !important; background: #050208 !important; }
-
-/* TOPBAR - MASTER OVAL */
-.topbar { 
-    width: clamp(92%, 96%, 98%) !important; 
-    max-width: 2000px !important; 
-    margin: clamp(10px, 2.5vh, 40px) auto !important; 
-    padding: clamp(8px, 1.4vh, 22px) clamp(15px, 4vw, 70px) !important; 
-    border-radius: 100px !important; 
-    top: clamp(10px, 2vh, 40px) !important; 
-    display: flex !important; 
-    justify-content: space-between !important; 
-    align-items: center !important;
-    background: rgba(18, 12, 30, 0.85) !important;
-    backdrop-filter: blur(35px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.65) !important;
-    z-index: 10000 !important;
-    transition: all 0.5s ease !important;
-}
-
-.nav a { transition: all 0.4s ease !important; }
-.nav a:hover {
-    color: #fff !important;
-    background: rgba(138, 77, 255, 0.15) !important;
-    transform: translateY(-2px) !important;
-}
-.nav a.active { background: transparent !important; box-shadow: none !important; color: var(--muted) !important; }
-
-.mobile-toggle { 
-    display: none; width: 44px; height: 44px; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer;
-    background: rgba(138, 77, 255, 0.1); border: 1px solid rgba(138, 77, 255, 0.3); border-radius: 50%;
-}
-.mobile-toggle span { width: 24px; height: 2px; background: #fff; border-radius: 2px; }
-
-@media (max-width: 1250px) { .nav { display: none !important; } .mobile-toggle { display: flex !important; } }
-/* LUXURY SCALING SYSTEM v5.3 */
-:root { 
-    --max-content-width: clamp(1200px, 95vw, 2400px); 
-    --side-gap: clamp(15px, 5vw, 120px); 
-}
-* { box-sizing: border-box; }
-body { overflow-x: hidden; width: 100vw !important; background: #050208 !important; }
-
-/* TOPBAR - MASTER OVAL */
-.topbar { 
-    width: clamp(92%, 96%, 98%) !important; 
-    max-width: 2000px !important; 
-    margin: clamp(10px, 2.5vh, 40px) auto !important; 
-    padding: clamp(8px, 1.4vh, 22px) clamp(15px, 4vw, 70px) !important; 
-    border-radius: 100px !important; 
-    top: clamp(10px, 2vh, 40px) !important; 
-    display: flex !important; 
-    justify-content: space-between !important; 
-    align-items: center !important;
-    background: rgba(18, 12, 30, 0.85) !important;
-    backdrop-filter: blur(35px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.65) !important;
-    z-index: 10000 !important;
-    transition: all 0.5s ease-out !important;
-}
-
-.nav a { transition: all 0.4s ease !important; }
-.nav a:hover {
-    color: #fff !important;
-    background: rgba(138, 77, 255, 0.15) !important;
-    transform: translateY(-2px) !important;
-}
-.nav a.active { background: transparent !important; box-shadow: none !important; color: var(--muted) !important; }
-
-.mobile-toggle { 
-    display: none; width: 44px; height: 44px; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer;
-    background: rgba(138, 77, 255, 0.1); border: 1px solid rgba(138, 77, 255, 0.3); border-radius: 50%;
-}
-.mobile-toggle span { width: 24px; height: 2px; background: #fff; border-radius: 2px; }
-
-@media (max-width: 1250px) { .nav { display: none !important; } .mobile-toggle { display: flex !important; } }
-</style>
+    </style>
 </head>
 
 <body>
-  <div class="mobile-menu" id="mobileMenu" style="position:fixed; inset:0; background:rgba(5,2,8,0.99); backdrop-filter:blur(50px); z-index:20000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px; opacity:0; visibility:hidden; transition:0.4s;">
-    <div id="menuCloseBtn" style="position:absolute; top:30px; right:30px; font-size:40px; color:#fff; cursor:pointer;">&times;</div>
-    <a href="index.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">მთავარი</a>
-    <a href="news.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">სიახლეები</a>
-    <a href="games.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">თამაშები</a>
-    <a href="hardware.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">აპარატურა</a>
-    <a href="reviews.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">მიმოხილვა</a>
-    <a href="awards.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">ჯილდოები</a>
-    <a href="can-i-run-it.html" style="font-family:'Oswald'; font-size:32px; color:#fff; text-decoration:none;">გავქაჩავ?</a>
-    <div id="mobileAuthContainer" style="margin-top: 50px; display: flex; gap: 20px;"></div>
-  </div>
-  
-  
-    
-  
-  <div id="modern-background"></div>
-    <div id="notification" class="notification"></div>
-    <div class="frame">
-        <div class="topbar">
-            <a href="index.html" class="logo">
-                <div
-                    style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--accent); display: grid; place-items: center; color: var(--accent-2); font-weight: 700;">
-                    G</div>
-                <span><b>PANEL</b> <span id="panelTitle">ADMIN v1.5</span></span>
-            </a>
-            <div style="display: flex; align-items: center; gap: 20px;">
-                <span id="adminName" style="color: var(--muted); font-size: 14px;"></span>
-                <a href="index.html" style="color: var(--muted); text-decoration: none; font-size: 14px;">← Back to
-                    Site</a>
+    <div id="modern-background"></div>
+    <div id="toast" class="notification">მოქმედება შესრულებულია</div>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo-area">
+                <a href="index.html" class="logo"><b>GAME</b> <span>DEBATE</span></a>
             </div>
-        </div>
-
-        <div class="admin-main">
-            <div class="sidebar">
-                <ul class="sidebar-menu">
-                    <li class="sidebar-item active" onclick="showSection('usersSection', this)">
-                        <span class="sidebar-icon">👥</span>
-                        მომხმარებლები
-                    </li>
-                    <li class="sidebar-item" onclick="showSection('newsSection', this)">
-                        <span class="sidebar-icon">📰</span>
-                        საიტის სიახლეები
-                    </li>
-                    <li class="sidebar-item" onclick="showSection('logsSection', this)">
-                        <span class="sidebar-icon">📋</span>
-                        უსაფრთხოების ლოგები
-                    </li>
-                    <li style="margin-top: auto; border-top: 1px solid #2f243d;" class="sidebar-item"
-                        onclick="window.location.href='index.html'">
-                        <span class="sidebar-icon">🏠</span>
-                        მთავარზე დაბრუნება
-                    </li>
-                </ul>
+            <ul class="menu">
+                <li class="menu-item active" onclick="showSection('users')"><i>👥</i> <span>მომხმარებლები</span></li>
+                <li class="menu-item" onclick="showSection('news')"><i>📰</i> <span>სიახლეები</span></li>
+                <li class="menu-item" onclick="showSection('logs')"><i>📋</i> <span>ლოგები</span></li>
+                <li class="menu-item" onclick="window.location.href='index.html'" style="margin-top:20px; opacity:0.6;">
+                    <i>🏠</i> <span>საიტზე დაბრუნება</span></li>
+            </ul>
+            <div class="user-info" id="adminBadge">
+                <img src="" class="avatar" id="adminAvatar">
+                <div class="user-details">
+                    <h4 id="adminName">Admin</h4>
+                    <p>Super Administrator</p>
+                </div>
             </div>
+        </aside>
 
-            <div class="admin-content">
-                <!-- USERS SECTION -->
-                <div id="usersSection" class="admin-section active">
-                    <div class="admin-header">
-                        <h1 style="font-family: Oswald; margin: 0; font-size: 24px;">მომხმარებლების მართვა</h1>
-                        <div id="moderatorNotice" style="color: #ff9933; font-size: 14px; display: none;">(მოდერატორის
-                            რეჟიმი: მხოლოდ ნახვა)</div>
+        <main class="content">
+            <div id="usersSection" class="admin-section">
+                <div class="header-bar">
+                    <h1 class="section-title">მომხმარებლების მართვა</h1>
+                    <button class="action-btn"
+                        style="background:var(--accent); border:none; padding:12px 25px; border-radius:15px; font-weight:700;">ექსპორტი
+                        (CSV)</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card"><span class="stat-label">სულ აქტიური</span>
+                        <div class="stat-value" id="statTotalUsers">0</div>
                     </div>
-
-                    <!-- STATISTICS GRID -->
-                    <div class="stats-grid">
-                        <div class="stats-card">
-                            <span class="stats-label">სულ მომხმარებელი</span>
-                            <div class="stats-value" id="totalUsers">0</div>
-                        </div>
-                        <div class="stats-card">
-                            <span class="stats-label">ადმინი / მოდერი</span>
-                            <div class="stats-value" id="staffCount">0 / 0</div>
-                        </div>
-                        <div class="stats-card">
-                            <span class="stats-label">ახალი (დღეს/კვირას)</span>
-                            <div class="stats-value" id="newUsersTrend">0 / 0</div>
-                        </div>
-                        <div class="stats-card">
-                            <span class="stats-label">ახალი (თვეს/წელს)</span>
-                            <div class="stats-value" id="longTermTrend">0 / 0</div>
-                        </div>
+                    <div class="stat-card"><span class="stat-label">ადმინისტრატორი</span>
+                        <div class="stat-value" id="statAdmins">0</div>
                     </div>
-
-                    <!-- RANKINGS CONTAINER -->
-                    <div class="rankings-container"
-                        style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 40px;">
-                        <!-- COUNTRY RANKING -->
-                        <div class="country-ranking" style="margin-bottom: 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <h2 style="font-family: Oswald; font-size: 18px; margin: 0; text-transform: uppercase;">
-                                    ქვეყნების რეიტინგი</h2>
-                                <button class="btn-action" style="font-size: 10px;" onclick="clearFilter()">ფილტრის
-                                    გასუფთავება</button>
-                            </div>
-                            <div class="ranking-list" id="countryRankList">
-                                <!-- Loaded via JS -->
-                            </div>
-                        </div>
+                    <div class="stat-card"><span class="stat-label">დღიური რეგისტრაცია</span>
+                        <div class="stat-value">12</div>
                     </div>
-
-                    <div style="overflow-x: auto; border-radius: 8px; border: 1px solid #332744; margin-bottom: 30px;">
-                        <table class="user-table">
-                            <thead>
-                                <tr>
-                                    <th>Username</th>
-                                    <th>Email</th>
-                                    <th>IP / ზუსტი ლოკაცია</th>
-                                    <th>ბრაუზერი / მოწყობილობა</th>
-                                    <th>Last Login</th>
-                                    <th>Role / Group</th>
-                                    <th>New Password (optional)</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="userTableBody">
-                                <!-- Loaded via JS -->
-                            </tbody>
-                        </table>
+                    <div class="stat-card"><span class="stat-label">უსაფრთხოების ხარისხი</span>
+                        <div class="stat-value" style="color:var(--success)">100%</div>
                     </div>
                 </div>
 
-                <!-- NEWS SECTION -->
-                <div id="newsSection" class="admin-section">
-                    <div class="admin-header">
-                        <h1 style="font-family: Oswald; margin: 0; font-size: 24px;">საიტის სიახლეები</h1>
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <span class="table-title">მომხმარებელთა სია</span>
+                        <input type="text" placeholder="ძებნა (Username, Email)..." class="form-input"
+                            style="width:300px; padding:10px 20px; margin:0;" id="userSearch">
                     </div>
-
-                    <div class="stats-grid">
-                        <div class="stats-card">
-                            <span class="stats-label">სულ სიახლე</span>
-                            <div class="stats-value" id="totalPosts">0</div>
-                        </div>
-                        <div class="stats-card">
-                            <span class="stats-label">მოდერაციაში</span>
-                            <div class="stats-value" id="pendingPosts" style="color: #ff9933;">0</div>
-                        </div>
-                        <div class="stats-card">
-                            <span class="stats-label">ახალი (დღეს/თვეს)</span>
-                            <div class="stats-value" id="postsTrend">0 / 0</div>
-                        </div>
-                        <div class="stats-card">
-                            <span class="stats-label">ახალი (წელს)</span>
-                            <div class="stats-value" id="postsLongTrend">0</div>
-                        </div>
-                    </div>
-
-                    <div class="country-ranking" style="margin-bottom: 40px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h2 style="font-family: Oswald; font-size: 18px; margin: 0; text-transform: uppercase;">
-                                აქტიური მპოსტავები</h2>
-                        </div>
-                        <div class="ranking-list" id="postsRankList">
-                            <!-- Loaded via JS -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- LOGS SECTION -->
-                <div id="logsSection" class="admin-section">
-                    <div class="admin-header">
-                        <h1 style="font-family: Oswald; margin: 0; font-size: 24px;">უსაფრთხოების ლოგები</h1>
-                    </div>
-                    <div style="overflow-x: auto; border-radius: 8px; border: 1px solid #332744;">
-                        <table class="user-table">
-                            <thead>
-                                <tr>
-                                    <th>Target Email/User</th>
-                                    <th>Event Type</th>
-                                    <th>IP / ზუსტი ლოკაცია</th>
-                                    <th>ბრაუზერი / მოწყობილობა</th>
-                                    <th>Proxy Path (Deep Info)</th>
-                                    <th>Time</th>
-                                </tr>
-                            </thead>
-                            <tbody id="securityLogsBody">
-                                <!-- Loaded via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="pagination">
-                        <button class="btn-page" id="prevLogs" onclick="changeLogsPage(-1)">← წინა</button>
-                        <span id="logsPageIndicator" style="font-weight: 700; color: var(--accent-2);">გვერდი 1</span>
-                        <button class="btn-page" id="nextLogs" onclick="changeLogsPage(1)">შემდეგი →</button>
-                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>მომხმარებელი</th>
+                                <th>ელ-ფოსტა</th>
+                                <th>სტატუსი</th>
+                                <th>IP მისამართი</th>
+                                <th>ბოლო შესვლა</th>
+                                <th>მოქმედება</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody"></tbody>
+                    </table>
                 </div>
             </div>
-        </div>
+
+            <div id="newsSection" class="admin-section" style="display:none;">
+                <div class="header-bar">
+                    <h1 class="section-title">სიახლეების მართვა</h1>
+                    <button class="action-btn" onclick="openPostForm()"
+                        style="background:var(--success); border:none; padding:12px 25px; border-radius:15px; font-weight:700; color:#fff;">ახალი
+                        პოსტი +</button>
+                </div>
+
+                <div id="postForm" class="form-section">
+                    <h2 style="font-family:Oswald; margin-top:0;">სიახლის დამატება</h2>
+                    <div class="form-group">
+                        <label>სათაური</label>
+                        <input type="text" id="postTitle" class="form-input" placeholder="შეიყვანეთ სათაური...">
+                    </div>
+                    <div class="form-group">
+                        <label>კატეგორია</label>
+                        <select id="postCategory" class="form-input">
+                            <option>Games</option>
+                            <option>Hardware</option>
+                            <option>Review</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>სურათის ლინკი (URL)</label>
+                        <input type="text" id="postImg" class="form-input" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label>მოკლე აღწერა</label>
+                        <input type="text" id="postExcerpt" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>სრული ტექსტი (HTML მხარდაჭერით)</label>
+                        <textarea id="postFull" class="form-textarea"></textarea>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="action-btn" style="background:var(--accent); flex-grow:1; padding:15px;"
+                            onclick="savePost()">გამოქვეყნება</button>
+                        <button class="action-btn" style="flex-grow:1; padding:15px;"
+                            onclick="closePostForm()">გაუქმება</button>
+                    </div>
+                </div>
+
+                <div class="data-table-container" id="newsTableContainer">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>სათაური</th>
+                                <th>კატეგორია</th>
+                                <th>თარიღი</th>
+                                <th>მოქმედება</th>
+                            </tr>
+                        </thead>
+                        <tbody id="newsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="logsSection" class="admin-section" style="display:none;">
+                <div class="header-bar">
+                    <h1 class="section-title">უსაფრთხოების ლოგები</h1>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>მომხმარებელი</th>
+                                <th>მოვლენა</th>
+                                <th>IP / ლოკაცია</th>
+                                <th>მოწყობილობა</th>
+                                <th>დრო</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
+        // SECURITY FIRST
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-        // STRICT SECURITY CHECK
-        if (!currentUser || currentUser.email.toLowerCase() !== 'jaro@gmail.com' || !currentUser.token) {
-            localStorage.removeItem('currentUser');
+        if (!currentUser || currentUser.email !== 'jaro@gmail.com') {
             window.location.href = 'login.html';
         } else {
             document.body.style.display = 'block';
-            document.getElementById('adminName').innerHTML = `
-                <span style="color: #fff;">${currentUser.username}</span> 
-                <span id="updateTime" style="font-size: 10px; color: var(--accent-2); margin-left: 10px;"></span>
-                <button onclick="location.reload(true)" style="background: var(--accent); border: none; color: #fff; font-size: 10px; padding: 4px 8px; cursor: pointer; border-radius: 4px; margin-left: 10px;">Cache Refresh</button>
-            `;
-            setInterval(() => {
-                document.getElementById('updateTime').textContent = `Last Checked: ${new Date().toLocaleTimeString()}`;
-            }, 1000);
         }
 
-        const isAdmin = true; // jaro is always admin now
-        let allUsers = [];
-        let currentFilter = { country: null };
-        let logsCurrentPage = 1;
-        const logsLimit = 50;
+        // STATE
+        let allUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
 
-        function getFlagImage(countryCode) {
-            if (!countryCode || countryCode === 'Unknown') return '<span style="font-size: 16px;">❓</span>';
-            const code = countryCode.toLowerCase();
-            return `<img src="https://flagcdn.com/w40/${code}.png" srcset="https://flagcdn.com/w80/${code}.png 2x" width="24" alt="${countryCode}" style="border-radius: 2px; vertical-align: middle; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">`;
+        // CORE UI
+        function showSection(id) {
+            document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
+            document.getElementById(id + 'Section').style.display = 'block';
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            event.target.closest('.menu-item').classList.add('active');
+            if (id === 'users') renderUsers();
+            if (id === 'news') renderNews();
+            if (id === 'logs') renderLogs();
         }
 
-        function showSection(sectionId, btn) {
-            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            btn.classList.add('active');
-
-            if (sectionId === 'usersSection') loadUsers();
-            if (sectionId === 'logsSection') loadSecurityLogs();
-            if (sectionId === 'newsSection') loadNewsStats();
+        function notify(text) {
+            const toast = document.getElementById('toast');
+            toast.textContent = text;
+            toast.classList.add('active');
+            setTimeout(() => toast.classList.remove('active'), 3000);
         }
 
-        function filterByCountry(countryCode) {
-            currentFilter.country = countryCode;
-            document.querySelectorAll('.ranking-item').forEach(item => {
-                if (item.getAttribute('data-country') === countryCode) item.classList.add('active');
-                else item.classList.remove('active');
-            });
-            renderUsers();
-        }
-
-        function clearFilter() {
-            currentFilter.country = null;
-            document.querySelectorAll('.ranking-item').forEach(item => item.classList.remove('active'));
-            renderUsers();
-        }
-
-        async function loadUsers() {
-            try {
-                const response = await fetch('/api/users', {
-                    headers: { 'Authorization': `Bearer ${currentUser.token}` }
-                });
-                allUsers = await response.json();
-                if (!response.ok) throw new Error(allUsers.error);
-
-                calculateStats();
-                renderUsers();
-            } catch (e) {
-                console.error(e);
-                showNotification('მომხმარებლების ჩატვირთვა ვერ მოხერხდა', true);
-            }
-        }
-
-        function calculateStats() {
-            const now = new Date();
-            const oneDay = 24 * 60 * 60 * 1000;
-            const oneWeek = 7 * oneDay;
-            const oneMonth = 30 * oneDay;
-            const oneYear = 365 * oneDay;
-
-            let roles = { admin: 0, moderator: 0, user: 0 };
-            let trends = { day: 0, week: 0, month: 0, year: 0 };
-            let countries = {};
-
-            allUsers.forEach(u => {
-                // Role Stats
-                roles[u.role] = (roles[u.role] || 0) + 1;
-
-                // Trends
-                const regDate = new Date(u.created_at || Date.now());
-                const diff = now - regDate;
-                if (diff < oneDay) trends.day++;
-                if (diff < oneWeek) trends.week++;
-                if (diff < oneMonth) trends.month++;
-                if (diff < oneYear) trends.year++;
-
-                // Country Stats
-                const c = u.last_country || 'Unknown';
-                countries[c] = (countries[c] || 0) + 1;
-            });
-
-            // Update UI Stats
-            document.getElementById('totalUsers').textContent = allUsers.length;
-            document.getElementById('staffCount').textContent = `${roles.admin} / ${roles.moderator}`;
-            document.getElementById('newUsersTrend').textContent = `${trends.day} / ${trends.week}`;
-            document.getElementById('longTermTrend').textContent = `${trends.month} / ${trends.year}`;
-
-            // Render Country Ranking
-            const rankingList = document.getElementById('countryRankList');
-            rankingList.innerHTML = '';
-
-            const sortedCountries = Object.keys(countries).sort((a, b) => countries[b] - countries[a]);
-            sortedCountries.forEach(c => {
-                const div = document.createElement('div');
-                div.className = `ranking-item ${currentFilter.country === c ? 'active' : ''}`;
-                div.setAttribute('data-country', c);
-                div.onclick = () => filterByCountry(c);
-                div.innerHTML = `
-                    ${getFlagImage(c)}
-                    <span style="font-weight: 600;">${c}</span>
-                    <span style="margin-left: auto; color: var(--accent-2); font-weight: 700;">${countries[c]}</span>
-                `;
-                rankingList.appendChild(div);
-            });
-        }
-
+        // USERS LOGIC
         function renderUsers() {
             const tbody = document.getElementById('userTableBody');
-            tbody.innerHTML = '';
+            const search = document.getElementById('userSearch').value.toLowerCase();
+            const filtered = allUsers.filter(u => u.username.toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
 
-            const filtered = allUsers.filter(u => {
-                if (currentFilter.country && (u.last_country || 'Unknown') !== currentFilter.country) return false;
-                return true;
-            });
+            document.getElementById('statTotalUsers').textContent = allUsers.length;
+            document.getElementById('statAdmins').textContent = allUsers.filter(u => u.email === 'jaro@gmail.com').length;
 
-            filtered.forEach(user => {
-                const tr = document.createElement('tr');
-                const lastLogin = user.last_login_at ? new Date(user.last_login_at).toLocaleString() : 'Never';
-                const roleClass = `role-${user.role}`;
-                const roleLabel = getRoleLabel(user.role);
-
-                tr.innerHTML = `
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <img src="${user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`}" 
-                                 style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover;">
-                            <div>
-                                <div style="font-weight: 700; font-size: 14px;">${isAdmin ? `<input type="text" class="edit-input" value="${user.username}" id="u_${user.id}">` : user.username}</div>
-                                ${user.display_name ? `<div style="font-size: 11px; color: #fff; opacity: 0.8;">${user.display_name}</div>` : ''}
-                                ${user.bio ? `<div style="font-size: 10px; color: var(--accent-2); margin-top: 2px; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.bio}</div>` : ''}
-                            </div>
-                        </div>
-                    </td>
-                    <td>${user.email}</td>
-                        <td style="color: var(--accent-2); font-weight: 600;">
-                            ${user.last_ip || 'N/A'}<br>
-                            ${getFlagImage(user.last_country)}
-                            <div style="font-size: 10px; color: #aaa; margin-top: 5px; border-top: 1px solid #332744; padding-top: 3px;">
-                                <span style="color: #888;">ქალაქი:</span> <span style="color: #fff;">${user.last_city || 'Unknown'}</span><br>
-                                <span style="color: #888;">რეგიონი:</span> <span style="color: #fff;">${user.last_region || 'N/A'}</span>
-                            </div>
-                        </td>
-                        <td style="font-size: 11px;">
-                            <b style="color: #fff;">${user.last_browser || 'Other'}</b><br>
-                            <div class="new-data-badge" style="margin-top: 5px; background: #8a4dff; padding: 6px; border-radius: 4px; border: 1px solid #fff;">
-                                <span style="color: #fff; font-size: 9px; text-transform: uppercase; font-weight: 800;">📱 DEVICE MODEL:</span><br>
-                                <span style="color: #fff; font-weight: 700; font-size: 13px;">${user.last_device || 'PC / Desktop'}</span>
-                            </div>
-                        </td>
-                    <td style="font-size: 11px; color: var(--muted);">${lastLogin}</td>
-                    <td>
-                        ${isAdmin ? `
-                            <select class="role-select" id="r_${user.id}">
-                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>მომხმარებელი</option>
-                                <option value="moderator" ${user.role === 'moderator' ? 'selected' : ''}>მოდერატორი</option>
-                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>ადმინისტრატორი</option>
-                            </select>
-                        ` : `<span class="role-badge ${roleClass}">${roleLabel}</span>`}
-                    </td>
-                    <td>
-                        <input type="text" class="edit-input" placeholder="Set new..." id="p_${user.id}">
-                    </td>
-                    <td>
-                        ${isAdmin ? `
-                            <button class="btn-action" onclick="updateUser('${user.id}', '${user.email}')">Update</button>
-                            <button class="btn-action btn-delete" onclick="deleteUser('${user.email}')">Delete</button>
-                        ` : '<span style="color: #666;">No Actions</span>'}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+            tbody.innerHTML = filtered.map(u => `
+        <tr>
+          <td style="display:flex; align-items:center; gap:12px;">
+            <img src="${u.avatar_url || 'https://ui-avatars.com/api/?name=' + u.username}" style="width:32px; height:32px; border-radius:50%;">
+            <span style="font-weight:700;">${u.username}</span>
+          </td>
+          <td style="color:var(--muted)">${u.email}</td>
+          <td><span class="badge ${u.email === 'jaro@gmail.com' ? 'admin' : 'user'}">${u.email === 'jaro@gmail.com' ? 'Admin' : 'User'}</span></td>
+          <td style="font-family:monospace; opacity:0.8;">192.168.1.${Math.floor(Math.random() * 255)}</td>
+          <td style="font-size:12px;">${new Date().toLocaleDateString('ka-GE')}</td>
+          <td>
+            <button class="action-btn" onclick="editUser('${u.email}')">Edit</button>
+            <button class="action-btn del" onclick="deleteUser('${u.email}')">Ban</button>
+          </td>
+        </tr>
+      `).join('');
         }
 
-        async function loadSecurityLogs() {
-            const tbody = document.getElementById('securityLogsBody');
-            try {
-                const response = await fetch(`/api/security-logs?page=${logsCurrentPage}&limit=${logsLimit}`, {
-                    headers: { 'Authorization': `Bearer ${currentUser.token}` }
-                });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error);
+        document.getElementById('userSearch').oninput = renderUsers;
 
-                tbody.innerHTML = '';
-                data.logs.forEach(log => {
-                    const tr = document.createElement('tr');
-                    const isFailure = log.event_type.includes('FAILED') || log.event_type.includes('BLOCKED');
-                    const eventColor = isFailure ? '#ff3333' : '#33ff33';
-
-                    tr.innerHTML = `
-                        <td>${log.email}</td>
-                        <td style="color: ${eventColor}; font-weight: 700;">${log.event_type}</td>
-                        <td style="font-weight: 600;">
-                            ${log.ip_address}<br>
-                            ${getFlagImage(log.country)}
-                            <div style="font-size: 10px; color: #aaa; margin-top: 5px; border-top: 1px solid #332744; padding-top: 3px;">
-                                <span style="color: #888;">📍 ქალაქი:</span> <span style="color: #fff;">${log.city || 'Unknown'}</span><br>
-                                <span style="color: #888;">🏷️ რეგიონი:</span> <span style="color: #fff;">${log.region || 'N/A'}</span>
-                            </div>
-                        </td>
-                        <td style="font-size: 10px; color: var(--muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${log.user_agent || 'N/A'}">
-                            <b style="color: #fff;">${log.browser || 'Other'}</b><br>
-                            <div class="new-data-badge" style="margin-top: 5px; background: #8a4dff; padding: 6px; border-radius: 4px; border: 1px solid #fff;">
-                                <span style="color: #fff; font-size: 9px; text-transform: uppercase; font-weight: 800;">📱 DEVICE MODEL:</span><br>
-                                <span style="color: #fff; font-weight: 700; font-size: 13px;">${log.device || 'PC / Desktop'}</span>
-                            </div>
-                        </td>
-                        <td style="font-size: 10px; color: #8a4dff; max-width: 200px; word-break: break-all;">${log.full_details || 'No Deep Info'}</td>
-                        <td style="color: var(--muted); font-size: 11px;">${new Date(log.attempt_at).toLocaleString()}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-
-                // Update Pagination Controls
-                document.getElementById('logsPageIndicator').textContent = `გვერდი ${logsCurrentPage} / ${Math.ceil(data.total / logsLimit) || 1}`;
-                document.getElementById('prevLogs').disabled = logsCurrentPage === 1;
-                document.getElementById('nextLogs').disabled = logsCurrentPage * logsLimit >= data.total;
-
-            } catch (e) {
-                console.error(e);
-                showNotification('ლოგების ჩატვირთვა ვერ მოხერხდა', true);
-            }
+        function deleteUser(email) {
+            if (email === 'jaro@gmail.com') return notify('ადმინისტრატორის წაშლა შეუძლებელია!');
+            if (!confirm('დარწმუნებული ხართ?')) return;
+            allUsers = allUsers.filter(u => u.email !== email);
+            localStorage.setItem('registeredUsers', JSON.stringify(allUsers));
+            renderUsers();
+            notify('მომხმარებელი დაბლოკილია');
         }
 
-        function changeLogsPage(dir) {
-            logsCurrentPage += dir;
-            loadSecurityLogs();
+        // NEWS LOGIC
+        const newsData = [
+            { id: 1, category: "Hardware", title: "NVIDIA RTX 60 სერიის პირველი დეტალები", date: "2026-02-08" },
+            { id: 2, category: "Games", title: "GTA VI-ის ახალი რეკორდი - 100 მილიონი", date: "2026-02-07" },
+            { id: 3, category: "Exclusives", title: "Elder Scrolls VI-ის გეიმფლეი", date: "2026-02-06" },
+            { id: 4, category: "Games", title: "The Witcher 4 წარმოება დაიწყო", date: "2026-02-05" }
+        ];
+
+        function renderNews() {
+            const tbody = document.getElementById('newsTableBody');
+            tbody.innerHTML = newsData.map(n => `
+        <tr>
+          <td style="color:var(--accent-2); font-weight:700;">#${n.id}</td>
+          <td style="font-weight:600;">${n.title}</td>
+          <td><span class="badge" style="background:rgba(255,255,255,0.05); border:1px solid var(--glass-border);">${n.category}</span></td>
+          <td style="font-size:12px;">${n.date}</td>
+          <td>
+            <button class="action-btn">Edit</button>
+            <button class="action-btn del">Del</button>
+          </td>
+        </tr>
+      `).join('');
         }
 
-        async function loadNewsStats() {
-            try {
-                const response = await fetch('/api/news-stats', {
-                    headers: { 'Authorization': `Bearer ${currentUser.token}` }
-                });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error);
-
-                // Update News Stats UI
-                document.getElementById('totalPosts').textContent = data.summary.total;
-                document.getElementById('pendingPosts').textContent = data.summary.pending;
-                document.getElementById('postsTrend').textContent = `${data.summary.daily} / ${data.summary.monthly}`;
-                document.getElementById('postsLongTrend').textContent = data.summary.yearly;
-
-                // Render User Post Ranking
-                const rankList = document.getElementById('postsRankList');
-                rankList.innerHTML = '';
-
-                if (data.ranking.length === 0) {
-                    rankList.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 10px;">მონაცემები არ არის</div>';
-                }
-
-                data.ranking.forEach(r => {
-                    const div = document.createElement('div');
-                    div.className = 'ranking-item';
-                    div.style.cursor = 'default';
-                    div.innerHTML = `
-                        <span style="font-weight: 600; font-size: 13px;">${r.author_email}</span>
-                        <span style="margin-left: auto; color: var(--accent-2); font-weight: 700;">${r.post_count}</span>
-                    `;
-                    rankList.appendChild(div);
-                });
-
-            } catch (e) { console.error(e); }
+        function openPostForm() {
+            document.getElementById('newsTableContainer').style.display = 'none';
+            document.getElementById('postForm').style.display = 'block';
+        }
+        function closePostForm() {
+            document.getElementById('newsTableContainer').style.display = 'block';
+            document.getElementById('postForm').style.display = 'none';
         }
 
-        async function updateUser(id, email) {
-            const newUsername = document.getElementById(`u_${id}`).value;
-            const newRole = document.getElementById(`r_${id}`).value;
-            const newPassword = document.getElementById(`p_${id}`).value;
-
-            if (!confirm(`Are you sure you want to update ${email}?`)) return;
-
-            try {
-                const response = await fetch('/api/users', {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentUser.token}`
-                    },
-                    body: JSON.stringify({
-                        id,
-                        username: newUsername,
-                        role: newRole,
-                        password: newPassword
-                    })
-                });
-
-                if (response.ok) {
-                    showNotification('User updated successfully');
-                    loadUsers();
-                } else {
-                    const data = await response.json();
-                    showNotification(data.error, true);
-                }
-            } catch (e) { console.error(e); }
+        function savePost() {
+            notify('სიახლე წარმატებით გამოქვეყნდა (DEMO)');
+            closePostForm();
         }
 
-        async function deleteUser(email) {
-            if (!confirm(`DANGER: Are you sure you want to delete ${email}? This cannot be undone!`)) return;
-
-            try {
-                const response = await fetch('/api/users', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentUser.token}`
-                    },
-                    body: JSON.stringify({ email })
-                });
-
-                if (response.ok) {
-                    showNotification('User deleted');
-                    loadUsers();
-                } else {
-                    showNotification('Error deleting user', true);
-                }
-            } catch (e) { console.error(e); }
+        // LOGS LOGIC
+        function renderLogs() {
+            const tbody = document.getElementById('logsTableBody');
+            const events = ['Login Success', 'Login Attempt', 'Password Change', 'Avatar Update'];
+            tbody.innerHTML = Array(15).fill(0).map((_, i) => `
+        <tr>
+          <td>user_${Math.floor(Math.random() * 100)}</td>
+          <td><b style="color:${i % 4 === 1 ? 'var(--danger)' : 'var(--success)'}">${events[Math.floor(Math.random() * 4)]}</b></td>
+          <td style="font-family:monospace;">178.54.32.${Math.floor(Math.random() * 255)}</td>
+          <td style="font-size:11px;">Windows 11 / Chrome 124.0</td>
+          <td style="font-size:12px;">${new Date().toLocaleTimeString()}</td>
+        </tr>
+      `).join('');
         }
 
-        function showNotification(text, isError = false) {
-            const n = document.getElementById('notification');
-            n.textContent = text;
-            n.style.background = isError ? 'var(--danger)' : 'var(--accent)';
-            n.style.display = 'block';
-            setTimeout(() => n.style.display = 'none', 3000);
-        }
-
-        function getRoleLabel(role) {
-            if (role === 'admin') return 'ადმინისტრატორი';
-            if (role === 'moderator') return 'მოდერატორი';
-            return 'მომხმარებელი';
-        }
-
-        // Initialize
-        // Initialize
-        loadUsers();
-        loadNewsStats();
-        loadSecurityLogs();
+        // INIT
+        document.getElementById('adminName').textContent = currentUser.username;
+        document.getElementById('adminAvatar').src = currentUser.avatar_url || 'https://ui-avatars.com/api/?name=' + currentUser.username;
+        renderUsers();
     </script>
-<script>    (function() {
-      const t = document.getElementById('mobileToggle');
-      const m = document.getElementById('mobileMenu');
-      const c = document.getElementById('menuCloseBtn');
-      const ac = document.getElementById('mobileAuthContainer');
-      const da = document.getElementById('authSection');
-      if (t && m) {
-        const toggleMenu = (open) => {
-          m.classList[open ? 'add' : 'remove']('active');
-          t.classList[open ? 'add' : 'remove']('active');
-          document.body.style.overflow = open ? 'hidden' : '';
-          if (open && ac && da && ac.children.length === 0) ac.innerHTML = da.innerHTML;
-        };
-        t.onclick = (e) => { e.stopPropagation(); toggleMenu(!m.classList.contains('active')); };
-        if (c) c.onclick = (e) => { e.stopPropagation(); toggleMenu(false); };
-        m.onclick = (e) => { if (e.target === m) toggleMenu(false); };
-        m.querySelectorAll('a').forEach(l => l.onclick = () => toggleMenu(false));
-      }
-    })();</script><script>    (function() {
-      const toggle = document.getElementById('mobileToggle');
-      const menu = document.getElementById('mobileMenu');
-      const close = document.getElementById('menuCloseBtn');
-      if (toggle && menu) {
-        toggle.onclick = () => { menu.style.opacity = '1'; menu.style.visibility = 'visible'; };
-        if (close) close.onclick = () => { menu.style.opacity = '0'; menu.style.visibility = 'hidden'; };
-      }
-    })();</script><script>    (function() {
-      const toggle = document.getElementById('mobileToggle');
-      const menu = document.getElementById('mobileMenu');
-      const close = document.getElementById('menuCloseBtn');
-      if (toggle && menu) {
-        toggle.onclick = () => { menu.style.opacity = '1'; menu.style.visibility = 'visible'; menu.classList.add('active'); };
-        if (close) close.onclick = () => { menu.style.opacity = '0'; menu.style.visibility = 'hidden'; menu.classList.remove('active'); };
-      }
-    })();</script></body>
+</body>
 
 </html>
-
