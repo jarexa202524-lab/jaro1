@@ -21,6 +21,7 @@
       --text: #f2eef7;
       --glass: rgba(255, 255, 255, 0.03);
       --glass-border: rgba(255, 255, 255, 0.1);
+      --card-bg: rgba(18, 12, 30, 0.6);
       --max-content-width: clamp(1200px, 95vw, 2400px);
       --side-gap: clamp(15px, 5vw, 120px);
       --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -45,7 +46,7 @@
       margin: 0 auto !important;
     }
 
-    /* TOPBAR - MASTER OVAL */
+    /* TOPBAR */
     .topbar {
       width: clamp(92%, 96%, 98%) !important;
       max-width: 2000px !important;
@@ -53,7 +54,7 @@
       padding: clamp(10px, 1.5vh, 22px) clamp(20px, 4vw, 70px) !important;
       border-radius: 100px !important;
       position: sticky;
-      top: clamp(10px, 2vh, 40px) !important;
+      top: clamp(15px, 2.5vh, 40px) !important;
       z-index: 10000 !important;
       display: flex !important;
       justify-content: space-between !important;
@@ -171,121 +172,149 @@
       color: #fff;
     }
 
-    .logout-btn {
-      padding: 10px 20px;
-      background: rgba(231, 76, 60, 0.1);
-      border: 1px solid rgba(231, 76, 60, 0.2);
-      border-radius: 30px;
-      color: #ff6b6b;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    /* OPTIMIZED NEWS BLOCK */
-    .page-header {
-      padding: clamp(80px, 15vh, 160px) 20px clamp(40px, 8vh, 80px);
-      text-align: center;
-      background: radial-gradient(circle at center, rgba(138, 77, 255, 0.08), transparent 70%);
-    }
-
-    .page-header h1 {
-      font-family: "Oswald";
-      font-size: clamp(48px, 8vw, 110px);
-      text-transform: uppercase;
-      margin: 0;
-      letter-spacing: clamp(5px, 1.5vw, 15px);
-      color: #fff;
-      text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    .page-header p {
-      font-size: clamp(14px, 1.5vw, 22px);
-      color: var(--accent-2);
-      font-weight: 600;
-      margin-top: 15px;
-      text-transform: uppercase;
-      letter-spacing: 4px;
-      opacity: 0.8;
-    }
-
-    .container {
-      padding: 0 var(--side-gap) 120px;
-      width: 100%;
-      max-width: 1200px;
+    /* NEWS FEED LAYOUT */
+    .news-container {
+      padding: clamp(40px, 8vh, 120px) var(--side-gap);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(clamp(320px, 28vw, 450px), 1fr));
+      gap: clamp(30px, 4vw, 60px);
+      max-width: var(--max-content-width);
       margin: 0 auto;
     }
 
-    .article-card {
-      background: rgba(18, 12, 30, 0.6);
+    .news-card {
+      background: var(--card-bg);
       backdrop-filter: blur(40px);
       border: 1px solid var(--glass-border);
-      border-radius: clamp(25px, 4vw, 50px);
-      padding: clamp(30px, 6vw, 80px);
-      line-height: 1.8;
-      color: #dfd8e9;
-      font-size: clamp(16px, 1.4vw, 24px);
-      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8);
+      border-radius: 40px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .news-card:hover {
+      transform: translateY(-15px) scale(1.02);
+      border-color: rgba(138, 77, 255, 0.4);
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8), 0 0 30px rgba(138, 77, 255, 0.1);
+    }
+
+    .news-thumb {
+      width: 100%;
+      height: 250px;
       position: relative;
       overflow: hidden;
     }
 
-    .article-card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
+    .news-thumb img {
       width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent));
-      background-size: 200% 100%;
-      animation: shift 3s linear infinite;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s ease;
     }
 
-    @keyframes shift {
-      0% {
-        background-position: 0% 0%;
-      }
-
-      100% {
-        background-position: 200% 0%;
-      }
+    .news-card:hover .news-thumb img {
+      transform: scale(1.15);
     }
 
-    .article-card p {
-      margin-bottom: clamp(20px, 4vh, 40px);
-      font-weight: 500;
-      letter-spacing: 0.3px;
-    }
-
-    .article-card p:last-child {
-      margin-bottom: 0;
-    }
-
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
+    .news-category {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 6px 16px;
+      background: var(--accent);
       color: #fff;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 12px 28px;
-      border-radius: 40px;
-      border: 1px solid var(--glass-border);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(138, 77, 255, 0.3);
+      z-index: 2;
+    }
+
+    .news-body {
+      padding: 35px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .news-date {
+      color: var(--accent-2);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .news-title {
+      font-family: "Oswald";
+      font-size: 26px;
+      line-height: 1.3;
+      margin: 0 0 15px;
+      color: #fff;
+      transition: color 0.3s ease;
+    }
+
+    .news-card:hover .news-title {
+      color: var(--accent-2);
+    }
+
+    .news-excerpt {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--muted);
+      margin: 0 0 25px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .read-more {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
       text-decoration: none;
       font-weight: 700;
       font-size: 14px;
       text-transform: uppercase;
       letter-spacing: 2px;
-      margin-top: 50px;
       transition: var(--transition);
     }
 
-    .back-link:hover {
+    .read-more span {
+      width: 32px;
+      height: 2px;
       background: var(--accent);
-      border-color: var(--accent);
-      box-shadow: 0 0 30px var(--accent-glow);
-      transform: translateX(-8px);
+      transition: var(--transition);
+    }
+
+    .news-card:hover .read-more span {
+      width: 50px;
+      background: #fff;
+    }
+
+    /* BACKGROUND */
+    #modern-background {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: #050208;
+    }
+
+    #modern-background::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, #1a0b3a 0%, #050208 100%);
+      opacity: 0.8;
     }
 
     /* MOBILE TOGGLE & MENU */
@@ -354,36 +383,6 @@
       transition: 0.3s;
     }
 
-    .mobile-menu a:hover {
-      color: var(--accent);
-      transform: scale(1.1);
-    }
-
-    .menu-close-btn {
-      position: absolute;
-      top: 40px;
-      right: 40px;
-      font-size: 50px;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    /* BACKGROUND */
-    #modern-background {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      background: #050208;
-    }
-
-    #modern-background::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 50% 50%, #1a0b3a 0%, #050208 100%);
-      opacity: 0.6;
-    }
-
     @media (max-width: 1250px) {
       .nav {
         display: none;
@@ -399,17 +398,20 @@
         display: none;
       }
 
-      .container {
-        padding: 0 15px 80px;
+      .news-container {
+        padding: 80px 15px 60px;
       }
 
-      .article-card {
-        padding: 35px 25px;
+      .news-card {
         border-radius: 30px;
       }
 
-      .topbar {
-        width: 96%;
+      .news-body {
+        padding: 25px;
+      }
+
+      .news-title {
+        font-size: 22px;
       }
     }
   </style>
@@ -419,7 +421,8 @@
   <div id="modern-background"></div>
 
   <div class="mobile-menu" id="mobileMenu">
-    <div class="menu-close-btn" id="menuCloseBtn">&times;</div>
+    <div style="position:absolute; top:30px; right:30px; font-size:50px; color:#fff; cursor:pointer;" id="menuCloseBtn">
+      &times;</div>
     <a href="index.html">მთავარი</a>
     <a href="news.html">სიახლეები</a>
     <a href="games.html">თამაშები</a>
@@ -427,7 +430,6 @@
     <a href="reviews.html">მიმოხილვა</a>
     <a href="awards.html">ჯილდოები</a>
     <a href="can-i-run-it.html">გავქაჩავ?</a>
-    <div id="mobileAuthContainer" style="margin-top: 50px; display: flex; gap: 20px;"></div>
   </div>
 
   <div class="frame">
@@ -453,25 +455,73 @@
       </div>
     </header>
 
-    <div class="page-header">
-      <h1>HEADLINES</h1>
-      <p>The daily pulse of the gaming world.</p>
-    </div>
+    <main class="news-container">
+      <!-- NEWS ITEM 1 -->
+      <article class="news-card">
+        <div class="news-category">Hardware</div>
+        <div class="news-thumb">
+          <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200" alt="RTX 60 Series">
+        </div>
+        <div class="news-body">
+          <span class="news-date">February 08, 2026</span>
+          <h2 class="news-title">NVIDIA RTX 60 სერიის პირველი დეტალები - რევოლუცია AI გრაფიკაში</h2>
+          <p class="news-excerpt">ინსაიდერული ინფორმაციით, NVIDIA-ს ახალი თაობის ვიდეო ბარათები 3-ჯერ უფრო სწრაფი იქნება
+            AI გამოთვლებში, რაც სრულიად შეცვლის რეალურ დროში რენდერინგს.</p>
+          <a href="#" class="read-more">ნახეთ სრულად <span></span></a>
+        </div>
+      </article>
 
-    <main class="container">
-      <div class="article-card">
-        <p>თამაშებისა და ტექნოლოგიების სამყარო არასდროს ჩერდება. ჩვენი გუნდი მუშაობს 24/7, რათა მოგაწოდოთ ყველაზე ცხელი
-          სიახლეები RTX 60 სერიის ბარათების, ახალი თაობის კონსოლებისა და იმ თამაშების შესახებ, რომლებიც 2026 წელს
-          შეცვლიან ინდუსტრიას.</p>
-        <p>დარჩით ჩვენთან და იყავით პირველები, ვინც გაიგებს GTA VI-ის ახალი თრეილერის, Elder Scrolls VI-ის გეიმფლეის ან
-          AI-ზე დაფუძნებული გრაფიკული ძრავების შესახებ.</p>
-        <a href="index.html" class="back-link">← Return to Hub</a>
-      </div>
+      <!-- NEWS ITEM 2 -->
+      <article class="news-card">
+        <div class="news-category">Games</div>
+        <div class="news-thumb">
+          <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200" alt="GTA VI">
+        </div>
+        <div class="news-body">
+          <span class="news-date">February 07, 2026</span>
+          <h2 class="news-title">GTA VI-ის ახალი რეკორდი - 100 მილიონი წინასწარი შეკვეთა</h2>
+          <p class="news-excerpt">Rockstar Games-მა ოფიციალურად დაადასტურა, რომ GTA VI გახდა ყველა დროის ყველაზე
+            მოთხოვნადი მედია პროდუქტი ისტორიაში.</p>
+          <a href="#" class="read-more">ნახეთ სრულად <span></span></a>
+        </div>
+      </article>
+
+      <!-- NEWS ITEM 3 -->
+      <article class="news-card">
+        <div class="news-category">Exclusives</div>
+        <div class="news-thumb">
+          <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200" alt="Elder Scrolls VI">
+        </div>
+        <div class="news-body">
+          <span class="news-date">February 06, 2026</span>
+          <h2 class="news-title">Elder Scrolls VI-ის გეიმფლეი სექტემბერში გამოჩნდება</h2>
+          <p class="news-excerpt">Bethesda-ს ხელმძღვანელობამ განაცხადა, რომ თამაში მზადების ბოლო ეტაპზეა და ფანები
+            პირველ რეალურ გეიმფლეის შემოდგომაზე იხილავენ.</p>
+          <a href="#" class="read-more">ნახეთ სრულად <span></span></a>
+        </div>
+      </article>
+
+      <!-- NEWS ITEM 4 -->
+      <article class="news-card">
+        <div class="news-category">Tech</div>
+        <div class="news-thumb">
+          <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=1200" alt="Ray Tracing">
+        </div>
+        <div class="news-body">
+          <span class="news-date">February 05, 2026</span>
+          <h2 class="news-title">Ray Tracing 2.0 - სინათლის სიმულაცია ახალ საფეხურზე</h2>
+          <p class="news-excerpt">ახალი ალგორითმები საშუალებას იძლევა სინათლის სხივების სიმულაცია მოხდეს მობილურ
+            მოწყობილობებზეც კი, ენერგიის მინიმალური დანახარჯით.</p>
+          <a href="#" class="read-more">ნახეთ სრულად <span></span></a>
+        </div>
+      </article>
     </main>
   </div>
 
   <div class="modal-overlay" id="modalOverlay">
-    <div class="modal" id="modalContent"></div>
+    <div class="modal" id="modalContent"
+      style="background:var(--card-bg); backdrop-filter:blur(40px); border:1px solid var(--glass-border); border-radius:40px; padding:40px; width:100%; max-width:440px; position:relative;">
+    </div>
   </div>
 
   <script>
@@ -479,7 +529,7 @@
 
     function updateAuthUI(user) {
       const section = document.getElementById('authSection');
-      if (!user) return;
+      if (!user || !section) return;
       const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
       section.innerHTML = `
         <div id="userBadge" class="user-badge">
@@ -500,13 +550,13 @@
       const content = document.getElementById('modalContent');
       const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=8a4dff&color=fff`;
       content.innerHTML = `
-        <span class="modal-close" id="closeM">&times;</span>
+        <span style="position:absolute; top:20px; right:20px; font-size:24px; color:var(--muted); cursor:pointer;" id="closeM">&times;</span>
         <div style="text-align: center;">
           <img src="${avatar}" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 20px; object-fit: cover;">
           <h2 style="font-family: Oswald; margin: 0; font-size: 28px;">${user.username}</h2>
           <div style="display: flex; flex-direction: column; gap: 10px; margin-top:20px;">
-            <a href="admin.html" class="modal-btn">ადმინ პანელი</a>
-            <button class="modal-btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);" id="closeNow">Close</button>
+            <a href="admin.html" style="background:var(--accent); color:#fff; text-decoration:none; padding:12px; border-radius:12px; font-family:Oswald; font-weight:700;">ადმინ პანელი</a>
+            <button style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color:#fff; padding:12px; border-radius:12px; font-family:Oswald; cursor:pointer;" id="closeNow">Close</button>
           </div>
         </div>
       `;
@@ -523,19 +573,9 @@
       const t = document.getElementById('mobileToggle');
       const m = document.getElementById('mobileMenu');
       const c = document.getElementById('menuCloseBtn');
-      const ac = document.getElementById('mobileAuthContainer');
-      const da = document.getElementById('authSection');
       if (t && m) {
-        const toggleMenu = (open) => {
-          m.classList[open ? 'add' : 'remove']('active');
-          t.classList[open ? 'add' : 'remove']('active');
-          document.body.style.overflow = open ? 'hidden' : '';
-          if (open && ac && da && ac.children.length === 0) ac.innerHTML = da.innerHTML;
-        };
-        t.onclick = (e) => { e.stopPropagation(); toggleMenu(!m.classList.contains('active')); };
-        if (c) c.onclick = (e) => { e.stopPropagation(); toggleMenu(false); };
-        m.onclick = (e) => { if (e.target === m) toggleMenu(false); };
-        m.querySelectorAll('a').forEach(l => l.onclick = () => toggleMenu(false));
+        t.onclick = () => { m.classList.add('active'); document.body.style.overflow = 'hidden'; };
+        if (c) c.onclick = () => { m.classList.remove('active'); document.body.style.overflow = ''; };
       }
     })();
   </script>
