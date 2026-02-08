@@ -211,8 +211,26 @@
     .news-container {
       padding: 60px var(--side-gap);
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 30px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 25px;
+    }
+
+    @media (max-width: 1400px) {
+      .news-container {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .news-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 700px) {
+      .news-container {
+        grid-template-columns: 1fr;
+      }
     }
 
     .news-card {
@@ -614,10 +632,10 @@
       }
     ];
 
-    const statsStore = JSON.parse(localStorage.getItem('newsStatsLive')) || {};
+    const statsStore = JSON.parse(localStorage.getItem('newsStatsLiveV2')) || {};
     newsData.forEach(item => {
       if (statsStore[`views-${item.id}`] === undefined) statsStore[`views-${item.id}`] = 0;
-      if (statsStore[`comments-${item.id}`] === undefined) statsStore[`comments-${item.id}`] = Math.floor(Math.random() * 50);
+      if (statsStore[`comments-${item.id}`] === undefined) statsStore[`comments-${item.id}`] = 0;
     });
 
     function renderFeed() {
@@ -649,7 +667,7 @@
 
     function openArticle(id) {
       statsStore[`views-${id}`]++;
-      localStorage.setItem('newsStatsLive', JSON.stringify(statsStore));
+      localStorage.setItem('newsStatsLiveV2', JSON.stringify(statsStore));
       location.hash = `article-${id}`;
       renderDetail(newsData.find(n => n.id === id));
     }
