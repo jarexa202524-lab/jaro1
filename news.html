@@ -738,17 +738,32 @@
     }
 
     function rateArticle(id, type) {
+      const voteKey = `voted-${id}`;
+      const lastVote = localStorage.getItem(voteKey);
+      const now = Date.now();
+
+      if (lastVote && now - parseInt(lastVote) < 24 * 60 * 60 * 1000) {
+        const remainingHours = Math.ceil((24 * 60 * 60 * 1000 - (now - parseInt(lastVote))) / (60 * 60 * 1000));
+        alert(`თქვენ უკვე მიეცით ხმა ამ სიახლეს. ხელახლა ხმის მიცემას შეძლებთ ${remainingHours} საათში.`);
+        return;
+      }
+
       const key = `${type}s-${id}`;
       statsStore[key]++;
       localStorage.setItem('newsStatsLiveV3', JSON.stringify(statsStore));
+      localStorage.setItem(voteKey, now.toString());
 
       const countEl = document.getElementById(`${type}-count-${id}`);
       if (countEl) countEl.innerText = statsStore[key];
 
-      // Proactive feedback
+      // Visual feedback
       const btn = event.currentTarget;
+      btn.style.transform = "scale(1.2)";
       btn.classList.add('active');
-      setTimeout(() => btn.classList.remove('active'), 300);
+      setTimeout(() => {
+        btn.style.transform = "";
+        btn.classList.remove('active');
+      }, 300);
     }
 
     function renderDetail(item) {
