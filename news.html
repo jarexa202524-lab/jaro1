@@ -561,6 +561,101 @@
       opacity: 0.85;
     }
 
+    .comment-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 12px;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      transition: 0.3s;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .action-btn:hover {
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .action-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.5;
+    }
+
+    .action-btn.like-btn:hover {
+      color: #2ecc71;
+    }
+
+    .action-btn.dislike-btn:hover {
+      color: #e74c3c;
+    }
+
+    .action-btn.del-btn:hover {
+      color: #ff3333;
+    }
+
+    .action-btn.edit-btn:hover {
+      color: var(--accent);
+    }
+
+    .comment-replies {
+      margin-left: 50px;
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      border-left: 2px solid rgba(138, 77, 255, 0.2);
+      padding-left: 20px;
+    }
+
+    .reply-form {
+      margin-top: 10px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--glass-border);
+      border-radius: 15px;
+    }
+
+    .reply-textarea {
+      width: 100%;
+      height: 60px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      resize: none;
+    }
+
+    .edit-area {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      color: #fff;
+      padding: 10px;
+      font-family: inherit;
+      margin-bottom: 10px;
+      outline: none;
+      resize: vertical;
+    }
+
     .comment-auth-prompt {
       padding: 30px;
       border: 1px dashed var(--glass-border);
@@ -938,26 +1033,87 @@
       }, 300);
     }
 
-    function submitComment(id) {
-      const text = document.getElementById('commentText').value.trim();
+    function submitComment(articleId, parentId = null) {
+      const inputId = parentId ? `replyText-${parentId}` : 'commentText';
+      const input = document.getElementById(inputId);
+      const text = input.value.trim();
       if (!text) return;
       if (!currentUser) return alert('გთხოვთ გაიაროთ ავტორიზაცია');
 
       const newComment = {
+        id: Date.now() + Math.random(),
+        parentId: parentId,
         username: currentUser.username,
         avatar: currentUser.avatar_url || `https://ui-avatars.com/api/?name=${currentUser.username}&background=8a4dff&color=fff`,
         role: currentUser.email === 'jaro@gmail.com' ? 'admin' : 'user',
         text: text,
+        likes: 0,
+        dislikes: 0,
         time: new Date().toLocaleString('ka-GE', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })
       };
 
-      commentsStore[id].push(newComment);
-      statsStore[`comments-${id}`]++;
+      commentsStore[articleId].push(newComment);
+      if (!parentId) statsStore[`comments-${articleId}`]++;
+
       localStorage.setItem('newsCommentsLiveV1', JSON.stringify(commentsStore));
       localStorage.setItem('newsStatsLiveV3', JSON.stringify(statsStore));
 
-      // Update Detail UI immediately
-      renderDetail(newsData.find(n => n.id === id));
+      renderDetail(newsData.find(n => n.id === articleId));
+    }
+
+    function deleteComment(articleId, commentId) {
+      if (!confirm('დარწმუნებული ხართ რომ გსურთ წაშლა?')) return;
+      commentsStore[articleId] = commentsStore[articleId].filter(c => c.id !== commentId && c.parentId !== commentId);
+      localStorage.setItem('newsCommentsLiveV1', JSON.stringify(commentsStore));
+      renderDetail(newsData.find(n => n.id === articleId));
+    }
+
+    function editComment(commentId) {
+      const textEl = document.getElementById(`comment-text-${commentId}`);
+      const currentText = textEl.innerText;
+      textEl.innerHTML = `
+        <textarea id="edit-box-${commentId}" class="edit-area">${currentText}</textarea>
+        <button class="modal-btn" style="padding: 5px 15px; font-size:12px;" onclick="saveEdit(${commentId})">შენახვა</button>
+      `;
+    }
+
+    function saveEdit(commentId) {
+      const newText = document.getElementById(`edit-box-${commentId}`).value.trim();
+      if (!newText) return;
+
+      // Find and update in all articles (or find the active one)
+      for (let artId in commentsStore) {
+        const comment = commentsStore[artId].find(c => c.id === commentId);
+        if (comment) {
+          comment.text = newText;
+          localStorage.setItem('newsCommentsLiveV1', JSON.stringify(commentsStore));
+          renderDetail(newsData.find(n => n.id === parseInt(artId)));
+          break;
+        }
+      }
+    }
+
+    function rateComment(articleId, commentId, type) {
+      const voteKey = `voted-cmt-${commentId}`;
+      const lastVote = localStorage.getItem(voteKey);
+      const now = Date.now();
+
+      if (lastVote && now - parseInt(lastVote) < 24 * 60 * 60 * 1000) {
+        return alert('ხმის მიცემა შესაძლებელია 24 საათში ერთხელ');
+      }
+
+      const comment = commentsStore[articleId].find(c => c.id === commentId);
+      if (comment) {
+        comment[`${type}s`]++;
+        localStorage.setItem('newsCommentsLiveV1', JSON.stringify(commentsStore));
+        localStorage.setItem(voteKey, now.toString());
+        renderDetail(newsData.find(n => n.id === articleId));
+      }
+    }
+
+    function showReplyField(commentId) {
+      const field = document.getElementById(`reply-field-${commentId}`);
+      field.style.display = field.style.display === 'none' ? 'block' : 'none';
     }
 
     function renderDetail(item) {
@@ -996,23 +1152,60 @@
           `}
 
           <div class="comments-list" id="commentsList">
-            ${commentsStore[item.id].map(c => `
-              <div class="comment-item">
-                <img src="${c.avatar}" class="comment-avatar">
-                <div class="comment-main">
-                  <div class="comment-header">
-                    <span class="comment-user">
-                      ${c.username}
-                      <span class="comment-role ${c.role === 'admin' ? 'role-admin' : 'role-user'}">
-                        ${c.role === 'admin' ? 'ადმინისტრატორი' : 'მომხმარებელი'}
-                      </span>
-                    </span>
-                    <span class="comment-time">${c.time}</span>
+            ${(() => {
+          const allCmts = commentsStore[item.id];
+          const roots = allCmts.filter(c => !c.parentId);
+          const isAdmin = currentUser && currentUser.email === 'jaro@gmail.com';
+
+          return roots.map(c => {
+            const replies = allCmts.filter(r => r.parentId === c.id);
+            const renderSingleComment = (cmt, isReply = false) => `
+                  <div class="comment-item" ${isReply ? 'style="border-color:rgba(138, 77, 255, 0.1);"' : ''}>
+                    <img src="${cmt.avatar}" class="comment-avatar">
+                    <div class="comment-main">
+                      <div class="comment-header">
+                        <span class="comment-user">
+                          ${cmt.username}
+                          <span class="comment-role ${cmt.role === 'admin' ? 'role-admin' : 'role-user'}">
+                            ${cmt.role === 'admin' ? 'ადმინისტრატორი' : 'მომხმარებელი'}
+                          </span>
+                        </span>
+                        <span class="comment-time">${cmt.time}</span>
+                      </div>
+                      <p class="comment-text" id="comment-text-${cmt.id}">${cmt.text}</p>
+                      
+                      <div class="comment-actions">
+                        <button class="action-btn like-btn" onclick="rateComment(${item.id}, ${cmt.id}, 'like')">
+                          <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                          ${cmt.likes || 0}
+                        </button>
+                        <button class="action-btn dislike-btn" onclick="rateComment(${item.id}, ${cmt.id}, 'dislike')">
+                          <svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
+                          ${cmt.dislikes || 0}
+                        </button>
+                        ${currentUser ? `<button class="action-btn" onclick="showReplyField(${cmt.id})">პასუხი</button>` : ''}
+                        ${isAdmin ? `
+                          <button class="action-btn edit-btn" onclick="editComment(${cmt.id})">რედაქტირება</button>
+                          <button class="action-btn del-btn" onclick="deleteComment(${item.id}, ${cmt.id})">წაშლა</button>
+                        ` : ''}
+                      </div>
+
+                      <div id="reply-field-${cmt.id}" style="display:none; margin-top:15px;">
+                        <textarea id="replyText-${cmt.id}" class="reply-textarea" placeholder="დაწერეთ პასუხი..."></textarea>
+                        <button class="modal-btn" style="padding: 5px 15px; font-size:12px; margin-top:5px;" onclick="submitComment(${item.id}, ${cmt.id})">გაგზავნა</button>
+                      </div>
+                    </div>
                   </div>
-                  <p class="comment-text">${c.text}</p>
-                </div>
-              </div>
-            `).reverse().join('')}
+                `;
+
+            return `
+                  ${renderSingleComment(c)}
+                  <div class="comment-replies">
+                    ${replies.map(r => renderSingleComment(r, true)).join('')}
+                  </div>
+                `;
+          }).reverse().join('');
+        })()}
           </div>
         </section>
       `;
