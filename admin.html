@@ -143,6 +143,91 @@
             text-align: center;
         }
 
+        /* ANALYTICS UI */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .dark-card {
+            background: var(--panel);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-family: "Oswald";
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .trend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .trend-label {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .trend-value {
+            font-family: "Oswald";
+            font-size: 20px;
+            color: var(--accent-2);
+        }
+
+        .country-row {
+            padding: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .country-bar-bg {
+            flex-grow: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .country-bar {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .country-info {
+            width: 120px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .country-count {
+            width: 40px;
+            text-align: right;
+            font-family: monospace;
+            color: var(--accent-2);
+        }
+
         .user-info {
             margin-top: auto;
             padding: 30px 40px;
@@ -447,6 +532,7 @@
             <ul class="menu">
                 <li class="menu-item active" onclick="showSection('users')"><i>👥</i> <span>მომხმარებლები</span></li>
                 <li class="menu-item" onclick="showSection('news')"><i>📰</i> <span>სიახლეები</span></li>
+                <li class="menu-item" onclick="showSection('analytics')"><i>📊</i> <span>სტატისტიკა</span></li>
                 <li class="menu-item" onclick="showSection('logs')"><i>📋</i> <span>ლოგები</span></li>
                 <li class="menu-item" onclick="window.location.href='index.html'" style="margin-top:20px; opacity:0.6;">
                     <i>🏠</i> <span>საიტზე დაბრუნება</span>
@@ -614,6 +700,48 @@
                     </table>
                 </div>
             </div>
+
+            <div id="analyticsSection" class="admin-section" style="display:none;">
+                <div class="header-bar">
+                    <h1 class="section-title">სისტემური ანალიტიკა</h1>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="dark-card">
+                        <div class="card-header"><span class="card-title">მომხმარებლების ზრდა</span></div>
+                        <div class="trend-item"><span class="trend-label">ბოლო 7 დღე (კვირა)</span><span
+                                class="trend-value" id="userWeek">0</span></div>
+                        <div class="trend-item"><span class="trend-label">ბოლო 30 დღე (თვე)</span><span
+                                class="trend-value" id="userMonth">0</span></div>
+                        <div class="trend-item"><span class="trend-label">ბოლო 365 დღე (წელი)</span><span
+                                class="trend-value" id="userYear">0</span></div>
+                        <div class="trend-item"><span class="trend-label">სულ რეგისტრირებული</span><span
+                                class="trend-value" id="userTotal">0</span></div>
+                    </div>
+                    <div class="dark-card">
+                        <div class="card-header"><span class="card-title">სიახლეების აქტივობა</span></div>
+                        <div class="trend-item"><span class="trend-label">ამ კვირაში</span><span class="trend-value"
+                                id="newsWeek">0</span></div>
+                        <div class="trend-item"><span class="trend-label">ამ თვეში</span><span class="trend-value"
+                                id="newsMonth">0</span></div>
+                        <div class="trend-item"><span class="trend-label">ამ წელს</span><span class="trend-value"
+                                id="newsYear">0</span></div>
+                        <div class="trend-item"><span class="trend-label">სულ პოსტები</span><span class="trend-value"
+                                id="newsTotal">0</span></div>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="dark-card">
+                        <div class="card-header"><span class="card-title">ქვეყნების განაწილება</span></div>
+                        <div id="countryStatsContainer"></div>
+                    </div>
+                    <div class="dark-card">
+                        <div class="card-header"><span class="card-title">კატეგორიების წილი</span></div>
+                        <div id="categoryStatsContainer"></div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -657,6 +785,68 @@
             if (id === 'users') await fetchUsers();
             if (id === 'news') renderNews();
             if (id === 'logs') await fetchLogs();
+            if (id === 'analytics') renderAnalytics();
+        }
+
+        function renderAnalytics() {
+            const now = new Date();
+            const week = 7 * 24 * 60 * 60 * 1000;
+            const month = 30 * 24 * 60 * 60 * 1000;
+            const year = 365 * 24 * 60 * 60 * 1000;
+
+            // USER STATS
+            const u7 = allUsers.filter(u => (now - new Date(u.created_at)) < week).length;
+            const u30 = allUsers.filter(u => (now - new Date(u.created_at)) < month).length;
+            const u365 = allUsers.filter(u => (now - new Date(u.created_at)) < year).length;
+
+            document.getElementById('userWeek').textContent = u7;
+            document.getElementById('userMonth').textContent = u30;
+            document.getElementById('userYear').textContent = u365;
+            document.getElementById('userTotal').textContent = allUsers.length;
+
+            // COUNTRY STATS
+            const countries = {};
+            allUsers.forEach(u => {
+                const c = u.last_country || 'Unknown';
+                countries[c] = (countries[c] || 0) + 1;
+            });
+
+            const sortedCountries = Object.entries(countries).sort((a, b) => b[1] - a[1]);
+            const maxCount = sortedCountries[0]?.[1] || 1;
+
+            document.getElementById('countryStatsContainer').innerHTML = sortedCountries.map(([name, count]) => `
+                <div class="country-row">
+                    <span class="country-info">${name}</span>
+                    <div class="country-bar-bg"><div class="country-bar" style="width:${(count / maxCount) * 100}%"></div></div>
+                    <span class="country-count">${count}</span>
+                </div>
+            `).join('');
+
+            // NEWS STATS
+            const n7 = activeNews.filter(n => (now - new Date(n.date)) < week).length;
+            const n30 = activeNews.filter(n => (now - new Date(n.date)) < month).length;
+            const n365 = activeNews.filter(n => (now - new Date(n.date)) < year).length;
+
+            document.getElementById('newsWeek').textContent = n7;
+            document.getElementById('newsMonth').textContent = n30;
+            document.getElementById('newsYear').textContent = n365;
+            document.getElementById('newsTotal').textContent = activeNews.length;
+
+            // CATEGORY STATS
+            const cats = {};
+            activeNews.forEach(n => {
+                cats[n.category] = (cats[n.category] || 0) + 1;
+            });
+            const sortedCats = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+            const maxCat = sortedCats[0]?.[1] || 1;
+
+            document.getElementById('categoryStatsContainer').innerHTML = sortedCats.map(([name, count]) => `
+                <div class="country-row">
+                    <span class="country-info">${name}</span>
+                    <div class="country-bar-bg"><div class="country-bar" style="width:${(count / maxCat) * 100}%; background:var(--accent-2);"></div></div>
+                    <span class="country-count">${count}</span>
+                </div>
+            `).join('');
         }
 
         function notify(text) {
