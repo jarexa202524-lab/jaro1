@@ -66,10 +66,17 @@ export default async function handler(req, res) {
     }
 
     try {
-        // 1. IP BLOCKING PROTECTION
+        // 1. IP BLOCKING PROTECTION (Sentinel Hammer)
         await sql`CREATE TABLE IF NOT EXISTS blocked_ips (ip TEXT PRIMARY KEY, blocked_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP)`;
-        const isBlocked = await sql`SELECT * FROM blocked_ips WHERE ip = ${ip}`;
-        if (isBlocked.length > 0) return res.status(403).json({ error: 'წვდომა შეზღუდულია! თქვენი IP დაბლოკილია საეჭვო აქტივობის გამო.' });
+        const isIpBlocked = await sql`SELECT * FROM blocked_ips WHERE ip = ${ip}`;
+        const isSentinelBanned = await sql`SELECT * FROM site_bans WHERE target = ${ip} OR target = ${identifier}`;
+
+        if (isIpBlocked.length > 0 || isSentinelBanned.length > 0) {
+            return res.status(403).json({
+                error: 'წვდომა შეზღუდულია! თქვენი ანგარიში ან IP დაბლოკილია Project Sentinel-ის მიერ.',
+                reason: isSentinelBanned.length > 0 ? isSentinelBanned[0].reason : 'Security violation'
+            });
+        }
 
         // Ensure session_token column exists
         try { await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS session_token TEXT`; } catch (e) { }

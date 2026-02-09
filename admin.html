@@ -1909,8 +1909,57 @@
             }
         }
 
-        // Add a hidden migration trigger for the admin
-        console.log("God Mode ready. Run runMigration() in console to update DB.");
+        // GOD MODE: CHRONOS
+        async function loadChronos() {
+            try {
+                const res = await fetch('/api/tasks');
+                const tasks = await res.json();
+                console.log("Scheduled Tasks:", tasks);
+            } catch (e) { console.error("Chronos error:", e); }
+        }
+
+        async function scheduleTask() {
+            const type = document.getElementById('taskType').value;
+            const time = document.getElementById('taskTime').value;
+            if (!time) return alert("აირჩიეთ დრო!");
+
+            await fetch('/api/tasks', {
+                method: 'POST',
+                headers: getHeader(),
+                body: JSON.stringify({ type, execute_at: time, payload: {} })
+            });
+            notify('Chronos: დავალება დაგეგმილია! ⏳');
+            loadChronos();
+        }
+
+        // GOD MODE: NEURAL NEXUS
+        async function loadNexus() {
+            notify('Neural Nexus აანალიზებს მონაცემებს...');
+            // In a real app, this would call an AI API or heavy SQL. 
+            // Here we mock the 'intelligence' based on real activity count.
+            const res = await fetch('/api/activity');
+            const logs = await res.json();
+            const likes = logs.filter(l => l.action.includes('მოეწონა')).length;
+            const views = logs.length;
+            const sentiment = views > 0 ? Math.round((likes / (views / 5)) * 100) : 88;
+
+            // Just a fun mock update to show it's "thinking"
+            setTimeout(() => {
+                notify(`Nexus: ანალიზი დასრულდა. განწყობა: ${sentiment}%`);
+            }, 1500);
+        }
+
+        function notify(text) {
+            const toast = document.getElementById('toast');
+            toast.textContent = text;
+            toast.classList.add('active');
+            setTimeout(() => toast.classList.remove('active'), 3000);
+        }
+
+        // Initialize display
+        document.getElementById('adminName').textContent = currentUser.username;
+        document.getElementById('adminAvatar').src = currentUser.avatar_url || 'https://ui-avatars.com/api/?name=' + currentUser.username;
+        fetchUsers();
     </script>
 </body>
 

@@ -1071,6 +1071,15 @@
             details: details
           })
         });
+
+        // award XP if logged in
+        if (user && user.email) {
+          fetch('/api/forge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, action: 'visit' })
+          });
+        }
       } catch (err) { console.error("Activity log error:", err); }
     }
 
