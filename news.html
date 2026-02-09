@@ -72,10 +72,45 @@
       position: relative;
     }
 
+    /* VOICE OF GOD NOTIFICATION */
+    #god-voice {
+      position: fixed;
+      top: -100px;
+      left: 0;
+      width: 100%;
+      padding: 15px;
+      text-align: center;
+      z-index: 20000;
+      font-family: 'Oswald', sans-serif;
+      font-size: 18px;
+      color: #fff;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+      transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .god-info {
+      background: linear-gradient(90deg, #0984e3, #74b9ff);
+      color: #fff;
+    }
+
+    .god-warning {
+      background: linear-gradient(90deg, #fdcb6e, #ffeaa7);
+      color: #000;
+    }
+
+    .god-critical {
+      background: linear-gradient(90deg, #d63031, #ff7675);
+      color: #fff;
+    }
+
     /* TOPBAR - EXACT PARITY WITH INDEX.HTML */
     .topbar {
       position: sticky;
-      top: 20px;
+      top: calc(20px + var(--broadcast-height, 0px));
       z-index: 10000;
       display: flex;
       justify-content: space-between;
@@ -93,7 +128,7 @@
     }
 
     .topbar.scrolled {
-      top: 10px;
+      top: calc(10px + var(--broadcast-height, 0px));
       background: rgba(15, 10, 25, 0.95);
       width: 98%;
     }
@@ -956,6 +991,30 @@
   </div>
 
   <script>
+    // SYSTEM BROADCAST (VOICE OF GOD)
+    function checkBroadcast() {
+      const b = JSON.parse(localStorage.getItem('siteBroadcast'));
+      let el = document.getElementById('god-voice');
+      if (b && b.active) {
+        if (!el) {
+          el = document.createElement('div');
+          el.id = 'god-voice';
+          document.body.appendChild(el);
+        }
+        el.className = `god-${b.type}`;
+        el.innerHTML = `<span>${b.type === 'critical' ? '⚠️' : '📢'} ${b.text}</span>`;
+        el.style.top = '0';
+        document.documentElement.style.setProperty('--broadcast-height', '60px');
+      } else if (el) {
+        el.style.top = '-100px';
+        document.documentElement.style.setProperty('--broadcast-height', '0px');
+      }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      checkBroadcast();
+      setInterval(checkBroadcast, 10000);
+    });
+
     // SYNC WITH ADMIN PANEL
     const defaultNews = [
       { id: 1, category: "Hardware", title: "NVIDIA RTX 60 სერიის პირველი დეტალები", date: "February 08, 2026", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200", excerpt: "ინსაიდერული ინფორმაციით, NVIDIA-ს ახალი თაობის ვიდეო ბარათები 3-ჯერ უფრო სწრაფი იქნება AI გამოთვლებში.", full: "<p>NVIDIA RTX 60 სერია გვპირდება რევოლუციურ ნახტომს Ray Tracing-ში. ახალი ტიპის AI ბირთვები საშუალებას იძლევა გრაფიკის გენერირება მოხდეს თითქმის ნულოვანი დანახარჯით.</p><p>RTX 6090 გახდება პირველი ვიდეო ბარათი, რომელიც 8K რეზოლუციაზე 144 FPS-ს უპრობლემოდ დააფიქსირებს.</p>" },
