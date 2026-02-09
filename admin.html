@@ -1061,27 +1061,58 @@
         }
 
         // VOICE OF GOD LOGIC
-        function loadBroadcast() {
-            const b = JSON.parse(localStorage.getItem('siteBroadcast'));
-            if (b) {
-                document.getElementById('broadcastMsg').value = b.text;
-                document.getElementById('broadcastType').value = b.type;
+        async function loadBroadcast() {
+            try {
+                const res = await fetch('/api/broadcast');
+                const b = await res.json();
+                if (b && b.text) {
+                    document.getElementById('broadcastMsg').value = b.text;
+                    document.getElementById('broadcastType').value = b.type;
+                    localStorage.setItem('siteBroadcast', JSON.stringify(b));
+                }
+            } catch (err) {
+                const b = JSON.parse(localStorage.getItem('siteBroadcast'));
+                if (b) {
+                    document.getElementById('broadcastMsg').value = b.text;
+                    document.getElementById('broadcastType').value = b.type;
+                }
             }
         }
 
-        function sendBroadcast() {
+        async function sendBroadcast() {
             const text = document.getElementById('broadcastMsg').value;
             const type = document.getElementById('broadcastType').value;
             if (!text) return notify('ტექსტი ცარიელია!');
 
-            localStorage.setItem('siteBroadcast', JSON.stringify({ text, type, active: true, time: Date.now() }));
-            notify('შეტყობინება გაიგზავნა!');
+            const data = { text, type, active: true, time: Date.now() };
+            try {
+                await fetch('/api/broadcast', {
+                    method: 'POST',
+                    headers: getHeader(),
+                    body: JSON.stringify(data)
+                });
+                localStorage.setItem('siteBroadcast', JSON.stringify(data));
+                notify('შეტყობინება გაიგზავნა ყველასთვის! 📢');
+            } catch (err) {
+                console.error(err);
+                notify('სერვერზე გაგზავნა ვერ მოხერხდა');
+            }
         }
 
-        function clearBroadcast() {
-            localStorage.removeItem('siteBroadcast');
-            document.getElementById('broadcastMsg').value = '';
-            notify('შეტყობინება გაითიშა');
+        async function clearBroadcast() {
+            try {
+                await fetch('/api/broadcast', {
+                    method: 'POST',
+                    headers: getHeader(),
+                    body: JSON.stringify({ active: false })
+                });
+                localStorage.removeItem('siteBroadcast');
+                document.getElementById('broadcastMsg').value = '';
+                notify('შეტყობინება გაითიშა ყველასთვის');
+            } catch (err) {
+                console.error(err);
+                notify('შეცდომა გათიშვისას');
+            }
         }
 
         // NEON-CM LOGIC

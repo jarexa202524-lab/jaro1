@@ -88,23 +88,43 @@
         setInterval(checkBroadcast, 10000); // Poll every 10s
       });
 
-      function checkBroadcast() {
-        const b = JSON.parse(localStorage.getItem('siteBroadcast'));
-        let el = document.getElementById('god-voice');
+      async function checkBroadcast() {
+        try {
+          const res = await fetch('/api/broadcast');
+          const b = await res.json();
+          let el = document.getElementById('god-voice');
 
-        if (b && b.active) {
-          if (!el) {
-            el = document.createElement('div');
-            el.id = 'god-voice';
-            document.body.appendChild(el);
+          if (b && b.active) {
+            if (!el) {
+              el = document.createElement('div');
+              el.id = 'god-voice';
+              document.body.appendChild(el);
+            }
+            el.className = `god-${b.type}`;
+            el.innerHTML = `<span>${b.type === 'critical' ? '⚠️' : '📢'} ${b.text}</span>`;
+            el.style.top = '0';
+            document.documentElement.style.setProperty('--broadcast-height', '60px');
+          } else if (el) {
+            el.style.top = '-100px';
+            document.documentElement.style.setProperty('--broadcast-height', '0px');
           }
-          el.className = `god-${b.type}`;
-          el.innerHTML = `<span>${b.type === 'critical' ? '⚠️' : '📢'} ${b.text}</span>`;
-          el.style.top = '0';
-          document.documentElement.style.setProperty('--broadcast-height', '60px');
-        } else if (el) {
-          el.style.top = '-100px';
-          document.documentElement.style.setProperty('--broadcast-height', '0px');
+        } catch (err) {
+          const b = JSON.parse(localStorage.getItem('siteBroadcast'));
+          let el = document.getElementById('god-voice');
+          if (b && b.active) {
+            if (!el) {
+              el = document.createElement('div');
+              el.id = 'god-voice';
+              document.body.appendChild(el);
+            }
+            el.className = `god-${b.type}`;
+            el.innerHTML = `<span>${b.type === 'critical' ? '⚠️' : '📢'} ${b.text}</span>`;
+            el.style.top = '0';
+            document.documentElement.style.setProperty('--broadcast-height', '60px');
+          } else if (el) {
+            el.style.top = '-100px';
+            document.documentElement.style.setProperty('--broadcast-height', '0px');
+          }
         }
       }
     })();
