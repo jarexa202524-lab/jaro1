@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ka">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance - Game Debate</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a12;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 60px;
+            margin: 0;
+            color: #ff4757;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
+            animation: glitch 1s linear infinite;
+        }
+
+        p {
+            font-size: 24px;
+            color: #a4b0be;
+            margin-top: 20px;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #2f3542;
+            border-top: 5px solid #ff4757;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+
+        /* MATRIX BG EFFECT */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.2;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes glitch {
+
+            2%,
+            64% {
+                transform: translate(2px, 0) skew(0deg);
+            }
+
+            4%,
+            60% {
+                transform: translate(-2px, 0) skew(0deg);
+            }
+
+            62% {
+                transform: translate(0, 0) skew(5deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="matrix"></canvas>
+
+    <div class="container">
+        <h1>სისტემური განახლება</h1>
+        <p>საიტზე მიმდინარეობს ტექნიკური სამუშაოები.<br>გთხოვთ დაბრუნდეთ ცოტა ხანში.</p>
+        <div class="loader"></div>
+        <p id="eta" style="font-size:14px; color:#57606f;">სტატუსი: <span style="color:#2ed573;">აქტიური</span></p>
+    </div>
+
+    <script>
+        // Check if maintenance is still on
+        setInterval(() => {
+            const maintenance = localStorage.getItem('siteMaintenance') === 'true';
+            if (!maintenance) {
+                window.location.href = 'index.html';
+            }
+        }, 5000);
+
+        // Matrix Effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        const alphabet = katakana + latin + nums;
+
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const rainDrops = [];
+
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+
+        const draw = () => {
+            ctx.fillStyle = 'rgba(10, 10, 18, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#ff4757';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        };
+
+        setInterval(draw, 30);
+    </script>
+</body>
+
+</html>

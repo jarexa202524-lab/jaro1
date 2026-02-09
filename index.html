@@ -29,6 +29,91 @@
       --side-gap: clamp(20px, 5vw, 100px);
     }
 
+    /* VOICE OF GOD NOTIFICATION */
+    #god-voice {
+      position: fixed;
+      top: -100px;
+      left: 0;
+      width: 100%;
+      padding: 15px;
+      text-align: center;
+      z-index: 9999;
+      font-family: 'Oswald', sans-serif;
+      font-size: 18px;
+      color: #fff;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+      transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .god-info {
+      background: linear-gradient(90deg, #0984e3, #74b9ff);
+      color: #fff;
+    }
+
+    .god-warning {
+      background: linear-gradient(90deg, #fdcb6e, #ffeaa7);
+      color: #000;
+    }
+
+    .god-critical {
+      background: linear-gradient(90deg, #d63031, #ff7675);
+      color: #fff;
+    }
+  </style>
+  <script>
+    (function () {
+      // MAINTENANCE CHECK (GATEKEEPER)
+      const maintenance = localStorage.getItem('siteMaintenance') === 'true';
+      if (maintenance) {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        const isAdmin = user && (user.email === 'jaro@gmail.com' || user.role === 'admin');
+        if (!isAdmin) {
+          window.location.href = 'maintenance.html';
+        }
+      }
+
+      // Theme Loader
+      const theme = JSON.parse(localStorage.getItem('siteTheme'));
+      if (theme) {
+        document.documentElement.style.setProperty('--accent', theme.accent);
+        document.documentElement.style.setProperty('--glass', `rgba(255, 255, 255, ${theme.glass})`);
+      }
+      window.addEventListener('DOMContentLoaded', () => {
+        document.body.style.opacity = '1';
+        checkBroadcast();
+        setInterval(checkBroadcast, 10000); // Poll every 10s
+      });
+
+      function checkBroadcast() {
+        const b = JSON.parse(localStorage.getItem('siteBroadcast'));
+        let el = document.getElementById('god-voice');
+
+        if (b && b.active) {
+          if (!el) {
+            el = document.createElement('div');
+            el.id = 'god-voice';
+            document.body.appendChild(el);
+          }
+          el.className = `god-${b.type}`;
+          el.innerHTML = `<span>${b.type === 'critical' ? '⚠️' : '📢'} ${b.text}</span>`;
+          el.style.top = '0';
+        } else if (el) {
+          el.style.top = '-100px';
+        }
+      }
+    })();
+  </script>
+  <style>
+    /* NEON-CM THEME LOADER */
+    body {
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
     * {
       box-sizing: border-box;
       outline: none;
@@ -769,6 +854,13 @@
       const dotsCont = document.getElementById('sliderDots');
       if (!slider) return;
 
+      // HERO COMMAND: Load from Admin or use default
+      const savedSlides = JSON.parse(localStorage.getItem('siteSliderData'));
+      if (savedSlides && savedSlides.length > 0) {
+        // Clear default if we have saved ones (though we just overwrite data variable)
+        sliderData.splice(0, sliderData.length, ...savedSlides);
+      }
+
       slider.innerHTML += sliderData.map((s, i) => `
         <div class="slide ${i === 0 ? 'active' : ''}" style="background-image:url('${s.img}')">
           <div class="slide-overlay"></div>
@@ -794,6 +886,9 @@
       function updateSlides() {
         const slides = document.querySelectorAll('.slide');
         const dots = document.querySelectorAll('.dot');
+        // Safety check if slides count changed
+        if (slides.length !== sliderData.length) return location.reload();
+
         slides.forEach((s, i) => s.classList[i === cur ? 'add' : 'remove']('active'));
         dots.forEach((d, i) => d.classList[i === cur ? 'add' : 'remove']('active'));
       }
