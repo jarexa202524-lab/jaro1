@@ -1040,6 +1040,7 @@
         await fetch('/api/activity', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          keepalive: true,
           body: JSON.stringify({
             user_name: user ? user.username : 'სტუმარი',
             action: action,
