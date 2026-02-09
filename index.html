@@ -1034,6 +1034,24 @@
       overlay.onclick = (e) => { if (e.target === overlay) overlay.style.display = 'none'; };
     };
 
+    async function logActivity(action, details = '') {
+      const user = JSON.parse(localStorage.getItem('currentUser'));
+      try {
+        await fetch('/api/activity', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_name: user ? user.username : 'სტუმარი',
+            action: action,
+            details: details
+          })
+        });
+      } catch (err) { console.error("Activity log error:", err); }
+    }
+
+    // Capture Page View
+    logActivity('ეწვია მთავარ გვერდს');
+
     // UI HANDLERS
     const toggle = document.getElementById('mobileToggle');
     const menu = document.getElementById('mobileMenu');
