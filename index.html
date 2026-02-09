@@ -959,7 +959,7 @@
       const feedData = storedNews && storedNews.length > 0 ? storedNews : newsData;
 
       feed.innerHTML = feedData.map(n => `
-        <a href="news.html#article-${n.id}" class="news-card">
+        <a href="news.html#article-${n.id}" class="news-card" onclick="logActivity('დააჭირა სიახლეს', '${n.title.replace(/'/g, "\\'")}')">
           <div class="news-img" style="background-image:url('${n.img}')"><span class="news-tag">${n.category}</span></div>
           <div class="news-info"><h3>${n.title}</h3><p>${n.excerpt}</p></div>
         </a>
