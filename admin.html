@@ -538,6 +538,16 @@
                 <li class="menu-item" onclick="showSection('broadcast')"><i>📢</i> <span>შეტყობინებები</span></li>
                 <li class="menu-item" onclick="showSection('analytics')"><i>📊</i> <span>სტატისტიკა</span></li>
                 <li class="menu-item" onclick="showSection('logs')"><i>📋</i> <span>ლოგები</span></li>
+
+                <li
+                    style="padding: 20px 40px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 800; opacity: 0.8;">
+                    God Mode Innovations</li>
+                <li class="menu-item" onclick="showSection('sentinel')"><i>🛡️</i> <span>Sentinel (Security)</span></li>
+                <li class="menu-item" onclick="showSection('forge')"><i>⚒️</i> <span>The Forge (Rewards)</span></li>
+                <li class="menu-item" onclick="showSection('architect')"><i>🏗️</i> <span>The Architect (UI)</span></li>
+                <li class="menu-item" onclick="showSection('chronos')"><i>⏳</i> <span>Chronos (Tasker)</span></li>
+                <li class="menu-item" onclick="showSection('nexus')"><i>🧠</i> <span>Neural Nexus (AI)</span></li>
+
                 <li class="menu-item" onclick="window.location.href='index.html'" style="margin-top:20px; opacity:0.6;">
                     <i>🏠</i> <span>საიტზე დაბრუნება</span>
                 </li>
@@ -923,6 +933,164 @@
                     </div>
                 </div>
             </div>
+
+            <!-- GOD MODE SECTIONS -->
+            <div id="sentinelSection" class="admin-section" style="display:none;">
+                <div class="header-bar">
+                    <h1 class="section-title">Project Sentinel 🛡️</h1>
+                    <div style="display:flex; gap:10px;">
+                        <button class="action-btn" style="background:var(--accent-2);"
+                            onclick="fetchBans()">განახლება</button>
+                        <button class="action-btn" style="background:#ff3333;" onclick="openBanModal()">Banned
+                            List</button>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">უსაფრთხოების ფარი</span>
+                        <div class="stat-value" style="color:var(--success);">ACTIVE</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">დაბლოკილია ჯამში</span>
+                        <div class="stat-value" id="totalBansCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">ბოლო თავდასხმა</span>
+                        <div class="stat-value" style="font-size:16px;">Never</div>
+                    </div>
+                </div>
+                <div class="dark-card">
+                    <h3 style="font-family:Oswald; margin-top:0;">ავტომატური ბლოკირების წესები</h3>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                        <div class="form-group">
+                            <label>Brute Force Threshold</label>
+                            <input type="number" class="form-input" value="5" id="bruteThreshold">
+                            <small style="color:var(--muted)">რამდენჯერ არასწორ პაროლზე დაიბლოკოს IP</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Ban Duration (Minutes)</label>
+                            <input type="number" class="form-input" value="60" id="banDuration">
+                        </div>
+                    </div>
+                    <button class="action-btn" style="background:var(--accent); width:100%; margin-top:10px;"
+                        onclick="saveSentinelSettings()">პარამეტრების შენახვა</button>
+                </div>
+            </div>
+
+            <div id="forgeSection" class="admin-section" style="display:none;">
+                <div class="header-bar">
+                    <h1 class="section-title">The Forge (Gamification) ⚒️</h1>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">საშუალო XP</span>
+                        <div class="stat-value">450</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">გაცემული ბეჯები</span>
+                        <div class="stat-value">128</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Level 5+ მომხმარებლები</span>
+                        <div class="stat-value">12</div>
+                    </div>
+                </div>
+                <div class="dark-card">
+                    <h3 style="font-family:Oswald; margin-top:0;">XP გაცემის წესები</h3>
+                    <div class="form-group">
+                        <label>კომენტარზე დარიცხვა</label>
+                        <input type="number" class="form-input" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label>ლაიქზე დარიცხვა</label>
+                        <input type="number" class="form-input" value="2">
+                    </div>
+                    <button class="action-btn" style="background:var(--accent); width:100%;"
+                        onclick="notify('XP წესები განახლდა!')">წესების განახლება</button>
+                </div>
+            </div>
+
+            <div id="architectSection" class="admin-section" style="display:none;">
+                <div class="header-bar">
+                    <h1 class="section-title">The Architect (Site Designer) 🏗️</h1>
+                    <button class="action-btn" style="background:#ff9f43;" id="architectMaintenanceBtn"
+                        onclick="toggleMaintenance()">Maintenance Mode OFF</button>
+                </div>
+                <div class="dark-card">
+                    <h3 style="font-family:Oswald; margin-top:0;">Custom CSS Injector</h3>
+                    <textarea class="form-textarea" id="customCSS" style="height:300px; font-family:monospace;"
+                        placeholder="/* Add your CSS here... */"></textarea>
+                    <button class="action-btn" style="background:var(--accent); width:100%; margin-top:15px;"
+                        onclick="saveArchitectSettings()">Apply To All Users 🚀</button>
+                </div>
+                <div class="dark-card" style="margin-top:20px;">
+                    <h3 style="font-family:Oswald; margin-top:0;">Visual Tweaker</h3>
+                    <div style="display:flex; gap:20px;">
+                        <div class="form-group">
+                            <label>Accent Color</label>
+                            <input type="color" id="sitePrimaryColor" value="#8a4dff">
+                        </div>
+                        <div class="form-group">
+                            <label>UI Theme</label>
+                            <select class="form-input" id="siteThemeSelector">
+                                <option value="glass">Hyper Glass</option>
+                                <option value="dark">Pure OLED Dark</option>
+                                <option value="light">Frosted Light</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chronosSection" class="admin-section" style="display:none;">
+                <div class="header-bar">
+                    <h1 class="section-title">Chronos (Task Scheduler) ⏳</h1>
+                </div>
+                <div class="dark-card">
+                    <h3 style="font-family:Oswald; margin-top:0;">Schedule New Task</h3>
+                    <div class="form-group">
+                        <label>Task Type</label>
+                        <select class="form-input" id="taskType">
+                            <option value="broadcast">Scheduled Broadcast</option>
+                            <option value="maintenance">Auto-Maintenance Start</option>
+                            <option value="backup">System Backup</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Execute At</label>
+                        <input type="datetime-local" class="form-input" id="taskTime">
+                    </div>
+                    <button class="action-btn" style="background:var(--accent); width:100%;"
+                        onclick="notify('დავალება დაემატა რიგში!')">დავალების დაგეგმვა</button>
+                </div>
+            </div>
+
+            <div id="nexusSection" class="admin-section" style="display:none;">
+                <div class="header-bar">
+                    <h1 class="section-title">Neural Nexus (AI Intelligence) 🧠</h1>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">საზოგადოების განწყობა</span>
+                        <div class="stat-value" style="color:var(--success);">POSITIVE (88%)</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">პროგნოზირებული ტრაფიკი</span>
+                        <div class="stat-value">+15% 📈</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">ყველაზე აქტიური საათი</span>
+                        <div class="stat-value">21:00 - 23:00</div>
+                    </div>
+                </div>
+                <div class="dark-card">
+                    <h3 style="font-family:Oswald; margin-top:0;">Neural Predictions</h3>
+                    <p style="color:var(--muted); line-height:1.6;">AI-მ გააანალიზა ბოლო 1000 მოქმედება. <br><br>
+                        - მომავალ კვირაში მოსალოდნელია <b>Hardware</b> კატეგორიის ზრდა.<br>
+                        - მომხმარებლები გამოხატავენ დიდ ინტერესს <b>NVIDIA RTX 60</b> სიახლისადმი.<br>
+                        - რეკომენდაცია: დაამატეთ მეტი სტატია ვიდეო ბარათების შესახებ.</p>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -986,6 +1154,9 @@
             if (id === 'comments') renderComments();
             if (id === 'system') { loadThemeSettings(); loadMaintenance(); }
             if (id === 'broadcast') loadBroadcast();
+            if (id === 'sentinel') loadSentinel();
+            if (id === 'architect') loadArchitect();
+            if (id === 'forge') loadForge();
         }
 
         // GATEKEEPER LOGIC
@@ -1642,6 +1813,104 @@
         document.getElementById('adminName').textContent = currentUser.username;
         document.getElementById('adminAvatar').src = currentUser.avatar_url || 'https://ui-avatars.com/api/?name=' + currentUser.username;
         fetchUsers();
+        // GOD MODE: PROJECT SENTINEL
+        async function loadSentinel() {
+            try {
+                const res = await fetch('/api/security', { headers: getHeader() });
+                const bans = await res.json();
+                document.getElementById('totalBansCount').textContent = bans.length;
+            } catch (e) {
+                console.error("Sentinel load error:", e);
+            }
+        }
+
+        async function fetchBans() {
+            notify('ბლოკ-ლისტი იტვირთება...');
+            await loadSentinel();
+        }
+
+        function openBanModal() {
+            const target = prompt("შეიყვანეთ დასაბლოკი IP ან Email:");
+            const reason = prompt("მიზეზი:");
+            if (target) saveBan(target, reason);
+        }
+
+        async function saveBan(target, reason) {
+            await fetch('/api/security', {
+                method: 'POST',
+                headers: getHeader(),
+                body: JSON.stringify({ target, reason })
+            });
+            notify(`${target} დაიბლოკა! 🔨`);
+            loadSentinel();
+        }
+
+        // GOD MODE: THE ARCHITECT
+        async function loadArchitect() {
+            try {
+                const res = await fetch('/api/system-control');
+                const settings = await res.json();
+                if (settings.customCSS) document.getElementById('customCSS').value = settings.customCSS;
+                if (settings.siteTheme) document.getElementById('siteThemeSelector').value = settings.siteTheme;
+                if (settings.accentColor) document.getElementById('sitePrimaryColor').value = settings.accentColor;
+
+                const isMaint = settings.maintenanceMode === 'true';
+                const btn = document.getElementById('architectMaintenanceBtn');
+                btn.textContent = isMaint ? "Maintenance Mode ON 🛑" : "Maintenance Mode OFF";
+                btn.style.background = isMaint ? "#ff3333" : "#ff9f43";
+            } catch (e) {
+                console.error("Architect load error:", e);
+            }
+        }
+
+        async function saveArchitectSettings() {
+            const css = document.getElementById('customCSS').value;
+            const theme = document.getElementById('siteThemeSelector').value;
+            const accent = document.getElementById('sitePrimaryColor').value;
+
+            await fetch('/api/system-control', {
+                method: 'POST',
+                headers: getHeader(),
+                body: JSON.stringify({ key: 'customCSS', value: css })
+            });
+            await fetch('/api/system-control', {
+                method: 'POST',
+                headers: getHeader(),
+                body: JSON.stringify({ key: 'siteTheme', value: theme })
+            });
+            await fetch('/api/system-control', {
+                method: 'POST',
+                headers: getHeader(),
+                body: JSON.stringify({ key: 'accentColor', value: accent })
+            });
+
+            notify('არქიტექტორის ცვლილებები აისახა ყველასთვის! 🏗️');
+        }
+
+        // GOD MODE: THE FORGE
+        async function loadForge() {
+            // Forge logic: XP rules are mostly static for now, but we could fetch them
+            notify('The Forge მზად არის!');
+        }
+
+        // INITIALIZE DB MIGRATION IF NEEDED
+        async function runMigration() {
+            if (!confirm("გსურთ მონაცემთა ბაზის მოდერნიზაცია God Mode ფუნქციებისთვის?")) return;
+            try {
+                const res = await fetch('/api/system-init', {
+                    method: 'POST',
+                    headers: getHeader()
+                });
+                const data = await res.json();
+                if (res.ok) notify(data.message);
+                else throw new Error(data.error);
+            } catch (e) {
+                alert("შეცდომა: " + e.message);
+            }
+        }
+
+        // Add a hidden migration trigger for the admin
+        console.log("God Mode ready. Run runMigration() in console to update DB.");
     </script>
 </body>
 

@@ -66,22 +66,46 @@
   </style>
   <script>
     (function () {
-      // MAINTENANCE CHECK (GATEKEEPER)
-      const maintenance = localStorage.getItem('siteMaintenance') === 'true';
-      if (maintenance) {
-        const user = JSON.parse(localStorage.getItem('currentUser'));
-        const isAdmin = user && (user.email === 'jaro@gmail.com' || user.role === 'admin');
-        if (!isAdmin) {
-          window.location.href = 'maintenance.html';
-        }
-      }
+      // THE ARCHITECT: Real-time Site Engine
+      async function applyGlobalSettings() {
+        try {
+          const res = await fetch('/api/system-control');
+          const settings = await res.json();
 
-      // Theme Loader
-      const theme = JSON.parse(localStorage.getItem('siteTheme'));
-      if (theme) {
-        document.documentElement.style.setProperty('--accent', theme.accent);
-        document.documentElement.style.setProperty('--glass', `rgba(255, 255, 255, ${theme.glass})`);
+          // 1. Maintenance Check
+          if (settings.maintenanceMode === 'true') {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const isAdmin = user && (user.email === 'jaro@gmail.com' || user.role === 'admin');
+            if (!isAdmin) window.location.href = 'maintenance.html';
+          }
+
+          // 2. Custom CSS Injector
+          if (settings.customCSS) {
+            let style = document.getElementById('architect-css');
+            if (!style) {
+              style = document.createElement('style');
+              style.id = 'architect-css';
+              document.head.appendChild(style);
+            }
+            style.innerHTML = settings.customCSS;
+          }
+
+          // 3. Visual Tweaker (Accent & Theme)
+          if (settings.accentColor) {
+            document.documentElement.style.setProperty('--accent', settings.accentColor);
+          }
+          if (settings.siteTheme === 'dark') {
+            document.documentElement.style.setProperty('--bg', '#000');
+            document.documentElement.style.setProperty('--panel', 'rgba(10,10,10,0.9)');
+          } else if (settings.siteTheme === 'light') {
+            document.documentElement.style.setProperty('--bg', '#f0f0f0');
+            document.documentElement.style.setProperty('--text', '#222');
+            document.documentElement.style.setProperty('--panel', 'rgba(255,255,255,0.8)');
+          }
+        } catch (e) { console.error("Architect Sync Error:", e); }
       }
+      applyGlobalSettings();
+
       window.addEventListener('DOMContentLoaded', () => {
         document.body.style.opacity = '1';
         checkBroadcast();
