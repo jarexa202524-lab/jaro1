@@ -1013,7 +1013,9 @@
       statsStore[`views-${id}`]++;
       localStorage.setItem('newsStatsLiveV3', JSON.stringify(statsStore));
       location.hash = `article-${id}`;
-      renderDetail(newsData.find(n => n.id === id));
+      const article = newsData.find(n => n.id === id);
+      renderDetail(article);
+      logActivity('📖', 'User reading article', article.title);
     }
 
     function rateArticle(id, type) {
@@ -1043,12 +1045,15 @@
         btn.style.transform = "";
         btn.classList.remove('active');
       }, 300);
+
+      logActivity(type === 'like' ? '👍' : '👎', `${currentUser ? currentUser.username : 'Guest'} rated an article`, `Article #${id}`);
     }
 
     function submitComment(articleId, parentId = null) {
       const inputId = parentId ? `replyText-${parentId}` : 'commentText';
       const input = document.getElementById(inputId);
-      const text = input.value.trim();
+      const text = input.value.trim(); // Capture text before clearing
+
       if (!text) return;
       if (!currentUser) return alert('გთხოვთ გაიაროთ ავტორიზაცია');
 
@@ -1070,6 +1075,8 @@
       localStorage.setItem('newsCommentsLiveV1', JSON.stringify(commentsStore));
       localStorage.setItem('newsStatsLiveV3', JSON.stringify(statsStore));
 
+      logActivity('💬', `${currentUser.username} commented`, `Article #${articleId}`);
+
       renderDetail(newsData.find(n => n.id === articleId));
     }
 
@@ -1088,6 +1095,21 @@
       localStorage.setItem('newsCommentsLiveV1', JSON.stringify(commentsStore));
       localStorage.setItem('newsStatsLiveV3', JSON.stringify(statsStore));
       renderDetail(newsData.find(n => n.id === articleId));
+    }
+
+    function logActivity(icon, text, details) {
+      const user = currentUser;
+      if (user && user.role === 'admin') return; // Optional: Don't log admins
+
+      const logs = JSON.parse(localStorage.getItem('siteActivityLog')) || [];
+      logs.unshift({
+        icon: icon,
+        text: text,
+        details: details,
+        time: Date.now()
+      });
+      if (logs.length > 50) logs.pop();
+      localStorage.setItem('siteActivityLog', JSON.stringify(logs));
     }
 
     function editComment(commentId) {

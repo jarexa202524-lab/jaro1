@@ -799,100 +799,127 @@
                 </div>
             </div>
 
-            <div id="broadcastSection" class="admin-section" style="display:none;">
-                <div class="header-bar">
-                    <h1 class="section-title">სისტემური შეტყობინებები (Voice of God)</h1>
+            <div class="dark-card" style="grid-column: 1 / -1; border-color:var(--primary);">
+                <div class="card-header"><span class="card-title">Time Machine (Backup & Restore)</span></div>
+                <div style="display:flex; gap:20px; align-items:center;">
+                    <div style="flex:1;">
+                        <h3 style="margin:0; color:var(--text);">მონაცემების არქივირება</h3>
+                        <p style="margin:5px 0 0 0; color:var(--muted); font-size:12px;">ინახავს: სლაიდებს, სიახლეებს,
+                            კომენტარებს, თემას და პარამეტრებს.</p>
+                    </div>
+                    <button class="action-btn" onclick="exportData()"
+                        style="background:var(--secondary); color:#000;">⬇️ Backup Download</button>
+                    <button class="action-btn" onclick="document.getElementById('importFile').click()"
+                        style="background:var(--accent);">⬆️ Restore Data</button>
+                    <input type="file" id="importFile" style="display:none;" onchange="importData(this)">
                 </div>
+            </div>
+    </div>
+    </div>
 
-                <div class="form-section">
-                    <h2 style="font-family:Oswald; margin-top:0;">შეტყობინების გაგზავნა</h2>
-                    <div class="form-group">
-                        <label>შეტყობინების ტექსტი</label>
-                        <input type="text" id="broadcastMsg" class="form-input"
-                            placeholder="მაგ: სერვერის განახლება 10 წუთში...">
-                    </div>
-                    <div class="form-group">
-                        <label>ტიპი</label>
-                        <select id="broadcastType" class="form-input"
-                            style="background:var(--panel); color:#fff; border:1px solid var(--border);">
-                            <option value="info">🔵 ინფორმაცია (Blue)</option>
-                            <option value="warning">🟡 გაფრთხილება (Yellow)</option>
-                            <option value="critical">🔴 კრიტიკული (Red)</option>
-                        </select>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <button class="action-btn" style="background:var(--accent); flex-grow:1; padding:15px;"
-                            onclick="sendBroadcast()">გაგზავნა (Live)</button>
-                        <button class="action-btn" style="background:var(--muted); flex-grow:1; padding:15px;"
-                            onclick="clearBroadcast()">გათიშვა</button>
-                    </div>
-                    <p style="margin-top:20px; color:var(--muted); font-size:12px;">* შეტყობინება გამოჩნდება ყველა
-                        მომხმარებლის ეკრანზე მყისიერად.</p>
+    <div id="broadcastSection" class="admin-section" style="display:none;">
+        <div class="header-bar">
+            <h1 class="section-title">სისტემური შეტყობინებები (Voice of God)</h1>
+        </div>
+
+        <div class="form-section">
+            <h2 style="font-family:Oswald; margin-top:0;">შეტყობინების გაგზავნა</h2>
+            <div class="form-group">
+                <label>შეტყობინების ტექსტი</label>
+                <input type="text" id="broadcastMsg" class="form-input"
+                    placeholder="მაგ: სერვერის განახლება 10 წუთში...">
+            </div>
+            <div class="form-group">
+                <label>ტიპი</label>
+                <select id="broadcastType" class="form-input"
+                    style="background:var(--panel); color:#fff; border:1px solid var(--border);">
+                    <option value="info">🔵 ინფორმაცია (Blue)</option>
+                    <option value="warning">🟡 გაფრთხილება (Yellow)</option>
+                    <option value="critical">🔴 კრიტიკული (Red)</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="action-btn" style="background:var(--accent); flex-grow:1; padding:15px;"
+                    onclick="sendBroadcast()">გაგზავნა (Live)</button>
+                <button class="action-btn" style="background:var(--muted); flex-grow:1; padding:15px;"
+                    onclick="clearBroadcast()">გათიშვა</button>
+            </div>
+            <p style="margin-top:20px; color:var(--muted); font-size:12px;">* შეტყობინება გამოჩნდება ყველა
+                მომხმარებლის ეკრანზე მყისიერად.</p>
+        </div>
+    </div>
+
+    <div id="logsSection" class="admin-section" style="display:none;">
+        <div class="header-bar">
+            <h1 class="section-title">უსაფრთხოების ლოგები</h1>
+        </div>
+        <div class="data-table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>მომხმარებელი</th>
+                        <th>მოვლენა</th>
+                        <th>IP / ლოკაცია</th>
+                        <th>მოწყობილობა</th>
+                        <th>დრო</th>
+                    </tr>
+                </thead>
+                <tbody id="logsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="analyticsSection" class="admin-section" style="display:none;">
+        <div class="header-bar">
+            <h1 class="section-title">სისტემური ანალიტიკა</h1>
+        </div>
+
+        <div class="analytics-grid">
+            <div class="dark-card">
+                <div class="card-header"><span class="card-title">მომხმარებლების ზრდა</span></div>
+                <div class="trend-item"><span class="trend-label">ბოლო 7 დღე (კვირა)</span><span class="trend-value"
+                        id="userWeek">0</span></div>
+                <div class="trend-item"><span class="trend-label">ბოლო 30 დღე (თვე)</span><span class="trend-value"
+                        id="userMonth">0</span></div>
+                <div class="trend-item"><span class="trend-label">ბოლო 365 დღე (წელი)</span><span class="trend-value"
+                        id="userYear">0</span></div>
+                <div class="trend-item"><span class="trend-label">სულ რეგისტრირებული</span><span class="trend-value"
+                        id="userTotal">0</span></div>
+            </div>
+            <div class="dark-card">
+                <div class="card-header"><span class="card-title">სიახლეების აქტივობა</span></div>
+                <div class="trend-item"><span class="trend-label">ამ კვირაში</span><span class="trend-value"
+                        id="newsWeek">0</span></div>
+                <div class="trend-item"><span class="trend-label">ამ თვეში</span><span class="trend-value"
+                        id="newsMonth">0</span></div>
+                <div class="trend-item"><span class="trend-label">ამ წელს</span><span class="trend-value"
+                        id="newsYear">0</span></div>
+                <div class="trend-item"><span class="trend-label">სულ პოსტები</span><span class="trend-value"
+                        id="newsTotal">0</span></div>
+            </div>
+        </div>
+
+        <div class="analytics-grid">
+            <div class="dark-card">
+                <div class="card-header"><span class="card-title">ქვეყნების განაწილება</span></div>
+                <div id="countryStatsContainer"></div>
+            </div>
+            <div class="dark-card">
+                <div class="card-header"><span class="card-title">კატეგორიების წილი</span></div>
+                <div id="categoryStatsContainer"></div>
+            </div>
+
+            <div class="dark-card" style="grid-column: 1 / -1; border-color:var(--accent);">
+                <div class="card-header"><span class="card-title">Spyglass (Live Activity) 🕵️</span></div>
+                <div id="spyglassContainer"
+                    style="max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+                    <p style="color:var(--muted); text-align:center;">Waiting for activity...</p>
                 </div>
             </div>
 
-            <div id="logsSection" class="admin-section" style="display:none;">
-                <div class="header-bar">
-                    <h1 class="section-title">უსაფრთხოების ლოგები</h1>
-                </div>
-                <div class="data-table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>მომხმარებელი</th>
-                                <th>მოვლენა</th>
-                                <th>IP / ლოკაცია</th>
-                                <th>მოწყობილობა</th>
-                                <th>დრო</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logsTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="analyticsSection" class="admin-section" style="display:none;">
-                <div class="header-bar">
-                    <h1 class="section-title">სისტემური ანალიტიკა</h1>
-                </div>
-
-                <div class="analytics-grid">
-                    <div class="dark-card">
-                        <div class="card-header"><span class="card-title">მომხმარებლების ზრდა</span></div>
-                        <div class="trend-item"><span class="trend-label">ბოლო 7 დღე (კვირა)</span><span
-                                class="trend-value" id="userWeek">0</span></div>
-                        <div class="trend-item"><span class="trend-label">ბოლო 30 დღე (თვე)</span><span
-                                class="trend-value" id="userMonth">0</span></div>
-                        <div class="trend-item"><span class="trend-label">ბოლო 365 დღე (წელი)</span><span
-                                class="trend-value" id="userYear">0</span></div>
-                        <div class="trend-item"><span class="trend-label">სულ რეგისტრირებული</span><span
-                                class="trend-value" id="userTotal">0</span></div>
-                    </div>
-                    <div class="dark-card">
-                        <div class="card-header"><span class="card-title">სიახლეების აქტივობა</span></div>
-                        <div class="trend-item"><span class="trend-label">ამ კვირაში</span><span class="trend-value"
-                                id="newsWeek">0</span></div>
-                        <div class="trend-item"><span class="trend-label">ამ თვეში</span><span class="trend-value"
-                                id="newsMonth">0</span></div>
-                        <div class="trend-item"><span class="trend-label">ამ წელს</span><span class="trend-value"
-                                id="newsYear">0</span></div>
-                        <div class="trend-item"><span class="trend-label">სულ პოსტები</span><span class="trend-value"
-                                id="newsTotal">0</span></div>
-                    </div>
-                </div>
-
-                <div class="analytics-grid">
-                    <div class="dark-card">
-                        <div class="card-header"><span class="card-title">ქვეყნების განაწილება</span></div>
-                        <div id="countryStatsContainer"></div>
-                    </div>
-                    <div class="dark-card">
-                        <div class="card-header"><span class="card-title">კატეგორიების წილი</span></div>
-                        <div id="categoryStatsContainer"></div>
-                    </div>
-                </div>
-            </div>
-        </main>
+        </div>
+    </div>
+    </main>
     </div>
 
     <script>
@@ -965,6 +992,100 @@
                 btn.style.background = 'var(--success)';
                 btn.innerText = 'OPEN 🔓';
             }
+        }
+
+        // TIME MACHINE LOGIC
+        function exportData() {
+            const keys = [
+                'siteSliderData',
+                'siteNewsData',
+                'siteTheme',
+                'siteBroadcast',
+                'siteMaintenance',
+                'newsCommentsLiveV1',
+                'newsStatsLiveV3'
+            ];
+
+            const backup = {};
+            keys.forEach(k => {
+                const v = localStorage.getItem(k);
+                if (v) backup[k] = JSON.parse(v);
+            });
+
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup-${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            notify('ბექაპი გადმოიწერა!');
+        }
+
+        function importData(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    Object.keys(data).forEach(k => {
+                        localStorage.setItem(k, JSON.stringify(data[k]));
+                    });
+                    notify('მონაცემები აღდგენილია! გვერდი გადაიტვირთება...');
+                    setTimeout(() => location.reload(), 1500);
+                } catch (err) {
+                    alert('Error parsing backup file');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // TIME MACHINE LOGIC
+        function exportData() {
+            const keys = [
+                'siteSliderData',
+                'siteNewsData',
+                'siteTheme',
+                'siteBroadcast',
+                'siteMaintenance',
+                'newsCommentsLiveV1',
+                'newsStatsLiveV3'
+            ];
+
+            const backup = {};
+            keys.forEach(k => {
+                const v = localStorage.getItem(k);
+                if (v) backup[k] = JSON.parse(v);
+            });
+
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup-${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            notify('ბექაპი გადმოიწერა!');
+        }
+
+        function importData(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    Object.keys(data).forEach(k => {
+                        localStorage.setItem(k, JSON.stringify(data[k]));
+                    });
+                    notify('მონაცემები აღდგენილია! გვერდი გადაიტვირთება...');
+                    setTimeout(() => location.reload(), 1500);
+                } catch (err) {
+                    alert('Error parsing backup file');
+                }
+            };
+            reader.readAsText(file);
         }
 
         // VOICE OF GOD LOGIC
@@ -1043,6 +1164,7 @@
                     <td>#${c.postId}</td>
                     <td style="font-size:12px; color:var(--muted);">${c.time}</td>
                     <td>
+                        <button class="action-btn" onclick="analyzeComment('${c.text.replace(/'/g, "\\'")}', this)" style="background:var(--secondary); color:#000; margin-right:5px;">Oracle 🔮</button>
                         <button class="action-btn del" onclick="deleteCommentAdmin('${c.postId}', ${c.id})">Delete</button>
                     </td>
                 </tr>
@@ -1066,6 +1188,36 @@
                 renderComments();
                 notify('კომენტარი წაიშალა');
             }
+        }
+
+        // ORACLE LOGIC (AI ASSISTANT)
+        function analyzeComment(text, btn) {
+            const positive = ['good', 'great', 'love', 'amazing', 'cool', 'nice', 'best', 'კარგი', 'მომწონს', 'მაგარი', 'სუპერ'];
+            const negative = ['bad', 'hate', 'stupid', 'slow', 'ugly', 'worst', 'ცუდი', 'არვარგა', 'საშინელი'];
+
+            let score = 0;
+            const words = text.toLowerCase().split(/\s+/);
+            words.forEach(w => {
+                if (positive.some(k => w.includes(k))) score++;
+                if (negative.some(k => w.includes(k))) score--;
+            });
+
+            const badge = document.createElement('span');
+            badge.className = 'badge';
+            badge.style.marginRight = '5px';
+
+            if (score > 0) {
+                badge.style.background = 'var(--success)';
+                badge.innerText = 'POSITIVE';
+            } else if (score < 0) {
+                badge.style.background = '#ff4757';
+                badge.innerText = 'NEGATIVE';
+            } else {
+                badge.style.background = 'var(--muted)';
+                badge.innerText = 'NEUTRAL';
+            }
+
+            btn.replaceWith(badge);
         }
 
         // SLIDER LOGIC (HERO COMMAND)
@@ -1199,6 +1351,37 @@
                     <span class="country-count">${count}</span>
                 </div>
             `).join('');
+
+            renderSpyglass();
+        }
+
+        // SPYGLASS LOGIC
+        function renderSpyglass() {
+            const logs = JSON.parse(localStorage.getItem('siteActivityLog')) || [];
+            const container = document.getElementById('spyglassContainer');
+
+            if (logs.length === 0) {
+                container.innerHTML = '<p style="color:var(--muted); text-align:center;">Waiting for activity...</p>';
+                return;
+            }
+
+            container.innerHTML = logs.slice(0, 10).map(l => `
+                <div style="background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:18px;">${l.icon || '👤'}</span>
+                        <span style="font-size:13px; color:#fff;">${l.text}</span>
+                    </div>
+                    <span style="font-size:11px; color:var(--muted);">${timeAgo(l.time)}</span>
+                </div>
+            `).join('');
+        }
+
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            if (seconds < 60) return 'Just now';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return minutes + 'm ago';
+            return Math.floor(minutes / 60) + 'h ago';
         }
 
         function notify(text) {
