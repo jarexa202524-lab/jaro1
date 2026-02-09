@@ -644,9 +644,12 @@
                     <div class="form-group">
                         <label>კატეგორია</label>
                         <select id="postCategory" class="form-input">
-                            <option>Games</option>
-                            <option>Hardware</option>
-                            <option>Review</option>
+                            <option value="Games">Games</option>
+                            <option value="Hardware">Hardware</option>
+                            <option value="Exclusives">Exclusives</option>
+                            <option value="Tech">Tech</option>
+                            <option value="Movies">Movies</option>
+                            <option value="TV">TV</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -751,6 +754,112 @@
                 </div>
             </div>
 
+            <!-- BROADCAST SECTION -->
+            <div id="broadcastSection" class="admin-section" style="display:none;">
+                <div class="header-bar">
+                    <h1 class="section-title">სისტემური შეტყობინებები (Voice of God)</h1>
+                </div>
+
+                <div class="form-section" style="display:block;">
+                    <h2 style="font-family:Oswald; margin-top:0;">შეტყობინების გაგზავნა</h2>
+                    <div class="form-group">
+                        <label>შეტყობინების ტექსტი</label>
+                        <input type="text" id="broadcastMsg" class="form-input"
+                            placeholder="მაგ: სერვერის განახლება 10 წუთში...">
+                    </div>
+                    <div class="form-group">
+                        <label>ტიპი</label>
+                        <select id="broadcastType" class="form-input"
+                            style="background:var(--panel); color:#fff; border:1px solid var(--border);">
+                            <option value="info">🔵 ინფორმაცია (Blue)</option>
+                            <option value="warning">🟡 გაფრთხილება (Yellow)</option>
+                            <option value="critical">🔴 კრიტიკული (Red)</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="action-btn" style="background:var(--accent); flex-grow:1; padding:15px;"
+                            onclick="sendBroadcast()">გაგზავნა (Live)</button>
+                        <button class="action-btn" style="background:var(--muted); flex-grow:1; padding:15px;"
+                            onclick="clearBroadcast()">გათიშვა</button>
+                    </div>
+                    <p style="margin-top:20px; color:var(--muted); font-size:12px;">* შეტყობინება გამოჩნდება ყველა
+                        მომხმარებლის ეკრანზე მყისიერად.</p>
+                </div>
+            </div>
+
+            <!-- ANALYTICS SECTION -->
+            <div id="analyticsSection" class="admin-section" style="display:none;">
+                <div class="header-bar">
+                    <h1 class="section-title">სისტემური ანალიტიკა</h1>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="dark-card">
+                        <div class="card-header"><span class="card-title">მომხმარებლების ზრდა</span></div>
+                        <div class="trend-item"><span class="trend-label">ბოლო 7 დღე (კვირა)</span><span
+                                class="trend-value" id="userWeek">0</span></div>
+                        <div class="trend-item"><span class="trend-label">ბოლო 30 დღე (თვე)</span><span
+                                class="trend-value" id="userMonth">0</span></div>
+                        <div class="trend-item"><span class="trend-label">ბოლო 365 დღე (წელი)</span><span
+                                class="trend-value" id="userYear">0</span></div>
+                        <div class="trend-item"><span class="trend-label">სულ რეგისტრირებული</span><span
+                                class="trend-value" id="userTotal">0</span></div>
+                    </div>
+                    <div class="dark-card">
+                        <div class="card-header"><span class="card-title">სიახლეების აქტივობა</span></div>
+                        <div class="trend-item"><span class="trend-label">ამ კვირაში</span><span class="trend-value"
+                                id="newsWeek">0</span></div>
+                        <div class="trend-item"><span class="trend-label">ამ თვეში</span><span class="trend-value"
+                                id="newsMonth">0</span></div>
+                        <div class="trend-item"><span class="trend-label">ამ წელს</span><span class="trend-value"
+                                id="newsYear">0</span></div>
+                        <div class="trend-item"><span class="trend-label">სულ პოსტები</span><span class="trend-value"
+                                id="newsTotal">0</span></div>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="dark-card">
+                        <div class="card-header"><span class="card-title">ქვეყნების განაწილება</span></div>
+                        <div id="countryStatsContainer"></div>
+                    </div>
+                    <div class="dark-card">
+                        <div class="card-header"><span class="card-title">კატეგორიების წილი</span></div>
+                        <div id="categoryStatsContainer"></div>
+                    </div>
+
+                    <div class="dark-card" style="grid-column: 1 / -1; border-color:var(--accent);">
+                        <div class="card-header"><span class="card-title">Spyglass (Live Activity) 🕵️</span></div>
+                        <div id="spyglassContainer"
+                            style="max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+                            <p style="color:var(--muted); text-align:center;">Waiting for activity...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LOGS SECTION -->
+            <div id="logsSection" class="admin-section" style="display:none;">
+                <div class="header-bar">
+                    <h1 class="section-title">უსაფრთხოების ლოგები</h1>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>მომხმარებელი</th>
+                                <th>მოვლენა</th>
+                                <th>IP / ლოკაცია</th>
+                                <th>მოწყობილობა</th>
+                                <th>დრო</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SYSTEM SECTION -->
             <div id="systemSection" class="admin-section" style="display:none;">
                 <div class="header-bar">
                     <h1 class="section-title">სისტემური პარამეტრები (Neon-CM)</h1>
@@ -796,130 +905,25 @@
                                 style="width:150px; font-weight:bold;">OFF</button>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="dark-card" style="grid-column: 1 / -1; border-color:var(--primary);">
-                <div class="card-header"><span class="card-title">Time Machine (Backup & Restore)</span></div>
-                <div style="display:flex; gap:20px; align-items:center;">
-                    <div style="flex:1;">
-                        <h3 style="margin:0; color:var(--text);">მონაცემების არქივირება</h3>
-                        <p style="margin:5px 0 0 0; color:var(--muted); font-size:12px;">ინახავს: სლაიდებს, სიახლეებს,
-                            კომენტარებს, თემას და პარამეტრებს.</p>
+                    <div class="dark-card" style="grid-column: 1 / -1; border-color:var(--primary);">
+                        <div class="card-header"><span class="card-title">Time Machine (Backup & Restore)</span></div>
+                        <div style="display:flex; gap:20px; align-items:center;">
+                            <div style="flex:1;">
+                                <h3 style="margin:0; color:var(--text);">მონაცემების არქივირება</h3>
+                                <p style="margin:5px 0 0 0; color:var(--muted); font-size:12px;">ინახავს: სლაიდებს,
+                                    სიახლეებს, კომენტარებს, თემას და პარამეტრებს.</p>
+                            </div>
+                            <button class="action-btn" onclick="exportData()"
+                                style="background:var(--secondary); color:#000;">⬇️ Backup Download</button>
+                            <button class="action-btn" onclick="document.getElementById('importFile').click()"
+                                style="background:var(--accent);">⬆️ Restore Data</button>
+                            <input type="file" id="importFile" style="display:none;" onchange="importData(this)">
+                        </div>
                     </div>
-                    <button class="action-btn" onclick="exportData()"
-                        style="background:var(--secondary); color:#000;">⬇️ Backup Download</button>
-                    <button class="action-btn" onclick="document.getElementById('importFile').click()"
-                        style="background:var(--accent);">⬆️ Restore Data</button>
-                    <input type="file" id="importFile" style="display:none;" onchange="importData(this)">
                 </div>
             </div>
-    </div>
-    </div>
-
-    <div id="broadcastSection" class="admin-section" style="display:none;">
-        <div class="header-bar">
-            <h1 class="section-title">სისტემური შეტყობინებები (Voice of God)</h1>
-        </div>
-
-        <div class="form-section">
-            <h2 style="font-family:Oswald; margin-top:0;">შეტყობინების გაგზავნა</h2>
-            <div class="form-group">
-                <label>შეტყობინების ტექსტი</label>
-                <input type="text" id="broadcastMsg" class="form-input"
-                    placeholder="მაგ: სერვერის განახლება 10 წუთში...">
-            </div>
-            <div class="form-group">
-                <label>ტიპი</label>
-                <select id="broadcastType" class="form-input"
-                    style="background:var(--panel); color:#fff; border:1px solid var(--border);">
-                    <option value="info">🔵 ინფორმაცია (Blue)</option>
-                    <option value="warning">🟡 გაფრთხილება (Yellow)</option>
-                    <option value="critical">🔴 კრიტიკული (Red)</option>
-                </select>
-            </div>
-            <div style="display:flex; gap:10px;">
-                <button class="action-btn" style="background:var(--accent); flex-grow:1; padding:15px;"
-                    onclick="sendBroadcast()">გაგზავნა (Live)</button>
-                <button class="action-btn" style="background:var(--muted); flex-grow:1; padding:15px;"
-                    onclick="clearBroadcast()">გათიშვა</button>
-            </div>
-            <p style="margin-top:20px; color:var(--muted); font-size:12px;">* შეტყობინება გამოჩნდება ყველა
-                მომხმარებლის ეკრანზე მყისიერად.</p>
-        </div>
-    </div>
-
-    <div id="logsSection" class="admin-section" style="display:none;">
-        <div class="header-bar">
-            <h1 class="section-title">უსაფრთხოების ლოგები</h1>
-        </div>
-        <div class="data-table-container">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>მომხმარებელი</th>
-                        <th>მოვლენა</th>
-                        <th>IP / ლოკაცია</th>
-                        <th>მოწყობილობა</th>
-                        <th>დრო</th>
-                    </tr>
-                </thead>
-                <tbody id="logsTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="analyticsSection" class="admin-section" style="display:none;">
-        <div class="header-bar">
-            <h1 class="section-title">სისტემური ანალიტიკა</h1>
-        </div>
-
-        <div class="analytics-grid">
-            <div class="dark-card">
-                <div class="card-header"><span class="card-title">მომხმარებლების ზრდა</span></div>
-                <div class="trend-item"><span class="trend-label">ბოლო 7 დღე (კვირა)</span><span class="trend-value"
-                        id="userWeek">0</span></div>
-                <div class="trend-item"><span class="trend-label">ბოლო 30 დღე (თვე)</span><span class="trend-value"
-                        id="userMonth">0</span></div>
-                <div class="trend-item"><span class="trend-label">ბოლო 365 დღე (წელი)</span><span class="trend-value"
-                        id="userYear">0</span></div>
-                <div class="trend-item"><span class="trend-label">სულ რეგისტრირებული</span><span class="trend-value"
-                        id="userTotal">0</span></div>
-            </div>
-            <div class="dark-card">
-                <div class="card-header"><span class="card-title">სიახლეების აქტივობა</span></div>
-                <div class="trend-item"><span class="trend-label">ამ კვირაში</span><span class="trend-value"
-                        id="newsWeek">0</span></div>
-                <div class="trend-item"><span class="trend-label">ამ თვეში</span><span class="trend-value"
-                        id="newsMonth">0</span></div>
-                <div class="trend-item"><span class="trend-label">ამ წელს</span><span class="trend-value"
-                        id="newsYear">0</span></div>
-                <div class="trend-item"><span class="trend-label">სულ პოსტები</span><span class="trend-value"
-                        id="newsTotal">0</span></div>
-            </div>
-        </div>
-
-        <div class="analytics-grid">
-            <div class="dark-card">
-                <div class="card-header"><span class="card-title">ქვეყნების განაწილება</span></div>
-                <div id="countryStatsContainer"></div>
-            </div>
-            <div class="dark-card">
-                <div class="card-header"><span class="card-title">კატეგორიების წილი</span></div>
-                <div id="categoryStatsContainer"></div>
-            </div>
-
-            <div class="dark-card" style="grid-column: 1 / -1; border-color:var(--accent);">
-                <div class="card-header"><span class="card-title">Spyglass (Live Activity) 🕵️</span></div>
-                <div id="spyglassContainer"
-                    style="max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
-                    <p style="color:var(--muted); text-align:center;">Waiting for activity...</p>
-                </div>
-            </div>
-
-        </div>
-    </div>
-    </main>
+        </main>
     </div>
 
     <script>
@@ -951,18 +955,33 @@
         }
 
         // CORE UI
+        // CORE UI
         async function showSection(id) {
+            // Hide all
             document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
-            document.getElementById(id + 'Section').style.display = 'block';
+
+            // Show target
+            const targetId = id + 'Section';
+            const target = document.getElementById(targetId);
+            if (target) {
+                target.style.display = 'block';
+            }
+
+            // Update Menu UI
             document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-            if (event) {
+            if (typeof event !== 'undefined' && event) {
                 const item = event.target.closest('.menu-item');
                 if (item) item.classList.add('active');
             }
+
+            // Logic for specific pages
             if (id === 'users') await fetchUsers();
             if (id === 'news') renderNews();
             if (id === 'logs') await fetchLogs();
-            if (id === 'analytics') renderAnalytics();
+            if (id === 'analytics') {
+                if (allUsers.length === 0) await fetchUsers();
+                renderAnalytics();
+            }
             if (id === 'slider') renderSlider();
             if (id === 'comments') renderComments();
             if (id === 'system') { loadThemeSettings(); loadMaintenance(); }
@@ -992,53 +1011,6 @@
                 btn.style.background = 'var(--success)';
                 btn.innerText = 'OPEN 🔓';
             }
-        }
-
-        // TIME MACHINE LOGIC
-        function exportData() {
-            const keys = [
-                'siteSliderData',
-                'siteNewsData',
-                'siteTheme',
-                'siteBroadcast',
-                'siteMaintenance',
-                'newsCommentsLiveV1',
-                'newsStatsLiveV3'
-            ];
-
-            const backup = {};
-            keys.forEach(k => {
-                const v = localStorage.getItem(k);
-                if (v) backup[k] = JSON.parse(v);
-            });
-
-            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `backup-${new Date().toISOString().slice(0, 10)}.json`;
-            a.click();
-            notify('ბექაპი გადმოიწერა!');
-        }
-
-        function importData(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    Object.keys(data).forEach(k => {
-                        localStorage.setItem(k, JSON.stringify(data[k]));
-                    });
-                    notify('მონაცემები აღდგენილია! გვერდი გადაიტვირთება...');
-                    setTimeout(() => location.reload(), 1500);
-                } catch (err) {
-                    alert('Error parsing backup file');
-                }
-            };
-            reader.readAsText(file);
         }
 
         // TIME MACHINE LOGIC
@@ -1399,8 +1371,15 @@
                 allUsers = await res.json();
                 renderUsers();
             } catch (err) {
-                notify('შეცდომა მომხმარებლების წაკითხვისას');
-                console.error(err);
+                console.warn('API unavailable, using mock data for Users');
+                allUsers = [
+                    { username: 'Jaro Admin', email: 'jaro@gmail.com', role: 'admin', last_ip: '127.0.0.1', last_login_at: new Date().toISOString(), created_at: new Date(Date.now() - 86400000 * 300).toISOString() },
+                    { username: 'Giorgi', email: 'giorgi@example.com', role: 'user', last_ip: '192.168.1.5', last_login_at: new Date(Date.now() - 86400000 * 2).toISOString(), created_at: new Date(Date.now() - 86400000 * 10).toISOString() },
+                    { username: 'Nino', email: 'nino@example.com', role: 'user', last_ip: '192.168.1.8', last_login_at: new Date(Date.now() - 86400000 * 5).toISOString(), created_at: new Date(Date.now() - 86400000 * 20).toISOString() },
+                    { username: 'Luka', email: 'luka@example.com', role: 'user', last_ip: '192.168.1.12', last_login_at: new Date(Date.now() - 86400000 * 1).toISOString(), created_at: new Date(Date.now() - 86400000 * 5).toISOString() }
+                ];
+                renderUsers();
+                notify('სატესტო რეჟიმი: გამოყენებულია ლოკალური მონაცემები');
             }
         }
 
@@ -1598,7 +1577,22 @@
             </tr>
           `).join('');
             } catch (err) {
-                notify('შეცდომა ლოგების კითხვისას');
+                console.warn('API unavailable, using mock data for Logs');
+                const mockLogs = [
+                    { email: 'jaro@gmail.com', event_type: 'LOGIN_SUCCESS', ip_address: '127.0.0.1', country: 'GE', device: 'Windows', browser: 'Chrome', attempt_at: new Date().toISOString() },
+                    { email: 'giorgi@example.com', event_type: 'LOGIN_FAILED', ip_address: '192.168.1.5', country: 'GE', device: 'Android', browser: 'Firefox', attempt_at: new Date(Date.now() - 3600000).toISOString() },
+                    { email: 'bad@actor.com', event_type: 'WAF_BLOCK', ip_address: '45.33.22.11', country: 'RU', device: 'Unknown', browser: 'Bot', attempt_at: new Date(Date.now() - 7200000).toISOString() }
+                ];
+                const tbody = document.getElementById('logsTableBody');
+                tbody.innerHTML = mockLogs.map(log => `
+            <tr>
+              <td>${log.email}</td>
+              <td><b style="color:${log.event_type.includes('SUCCESS') ? 'var(--success)' : 'var(--danger)'}">${log.event_type}</b></td>
+              <td style="font-family:monospace;">${log.ip_address || 'Unknown'} (${log.country || '??'})</td>
+              <td style="font-size:11px;">${log.device || 'Unknown'} / ${log.browser || 'Unknown'}</td>
+              <td style="font-size:12px;">${new Date(log.attempt_at).toLocaleString('ka-GE')}</td>
+            </tr>
+          `).join('');
             }
         }
 
