@@ -930,7 +930,13 @@
     function initFeed() {
       const feed = document.getElementById('featuredNews');
       if (!feed) return;
-      feed.innerHTML = newsData.map(n => `
+
+      // SYNC: Load news from global storage (same as news.html/admin.html)
+      const storedNews = JSON.parse(localStorage.getItem('siteNewsData'));
+      // Use stored news if available, otherwise fall back to the hardcoded newsData (which should also be updated to match news.html defaults if needed, but storage is primary)
+      const feedData = storedNews && storedNews.length > 0 ? storedNews : newsData;
+
+      feed.innerHTML = feedData.map(n => `
         <a href="news.html#article-${n.id}" class="news-card">
           <div class="news-img" style="background-image:url('${n.img}')"><span class="news-tag">${n.category}</span></div>
           <div class="news-info"><h3>${n.title}</h3><p>${n.excerpt}</p></div>
